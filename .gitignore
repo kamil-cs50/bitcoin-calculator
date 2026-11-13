@@ -1,3 +1,9 @@
 .superpowers/
 node_modules/
 dist/
+.vite/
+*.tsbuildinfo
+coverage/
+.env
+.env.*
+.DS_Store
