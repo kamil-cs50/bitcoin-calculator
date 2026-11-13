@@ -37,6 +37,7 @@ describe('zbiór danych 2026.11', () => {
     expect(d.inflation.x0.verified).toBe('yes');
     expect(d.inflation.prevYoY.verified).toBe('secondary');
     expect(d.edo.firstYearRate.verified).toBe('yes');
+    expect(d.edo.earlyFeePer100.verified).toBe('secondary'); // limit opłaty w liście emisyjnym niezweryfikowany
     expect(d.taxPL.ikeLimit2026.verified).toBe('secondary');
     expect(d.assets.wigEquity!.g.kind).toBe('assumption');
     expect(d.assets.wigEquity!.g.verified).toBe('no');

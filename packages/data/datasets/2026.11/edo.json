@@ -32,7 +32,7 @@
   "earlyFeePer100": {
     "value": 3,
     "kind": "data",
-    "verified": "yes",
+    "verified": "secondary",
     "sources": [
       {
         "title": "Obligacje 10-letnie EDO, oferta listopad 2026",
