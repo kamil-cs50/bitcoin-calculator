@@ -667,3 +667,46 @@ Pytania, które zadałby wykonawca, i rozstrzygnięcia:
 
 Decyzje wymagające użytkownika (nie blokują planu): akceptacja tabel 6.2–6.3, nazwa aplikacji,
 domyślne włączenie przełącznika „po podatku”.
+
+---
+
+## 12. Poprawki recenzji (przed implementacją; mają pierwszeństwo przed sekcjami 4–9)
+
+Znaczniki **[R-n]**. Wykonawca stosuje je razem z odpowiednimi zadaniami planu.
+
+- **[R-1] Czynniki autoregresyjne w kalibracji korelacji (4.3, 4.4, 4.6, 4.7).** Wzór na `R̃` z
+  [Z-7] zakłada, że czynnik sumuje się w roku jak niezależne przyrosty. To dotyczy zwrotów aktywów,
+  ale nie inflacji `x_t` (AR(1)) ani realnego kursu `q_t` (AR(1)). Ustalenie:
+  - korekta [Z-7] obejmuje wyłącznie pary zwrot–zwrot;
+  - dla par z udziałem `ε^π` lub `ε^{fx}` wpisane `ρ` oznacza **korelację szoków miesięcznych**
+    i trafia do `R̃` bez korekty (poza rzutem Highama);
+  - panel „Kontrola modelu” pokazuje dla tych par wynikową korelację roczną (z symulacji), a T3
+    sprawdza dla nich korelację szoków, nie korelację roczną.
+- **[R-2] Definicja i kalibracja zmienności kursu (4.7, 6.2).** `σ` kursu w tabeli 6.2 to
+  odchylenie **12-miesięcznej zmiany** `ln` realnego kursu, bo to mierzy się w danych. Kalibracja:
+  `Var(q_{t+12} − q_t) = 2·V_q·(1 − φ_q^{12}) + ω_q·σ_q²`, `V_q = σ_{q,m}²·K_q/(1 − φ_q²)`
+  (składnik reżimowy `ω_q` liczony jak w 4.4). Z tego wyznaczamy `σ_{q,m}`. Wzór na zmienność
+  efektywną w PLN z 4.7 jest wtedy spójny dla horyzontu rocznego. T3 dostaje asercję na
+  odchylenie 12-miesięcznej zmiany `q`.
+- **[R-3] Dokładna reguła strat z papierów (zastępuje [Z-16]).** Art. 9 ust. 3 ustawy o PIT: dla
+  każdej straty („rocznika”) przez 5 kolejnych lat możliwe jest **jednorazowe** obniżenie dochodu
+  o kwotę do 5 000 000 zł w wybranym roku, a pozostała część straty w pozostałych latach podlega
+  limitowi 50% pierwotnej straty rocznie. Implementacja: jednorazowe odliczenie w pierwszym roku
+  z dodatnim dochodem (`min(dochód, pozostała strata, 5 mln)`), potem limit 50% rocznie, wygaśnięcie
+  po 5 latach, roczniki od najstarszego. Wybór pierwszego roku z dochodem to uproszczenie
+  (heurystyka zachłanna, nie optymalizacja podatnika), opisane w metodologii. Test T5 dostaje
+  przypadek, w którym dochód pierwszego roku jest mniejszy od straty, więc reszta schodzi po 50%.
+  Brzmienie przepisu do potwierdzenia w ISAP w zadaniu 16.
+- **[R-4] Zadanie 14 (skrypty kalibracyjne) bez sieci.** Środowisko wykonawcy może blokować
+  serwisy z danymi (GUS, NBP, FRED). Skrypty mają działać na plikach wejściowych pobranych
+  lokalnie. Jeśli pobranie się nie uda, zadanie kończy się skryptami z testami na danych
+  syntetycznych oraz wartościami z tabel 6.2–6.4 oznaczonymi `verified: 'no'`. Nie blokuje to
+  dalszych zadań.
+- **[R-5] Wdrożenie (zadanie 47).** Wykonawca przygotowuje `vercel.json`, build i instrukcję
+  wdrożenia, sprawdza je lokalnie (`vercel build` niewymagany; wystarczy `pnpm build` i podgląd
+  z nagłówkami), ale **nie wdraża**. Wymaga to konta użytkownika i zostaje zrobione z nim.
+- **[R-6] Średnia przy reżimach (4.3).** Wzór na `E[e^r]` w 4.3 dotyczy modelu bez reżimów.
+  W trybie realistycznym średnią arytmetyczną do UI liczymy z tej samej tabeli skali i rozkładu
+  stacjonarnego reżimów:
+  `E[e^{r}] = e^{μ} · Σ_s π_s e^{ασδ_s} · (1/K)Σ_k exp(σ_m²κ_s² s_k²/2)`
+  (miesięcznie; rocznie liczymy z symulacji kontrolnej, bo reżim jest skorelowany w czasie).
