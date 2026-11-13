@@ -1,0 +1,162 @@
+{
+  "capitalGainsRate": {
+    "value": 0.19,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "19% od dochodu z papierów i kryptowalut (art. 30b PIT, 4.10). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "interestRate": {
+    "value": 0.19,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "19% od odsetek (art. 30a PIT). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "lossCarryYears": {
+    "value": 5,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Straty z papierów rozliczane w 5 kolejnych latach (art. 9 ust. 3, R-3). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "lossOneOffLimit": {
+    "value": 5000000,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Jednorazowe odliczenie straty do 5 000 000 zł (art. 9 ust. 3, R-3). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "lossAnnualShare": {
+    "value": 0.5,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Reszta straty: do 50% pierwotnej straty rocznie (R-3). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "rentalRateLow": {
+    "value": 0.085,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Ryczałt najmu 8,5% do progu. Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "rentalRateHigh": {
+    "value": 0.125,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Ryczałt najmu 12,5% powyżej progu. Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "rentalThreshold": {
+    "value": 100000,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Próg przychodu rocznego z najmu 100 000 zł. Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "ikeLimit2026": {
+    "value": 28260,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Limit wpłat na IKE 2026 i 2027 (M.P. 2026 poz. 1081)",
+        "publisher": "czasopismo.legeartis.org",
+        "year": 2026,
+        "url": "https://czasopismo.legeartis.org",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Limit IKE 2026: 28 260 zł (M.P. 2026 poz. 1081); treść Monitora Polskiego nieodczytana."
+  },
+  "ikeLimit2027": {
+    "value": 30099,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Limit wpłat na IKE 2026 i 2027 (M.P. 2026 poz. 1081)",
+        "publisher": "czasopismo.legeartis.org",
+        "year": 2026,
+        "url": "https://czasopismo.legeartis.org",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Limit IKE 2027: 30 099 zł (M.P. 2026 poz. 1081)."
+  },
+  "ikzeLimit2026": {
+    "value": 11304,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Limity wpłat na IKZE 2026 i 2027",
+        "publisher": "xyz.pl",
+        "year": 2026,
+        "url": "https://xyz.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Limit IKZE 2026: 11 304 zł."
+  },
+  "ikzeLimitBusiness2026": {
+    "value": 16956,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Limity wpłat na IKZE 2026 i 2027",
+        "publisher": "xyz.pl",
+        "year": 2026,
+        "url": "https://xyz.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Limit IKZE 2026 dla prowadzących działalność: 16 956 zł."
+  },
+  "ikzeLimit2027": {
+    "value": 12039.6,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Limity wpłat na IKZE 2026 i 2027",
+        "publisher": "xyz.pl",
+        "year": 2026,
+        "url": "https://xyz.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Limit IKZE 2027: 12 039,60 zł; źródła sprzeczne co do publikacji obwieszczenia."
+  },
+  "ikzeLimitBusiness2027": {
+    "value": 18059.4,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Limity wpłat na IKZE 2026 i 2027",
+        "publisher": "xyz.pl",
+        "year": 2026,
+        "url": "https://xyz.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Limit IKZE 2027 dla działalności: 18 059,40 zł; źródła sprzeczne co do publikacji obwieszczenia."
+  },
+  "goldExemptionMonths": {
+    "value": 6,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Złoto fizyczne po upływie pół roku od końca miesiąca nabycia nie podlega PIT (art. 10 ust. 1 pkt 8 lit. d, Z-18). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  },
+  "realEstateExemptionYears": {
+    "value": 5,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Zwolnienie po 5 latach podatkowych (4.8). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
+  }
+}

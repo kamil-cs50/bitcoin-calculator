@@ -1,0 +1,209 @@
+{
+  "longRun": {
+    "value": 0.03,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Między celem NBP a średnią historyczną (❌ średnia historyczna)."
+  },
+  "longRunSE": {
+    "value": 0.005,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "SE ī = 0,5 pp (założenie)."
+  },
+  "yoySd": {
+    "value": 0.025,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Odchylenie r/r 2,5 pp (❌ do kalibracji na danych GUS)."
+  },
+  "yoyAutocorr12": {
+    "value": 0.4,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Autokorelacja r/r przy lagu 12 = 0,4 (❌ do kalibracji na danych GUS)."
+  },
+  "x0": {
+    "value": 0.035,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Komunikat o wskaźnikach cen towarów i usług konsumpcyjnych, październik 2026",
+        "publisher": "GUS",
+        "year": 2026,
+        "url": "https://stat.gov.pl/obszary-tematyczne/ceny-handel/wskazniki-cen/",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "CPI październik 2026: 3,5% r/r (GUS, komunikat z 2026-11-13). Start procesu to odczyt r/r, nie m/m (Z-13)."
+  },
+  "prevYoY": {
+    "value": 0.041,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Odczyty CPI i stopy referencyjnej NBP (źródło wtórne)",
+        "publisher": "finwire.pl",
+        "year": 2026,
+        "url": "https://finwire.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "CPI wrzesień 2026: 4,1% r/r (finwire.pl, źródło wtórne)."
+  },
+  "lastMoM": {
+    "value": -0.004,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Komunikat o wskaźnikach cen towarów i usług konsumpcyjnych, październik 2026",
+        "publisher": "GUS",
+        "year": 2026,
+        "url": "https://stat.gov.pl/obszary-tematyczne/ceny-handel/wskazniki-cen/",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "CPI październik 2026: −0,4% m/m (GUS). Informacyjnie; nie służy jako x₀."
+  },
+  "nbpTarget": {
+    "value": 0.025,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Cel inflacyjny NBP (strona zablokowała pobranie)",
+        "publisher": "NBP",
+        "year": 2026,
+        "url": "https://nbp.pl",
+        "accessed": "2026-11-13"
+      },
+      {
+        "title": "Odczyty CPI i stopy referencyjnej NBP (źródło wtórne)",
+        "publisher": "finwire.pl",
+        "year": 2026,
+        "url": "https://finwire.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Cel NBP 2,5% ± 1 pp (nbp.pl zablokowała pobranie; pasmo 1,5–3,5% wg finwire.pl).",
+    "range": [
+      0.015,
+      0.035
+    ]
+  },
+  "policyRate": {
+    "value": 0.0375,
+    "kind": "data",
+    "verified": "secondary",
+    "sources": [
+      {
+        "title": "Odczyty CPI i stopy referencyjnej NBP (źródło wtórne)",
+        "publisher": "finwire.pl",
+        "year": 2026,
+        "url": "https://finwire.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Stopa referencyjna NBP 3,75% od 2026-10-07 (finwire.pl)."
+  },
+  "cpiLevels": [
+    {
+      "value": 100,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 100.2871,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 100.575,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 100.8637,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 101.1533,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 101.4437,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 101.7349,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 102.027,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 102.3199,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 102.6137,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 102.9083,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 103.2037,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    },
+    {
+      "value": 103.5,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
+    }
+  ]
+}

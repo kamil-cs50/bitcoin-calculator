@@ -86,10 +86,10 @@ export const CryptoPresetSchema = z.object({
   sigma0: ParamSchema,
   sigmaInf: ParamSchema,
   tauSigma: ParamSchema,
-  /** Intensywność upadku na rok. */
-  h: ParamSchema,
-  /** Strata przy upadku L. */
-  lossL: ParamSchema,
+  /** Intensywność upadku na rok (h w spec 4.8). */
+  hazard: ParamSchema,
+  /** Strata przy upadku L (domyślnie 0,95). */
+  loss: ParamSchema,
   se: ParamSchema,
   alpha: ParamSchema,
   b: ParamSchema,
@@ -99,11 +99,15 @@ export type CryptoPreset = z.infer<typeof CryptoPresetSchema>;
 
 /** Reżimy, ogony i korelacje (4.3, 4.4). */
 export const MarketPresetSchema = z.object({
-  p01: ParamSchema,
-  p10: ParamSchema,
-  kappa0: ParamSchema,
-  kappa1: ParamSchema,
-  delta: ParamSchema,
+  /** Parametry łańcucha reżimów RSLN-2 (4.4). */
+  regime: z.object({
+    p01: ParamSchema,
+    p10: ParamSchema,
+    kappa0: ParamSchema,
+    kappa1: ParamSchema,
+    delta: ParamSchema,
+  }),
+  /** Stopnie swobody mieszanki skali (4.3). */
   nu: ParamSchema,
   /** Korelacje wpisane; klucz `idA|idB` (identyfikatory aktywów, kursów lub `inflation`). */
   correlations: z.record(z.string(), ParamSchema),
@@ -118,8 +122,12 @@ export const InflationPresetSchema = z.object({
   /** Odchylenie inflacji r/r oraz autokorelacja r/r przy lagu 12. */
   yoySd: ParamSchema,
   yoyAutocorr12: ParamSchema,
-  /** Ostatni odczyt r/r (x₀). */
-  lastYoY: ParamSchema,
+  /** Ostatni odczyt r/r (x₀, 4.6 Z-13). */
+  x0: ParamSchema,
+  /** Poprzedni odczyt r/r (wrzesień 2026, tabela 6.4). */
+  prevYoY: ParamSchema,
+  /** Ostatni odczyt m/m (tabela 6.4; informacyjnie, nie służy za x₀). */
+  lastMoM: ParamSchema,
   nbpTarget: ParamSchema,
   policyRate: ParamSchema,
   /** 13 ostatnich poziomów indeksu CPI, od najstarszego. */
@@ -147,11 +155,16 @@ export const EdoPresetSchema = z.object({
   firstYearRate: ParamSchema,
   margin: ParamSchema,
   /** Opłata za przedterminowy wykup w zł na obligację. */
-  earlyRedemptionFee: ParamSchema,
+  earlyFeePer100: ParamSchema,
   nominal: ParamSchema,
   termYears: ParamSchema,
   /** Marża przyszłych serii (rok 1 = max(0,x)+marża). */
   futureSeriesMargin: ParamSchema,
+  /** Dane referencyjne z tabeli 6.4: COI1130 (rok 1, marża, opłata) i TOS. */
+  coiFirstYearRate: ParamSchema,
+  coiMargin: ParamSchema,
+  coiEarlyFeePer100: ParamSchema,
+  tosRate: ParamSchema,
 });
 export type EdoPreset = z.infer<typeof EdoPresetSchema>;
 
@@ -165,9 +178,12 @@ export const TaxPresetSchema = z.object({
   rentalRateLow: ParamSchema,
   rentalRateHigh: ParamSchema,
   rentalThreshold: ParamSchema,
-  ikeLimit: ParamSchema,
-  ikzeLimit: ParamSchema,
-  ikzeLimitBusiness: ParamSchema,
+  ikeLimit2026: ParamSchema,
+  ikeLimit2027: ParamSchema,
+  ikzeLimit2026: ParamSchema,
+  ikzeLimitBusiness2026: ParamSchema,
+  ikzeLimit2027: ParamSchema,
+  ikzeLimitBusiness2027: ParamSchema,
   goldExemptionMonths: ParamSchema,
   realEstateExemptionYears: ParamSchema,
 });

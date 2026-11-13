@@ -1,0 +1,128 @@
+{
+  "USD": {
+    "sigma": {
+      "value": 0.11,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "σ odchylenia 12-miesięcznej zmiany ln realnego kursu USD/PLN (R-2); tabele A NBP do kalibracji (❌)."
+    },
+    "halfLifeYears": {
+      "value": 4,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Półokres powrotu do PPP 4 lata (Rogoff 1996; Taylor i Taylor 2004: 3–5 lat); ❌ do kalibracji."
+    },
+    "alpha": {
+      "value": -0.5,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Złoty słabnie w kryzysie (4.4); założenie."
+    },
+    "corrEquities": {
+      "value": -0.3,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Korelacja z akcjami −0,3 (❌ założenie, 6.2)."
+    },
+    "foreignInflation": {
+      "value": 0.025,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [
+        {
+          "title": "2027 Long-Term Capital Market Assumptions (komunikat prasowy, publ. 2026-10-19)",
+          "publisher": "J.P. Morgan Asset Management",
+          "year": 2026,
+          "url": "https://am.jpmorgan.com/us/en/asset-management/institutional/about-us/media/press-releases/jp-morgan-releases-2027-long-term-capital-market-assumptions/",
+          "accessed": "2026-11-13"
+        },
+        {
+          "title": "Global Investment Returns Yearbook 2026, streszczenie publiczne (Dimson, Marsh, Staunton)",
+          "publisher": "UBS",
+          "year": 2026,
+          "url": "https://www.ubs.com/content/dam/assets/wm/static/cio/documents/giry2026-summary-public.pdf",
+          "accessed": "2026-11-13"
+        }
+      ],
+      "note": "Cel Fed i EBC 2%; JPM globalnie 2,6%; DMS historycznie 2,9% (zakres 2,0–2,9%); założenie.",
+      "range": [
+        0.02,
+        0.029
+      ]
+    },
+    "realTrend": {
+      "value": 0,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Brak trendu realnej aprecjacji złotego (efekt Balassy–Samuelsona jako parametr eksperta, domyślnie 0); założenie."
+    }
+  },
+  "EUR": {
+    "sigma": {
+      "value": 0.07,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "σ odchylenia 12-miesięcznej zmiany ln realnego kursu EUR/PLN (R-2); tabele A NBP do kalibracji (❌)."
+    },
+    "halfLifeYears": {
+      "value": 4,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Półokres powrotu do PPP 4 lata (Rogoff 1996; Taylor i Taylor 2004: 3–5 lat); ❌ do kalibracji."
+    },
+    "alpha": {
+      "value": -0.5,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Złoty słabnie w kryzysie (4.4); założenie."
+    },
+    "corrEquities": {
+      "value": -0.3,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Korelacja z akcjami −0,3 (❌ założenie, 6.2)."
+    },
+    "foreignInflation": {
+      "value": 0.02,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [
+        {
+          "title": "2027 Long-Term Capital Market Assumptions (komunikat prasowy, publ. 2026-10-19)",
+          "publisher": "J.P. Morgan Asset Management",
+          "year": 2026,
+          "url": "https://am.jpmorgan.com/us/en/asset-management/institutional/about-us/media/press-releases/jp-morgan-releases-2027-long-term-capital-market-assumptions/",
+          "accessed": "2026-11-13"
+        },
+        {
+          "title": "Global Investment Returns Yearbook 2026, streszczenie publiczne (Dimson, Marsh, Staunton)",
+          "publisher": "UBS",
+          "year": 2026,
+          "url": "https://www.ubs.com/content/dam/assets/wm/static/cio/documents/giry2026-summary-public.pdf",
+          "accessed": "2026-11-13"
+        }
+      ],
+      "note": "Cel Fed i EBC 2%; JPM globalnie 2,6%; DMS historycznie 2,9% (zakres 2,0–2,9%); założenie.",
+      "range": [
+        0.02,
+        0.029
+      ]
+    },
+    "realTrend": {
+      "value": 0,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Brak trendu realnej aprecjacji złotego (efekt Balassy–Samuelsona jako parametr eksperta, domyślnie 0); założenie."
+    }
+  }
+}

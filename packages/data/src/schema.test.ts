@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ParamSchema, SourceSchema, DatasetSchema } from './schema';
-import { loadDataset, availableVersions } from './load';
+import { loadDataset } from './load';
 
 const source = {
   title: 'LTCMA 2027',
@@ -56,9 +56,7 @@ describe('loadDataset', () => {
     expect(() => loadDataset('1999.01')).toThrow();
   });
 
-  // Pliki datasets/2026.11/*.json wypełnia zadanie 4; do tego czasu pomijamy.
-  const has = availableVersions().includes('2026.11');
-  it.skipIf(!has)('ładuje i waliduje zbiór 2026.11, a każdy Param ma metadane', () => {
+  it('ładuje i waliduje zbiór 2026.11, a każdy Param ma metadane', () => {
     const ds = loadDataset('2026.11');
     expect(ds.version).toBe('2026.11');
     expect(DatasetSchema.safeParse(ds).success).toBe(true);

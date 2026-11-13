@@ -1,0 +1,100 @@
+{
+  "jpm": {
+    "title": "2027 Long-Term Capital Market Assumptions (komunikat prasowy, publ. 2026-10-19)",
+    "publisher": "J.P. Morgan Asset Management",
+    "year": 2026,
+    "url": "https://am.jpmorgan.com/us/en/asset-management/institutional/about-us/media/press-releases/jp-morgan-releases-2027-long-term-capital-market-assumptions/",
+    "accessed": "2026-11-13"
+  },
+  "vanguard": {
+    "title": "Vanguard VCMM return forecasts (strona z 2026-10-21, przebieg na 2026-09-30)",
+    "publisher": "Vanguard",
+    "year": 2026,
+    "url": "https://corporate.vanguard.com/content/corporatesite/us/en/corp/vemo/vemo-return-forecasts.html",
+    "accessed": "2026-11-13"
+  },
+  "aqr": {
+    "title": "2026 Capital Market Assumptions for Major Asset Classes",
+    "publisher": "AQR Capital Management",
+    "year": 2026,
+    "url": "https://www.aqr.com/insights/research/alternative-thinking/2026-capital-market-assumptions-for-major-asset-classes",
+    "accessed": "2026-11-13"
+  },
+  "ra": {
+    "title": "Asset Allocation Interactive",
+    "publisher": "Research Affiliates",
+    "year": 2026,
+    "url": "https://www.researchaffiliates.com/aai",
+    "accessed": "2026-11-13"
+  },
+  "blackrock": {
+    "title": "Capital Market Assumptions (liczby nieodczytane)",
+    "publisher": "BlackRock",
+    "year": 2026,
+    "url": "https://www.blackrock.com/institutions/en-global/institutional-insights/thought-leadership/capital-market-assumptions",
+    "accessed": "2026-11-13"
+  },
+  "ubs": {
+    "title": "Global Investment Returns Yearbook 2026, streszczenie publiczne (Dimson, Marsh, Staunton)",
+    "publisher": "UBS",
+    "year": 2026,
+    "url": "https://www.ubs.com/content/dam/assets/wm/static/cio/documents/giry2026-summary-public.pdf",
+    "accessed": "2026-11-13"
+  },
+  "gusCpi": {
+    "title": "Komunikat o wskaźnikach cen towarów i usług konsumpcyjnych, październik 2026",
+    "publisher": "GUS",
+    "year": 2026,
+    "url": "https://stat.gov.pl/obszary-tematyczne/ceny-handel/wskazniki-cen/",
+    "accessed": "2026-11-13"
+  },
+  "finwire": {
+    "title": "Odczyty CPI i stopy referencyjnej NBP (źródło wtórne)",
+    "publisher": "finwire.pl",
+    "year": 2026,
+    "url": "https://finwire.pl",
+    "accessed": "2026-11-13"
+  },
+  "nbp": {
+    "title": "Cel inflacyjny NBP (strona zablokowała pobranie)",
+    "publisher": "NBP",
+    "year": 2026,
+    "url": "https://nbp.pl",
+    "accessed": "2026-11-13"
+  },
+  "edo": {
+    "title": "Obligacje 10-letnie EDO, oferta listopad 2026",
+    "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+    "year": 2026,
+    "url": "https://obligacjeskarbowe.pl/oferta-obligacji/obligacje-10-letnie-edo/",
+    "accessed": "2026-11-13"
+  },
+  "oblig": {
+    "title": "Oferta obligacji skarbowych: COI1130, TOS",
+    "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+    "year": 2026,
+    "url": "https://obligacjeskarbowe.pl",
+    "accessed": "2026-11-13"
+  },
+  "legeartis": {
+    "title": "Limit wpłat na IKE 2026 i 2027 (M.P. 2026 poz. 1081)",
+    "publisher": "czasopismo.legeartis.org",
+    "year": 2026,
+    "url": "https://czasopismo.legeartis.org",
+    "accessed": "2026-11-13"
+  },
+  "xyz": {
+    "title": "Limity wpłat na IKZE 2026 i 2027",
+    "publisher": "xyz.pl",
+    "year": 2026,
+    "url": "https://xyz.pl",
+    "accessed": "2026-11-13"
+  },
+  "gusLife": {
+    "title": "Trwanie życia w 2025 r., tablice trwania życia",
+    "publisher": "GUS",
+    "year": 2026,
+    "url": "https://stat.gov.pl/obszary-tematyczne/ludnosc/trwanie-zycia/trwanie-zycia-w-2025-r-,2,20.html",
+    "accessed": "2026-11-13"
+  }
+}

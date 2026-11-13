@@ -1,0 +1,144 @@
+{
+  "firstYearRate": {
+    "value": 0.0535,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Obligacje 10-letnie EDO, oferta listopad 2026",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl/oferta-obligacji/obligacje-10-letnie-edo/",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "EDO1136: rok 1 5,35% (obligacjeskarbowe.pl, sprzedaż 1–30.11.2026)"
+  },
+  "margin": {
+    "value": 0.02,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Obligacje 10-letnie EDO, oferta listopad 2026",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl/oferta-obligacji/obligacje-10-letnie-edo/",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "EDO1136: kolejne lata inflacja + 2,00%, kapitalizacja roczna (obligacjeskarbowe.pl, sprzedaż 1–30.11.2026)"
+  },
+  "earlyFeePer100": {
+    "value": 3,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Obligacje 10-letnie EDO, oferta listopad 2026",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl/oferta-obligacji/obligacje-10-letnie-edo/",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Opłata za przedterminowy wykup 3,00 zł na obligację 100 zł, nie więcej niż narosłe odsetki; wykup możliwy po 7 dniach. ❌ dokładne brzmienie limitu opłaty w liście emisyjnym niezweryfikowane."
+  },
+  "nominal": {
+    "value": 100,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Obligacje 10-letnie EDO, oferta listopad 2026",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl/oferta-obligacji/obligacje-10-letnie-edo/",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "Wartość nominalna obligacji 100 zł."
+  },
+  "termYears": {
+    "value": 10,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Obligacje 10-letnie EDO, oferta listopad 2026",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl/oferta-obligacji/obligacje-10-letnie-edo/",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "EDO: termin wykupu 10 lat."
+  },
+  "futureSeriesMargin": {
+    "value": 0.02,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Rok 1 przyszłych serii = max(0, x_t) + marża (4.8); założenie, marża jak bieżąca."
+  },
+  "coiFirstYearRate": {
+    "value": 0.0475,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Oferta obligacji skarbowych: COI1130, TOS",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "COI1130: rok 1 4,75% (obligacjeskarbowe.pl)."
+  },
+  "coiMargin": {
+    "value": 0.015,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Oferta obligacji skarbowych: COI1130, TOS",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "COI1130: kolejne lata inflacja + 1,50%."
+  },
+  "coiEarlyFeePer100": {
+    "value": 2,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Oferta obligacji skarbowych: COI1130, TOS",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "COI1130: opłata za przedterminowy wykup 2,00 zł."
+  },
+  "tosRate": {
+    "value": 0.044,
+    "kind": "data",
+    "verified": "yes",
+    "sources": [
+      {
+        "title": "Oferta obligacji skarbowych: COI1130, TOS",
+        "publisher": "Ministerstwo Finansów (obligacjeskarbowe.pl)",
+        "year": 2026,
+        "url": "https://obligacjeskarbowe.pl",
+        "accessed": "2026-11-13"
+      }
+    ],
+    "note": "TOS (3-letnie stałe) 4,40% (lista produktów obligacjeskarbowe.pl)."
+  }
+}

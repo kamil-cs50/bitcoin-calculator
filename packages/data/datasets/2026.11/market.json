@@ -1,0 +1,69 @@
+{
+  "regime": {
+    "p01": {
+      "value": 0.04,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "p₀₁ = 0,04 (4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założenie do kalibracji (zadanie 14)."
+    },
+    "p10": {
+      "value": 0.2,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "p₁₀ = 0,20 (4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założenie do kalibracji (zadanie 14)."
+    },
+    "kappa0": {
+      "value": 1,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "κ₀ = 1 (4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założenie do kalibracji (zadanie 14)."
+    },
+    "kappa1": {
+      "value": 2.2,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "κ₁ = 2,2 (4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założenie do kalibracji (zadanie 14)."
+    },
+    "delta": {
+      "value": 0.175,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Δ = 0,175 (bezwymiarowe, 4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założenie do kalibracji (zadanie 14)."
+    }
+  },
+  "nu": {
+    "value": 5,
+    "kind": "assumption",
+    "verified": "no",
+    "sources": [],
+    "note": "Domyślnie ν = 5, założenie do czasu łącznej kalibracji z reżimami; walidacja wymusza ν ≥ 3 (4.3)."
+  },
+  "correlations": {
+    "btcPessimistic|globalEquity": {
+      "value": 0.35,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Korelacja BTC z akcjami 0,35 (❌ założenie, 6.3)."
+    },
+    "btcBase|globalEquity": {
+      "value": 0.35,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Korelacja BTC z akcjami 0,35 (❌ założenie, 6.3)."
+    },
+    "btcOptimistic|globalEquity": {
+      "value": 0.35,
+      "kind": "assumption",
+      "verified": "no",
+      "sources": [],
+      "note": "Korelacja BTC z akcjami 0,35 (❌ założenie, 6.3)."
+    }
+  }
+}
