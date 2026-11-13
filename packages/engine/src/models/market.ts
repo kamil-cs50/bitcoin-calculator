@@ -3,6 +3,7 @@ import { buildScaleTable } from '../math/scaleTable';
 import { normalInv } from '../math/normalInv';
 import { factorKey, streamSeed } from '../rng/streams';
 import { Xoshiro128ss } from '../rng/xoshiro128ss';
+import { drawDriftShifts } from './paramUncertainty';
 import { ConstantFx, ConstantInflation } from '../testing/stubs';
 import type { FxParams, InflationParams, RegimeParams, RiskyAssetParams, Scenario, Warning } from '../types';
 import { clampAlpha, inRegimeCorrelation, omega, regimeConstants, sigmaMonthlyFactor } from './regime';
@@ -54,6 +55,7 @@ export interface MarketState {
 const TABLE_K = 1024;
 const KEY_REGIME = factorKey('$regime');
 const KEY_TAIL = factorKey('$tail');
+const KEY_PARAM = factorKey('$paramUnc');
 
 function isRisky(a: { kind: string }): a is RiskyAssetParams {
   return a.kind === 'risky';
@@ -88,6 +90,12 @@ export class MarketSimulator {
   private readonly infl: InflationProcessLike;
   private readonly fxp: FxProcessLike[] = [];
   private readonly meanInflation: number;
+  private readonly meanInflationSe: number;
+  private readonly uncScale: number;
+  private readonly cholAssets: Float64Array; // Cholesky wpisanej ρ aktywów ryzykownych
+  private readonly seAssets: Float64Array;
+  private readonly zUnc: Float64Array;
+  private readonly rngParam = new Xoshiro128ss();
 
   private readonly rngRegime = new Xoshiro128ss();
   private readonly rngTail = new Xoshiro128ss();
@@ -100,7 +108,7 @@ export class MarketSimulator {
   private readonly eps: Float64Array;
   private readonly prevFx: Float64Array;
   private readonly collapsedNow: Uint8Array;
-  /** Roczne przesunięcia log-dryfu (zadanie 11 wypełnia je w initPath); tu zera. */
+  /** Roczne przesunięcia log-dryfu losowane w initPath (niepewność parametrów, spec 4.5). */
   private readonly driftShift: Float64Array;
   private regime: 0 | 1 = 0;
 
@@ -208,6 +216,16 @@ export class MarketSimulator {
     // procesy
     this.infl = deps.inflation(m.inflation);
     this.meanInflation = m.inflation.mean;
+    this.meanInflationSe = m.inflation.meanSe;
+    this.uncScale = m.uncertaintyScale;
+    // niepewność parametrów: Cholesky podmacierzy wpisanej ρ dla aktywów ryzykownych
+    const nr = this.nr;
+    const sub = new Float64Array(nr * nr);
+    for (let i = 0; i < nr; i++)
+      for (let j = 0; j < nr; j++) sub[i * nr + j] = rho[riskyFactor[i]! * n + riskyFactor[j]!]!;
+    this.cholAssets = robustCholesky(sub, nr);
+    this.seAssets = Float64Array.from(this.assets.map((a) => a.se));
+    this.zUnc = new Float64Array(nr + 1);
     for (let k = 0; k < this.nfx; k++) this.fxp.push(deps.fx(m.fx[k]!, fxSigmaM[k]!));
 
     // strumienie i bufory
@@ -246,8 +264,11 @@ export class MarketSimulator {
     for (let i = 0; i < this.nr; i++) this.rngCollapse[i]?.reseed(streamSeed(seed, path, this.collapseSeedKeys[i]!));
     this.regime = this.rngRegime.nextUniform() < this.c.pi1 ? 1 : 0;
     this.collapsedNow.fill(0);
-    this.driftShift.fill(0);
-    this.infl.init(this.meanInflation);
+    // niepewność parametrów (strumień $paramUnc): nr normalnych dla dryfów, ostatnia dla średniej inflacji
+    this.rngParam.reseed(streamSeed(seed, path, KEY_PARAM));
+    for (let i = 0; i <= this.nr; i++) this.zUnc[i] = normalInv(this.rngParam.nextUniform());
+    drawDriftShifts(this.zUnc, this.seAssets, this.cholAssets, this.nr, this.uncScale, this.driftShift);
+    this.infl.init(this.meanInflation + this.meanInflationSe * this.uncScale * this.zUnc[this.nr]!);
     for (let k = 0; k < this.nfx; k++) {
       this.fxp[k]!.init();
       this.prevFx[k] = this.fxp[k]!.logRate;
