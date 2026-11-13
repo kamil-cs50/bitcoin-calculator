@@ -4,10 +4,10 @@ import { normalInv } from '../math/normalInv';
 import { factorKey, streamSeed } from '../rng/streams';
 import { Xoshiro128ss } from '../rng/xoshiro128ss';
 import { drawDriftShifts } from './paramUncertainty';
-import { ConstantFx } from '../testing/stubs';
+import { FxProcess, fxMonthlySigma } from './fx';
 import { InflationProcess } from './inflation';
 import type { FxParams, InflationParams, RegimeParams, RiskyAssetParams, Scenario, Warning } from '../types';
-import { clampAlpha, inRegimeCorrelation, omega, regimeConstants, sigmaMonthlyFactor } from './regime';
+import { clampAlpha, inRegimeCorrelation, regimeConstants, sigmaMonthlyFactor } from './regime';
 import type { RegimeConstants } from './regime';
 
 /** Minimalny interfejs procesu inflacji (zadanie 12 dostarcza `InflationProcess` o tych sygnaturach). */
@@ -36,7 +36,7 @@ export interface MarketDeps {
 
 const DEFAULT_DEPS: MarketDeps = {
   inflation: (p) => new InflationProcess(p),
-  fx: (p) => new ConstantFx(p),
+  fx: (p, sigmaMonthly) => new FxProcess(p, sigmaMonthly),
 };
 
 export interface MarketState {
@@ -365,18 +365,6 @@ export class MarketSimulator {
     if (!d) return a.sigma;
     return d.sigmaInf + (a.sigma - d.sigmaInf) * Math.exp(-t / 12 / d.tauSigma);
   }
-}
-
-/**
- * σ_{q,m} wg R-2: Var(q_{t+12} − q_t) = 2·V_q·(1 − φ^12) + ω_q·σ_q², V_q = σ_{q,m}²·K_q/(1 − φ²),
- * z σ_q² = σ_q²(1 − ω_q) po stronie szumu. φ_q = 2^(−1/(12H)).
- */
-function fxMonthlySigma(f: FxParams, alpha: number, r: RegimeParams, c: RegimeConstants): number {
-  const phi = Math.pow(2, -1 / (12 * f.halfLifeYears));
-  const w = omega(alpha, c);
-  const k = c.pi0 + c.pi1 * r.kappa1 * r.kappa1;
-  const noiseVar = f.sigma * f.sigma * (1 - w);
-  return Math.sqrt((noiseVar * (1 - phi * phi)) / (2 * k * (1 - Math.pow(phi, 12))));
 }
 
 /** Cholesky z awaryjnym ściągnięciem do jedynki, gdy macierz po rzucie jest osobliwa (np. ρ = 1). */
