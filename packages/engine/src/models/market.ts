@@ -4,7 +4,8 @@ import { normalInv } from '../math/normalInv';
 import { factorKey, streamSeed } from '../rng/streams';
 import { Xoshiro128ss } from '../rng/xoshiro128ss';
 import { drawDriftShifts } from './paramUncertainty';
-import { ConstantFx, ConstantInflation } from '../testing/stubs';
+import { ConstantFx } from '../testing/stubs';
+import { InflationProcess } from './inflation';
 import type { FxParams, InflationParams, RegimeParams, RiskyAssetParams, Scenario, Warning } from '../types';
 import { clampAlpha, inRegimeCorrelation, omega, regimeConstants, sigmaMonthlyFactor } from './regime';
 import type { RegimeConstants } from './regime';
@@ -34,7 +35,7 @@ export interface MarketDeps {
 }
 
 const DEFAULT_DEPS: MarketDeps = {
-  inflation: (p) => new ConstantInflation(p),
+  inflation: (p) => new InflationProcess(p),
   fx: (p) => new ConstantFx(p),
 };
 
