@@ -48,7 +48,7 @@ function HeaderAside() {
     </button>
   );
   return (
-    <div className="eyebrow hidden items-center justify-end gap-x-4 lg:flex">
+    <div className="eyebrow flex w-full items-center justify-start gap-x-4 lg:w-auto lg:justify-end">
       <div className="flex items-center gap-1.5">
         {btn('pl', 'PL', 'Polski')}
         <span aria-hidden="true">/</span>

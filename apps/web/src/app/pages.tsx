@@ -26,7 +26,7 @@ export function HomePage() {
         <p className="m-0 max-w-[640px] text-[clamp(17px,1.6vw,21px)] leading-[1.5] font-light text-pretty text-fg/80">
           <Trans>
             Sprawdź, jak mogą potoczyć się losy Twojego portfela w{' '}
-            <span className="text-accent-text">10 000 możliwych przyszłości</span>: realnie, po podatku, z inflacją i
+            <span className="whitespace-nowrap text-accent-text">10 000 możliwych przyszłości</span>: realnie, po podatku, z inflacją i
             ryzykiem.
           </Trans>
         </p>

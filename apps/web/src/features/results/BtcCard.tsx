@@ -253,7 +253,7 @@ export function BtcCard({ scenario, dataset, month, priceUsd, pricePln, createWo
             <span>{`${t`1 na 10`} › ${usdShort(q[2])}`}</span>
           </>
         )}
-        {collapse && <span className="!text-accent-text">{collapse}</span>}
+        {collapse && <span>{collapse}</span>}
       </div>
       {(prices.usd || prices.pln) && (
         <details>

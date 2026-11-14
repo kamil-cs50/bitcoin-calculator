@@ -50,7 +50,7 @@ export function AssetPicker({ onOpenChange }: { onOpenChange?: (open: boolean) =
               <button
                 type="button"
                 onClick={() => setOpen(k)}
-                className={`inline-flex min-h-[38px] cursor-pointer items-center gap-2 rounded-full border px-4 text-sm text-fg transition-colors before:size-[9px] before:bg-[linear-gradient(currentColor,currentColor)_center/100%_1.5px_no-repeat,linear-gradient(currentColor,currentColor)_center/1.5px_100%_no-repeat] before:content-[''] ${
+                className={`inline-flex min-h-[38px] cursor-pointer items-center gap-2 rounded-full border px-4 text-sm text-fg transition-colors before:inline-block before:size-[9px] before:shrink-0 before:bg-[linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor)] before:bg-[length:100%_1.5px,1.5px_100%] before:bg-center before:bg-no-repeat before:opacity-80 before:content-[''] ${
                   open === k ? 'border-[rgba(157,185,255,0.45)] bg-[rgba(42,85,255,0.18)]' : 'border-border bg-field hover:bg-soft'
                 }`}
               >
