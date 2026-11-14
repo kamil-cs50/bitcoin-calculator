@@ -100,6 +100,14 @@ export function validateScenario(s: Scenario): ValidationResult {
     err('baseCurrency', `Brak procesu kursu dla waluty bazowej ${s.baseCurrency} (market.fx).`);
   }
 
+  const wd = s.withdrawal;
+  if (wd?.kind === 'guytonKlinger') {
+    if (!isNum(wd.initialRate) || wd.initialRate <= 0 || wd.initialRate > 1) err('withdrawal.initialRate', 'Początkowa stopa wypłat musi mieścić się w przedziale (0, 1].');
+    if (!isNum(wd.guardrail) || wd.guardrail <= 0 || wd.guardrail >= 1) err('withdrawal.guardrail', 'Margines reguł (guardrail) musi mieścić się w przedziale (0, 1).');
+    if (!isNum(wd.adjustment) || wd.adjustment <= 0 || wd.adjustment >= 1) err('withdrawal.adjustment', 'Korekta wypłaty musi mieścić się w przedziale (0, 1).');
+    if (!isNum(wd.inflationCap) || wd.inflationCap < 0) err('withdrawal.inflationCap', 'Limit indeksacji inflacją nie może być ujemny.');
+  }
+
   const ids = new Set(s.assets.map((a) => a.id));
   s.positions.forEach((pos, i) => {
     if (!ids.has(pos.assetId)) err(`positions[${i}].assetId`, `Nieznane aktywo: ${pos.assetId}.`);

@@ -14,7 +14,7 @@ export interface FxParams { currency: 'USD' | 'EUR'; sigma: number; halfLifeYear
 export interface MarketModel { mode: 'realistic' | 'gbm'; nu: number; regime: RegimeParams; factorIds: string[]; correlation: number[]; inflation: InflationParams; fx: FxParams[]; uncertaintyScale: number }
 // factorIds: id aktywów ryzykownych, potem 'fx:USD', 'fx:EUR' (jeśli używane), na końcu 'cpi'; correlation wierszami
 export interface Contribution { monthly: number; endMonth: number; indexation: 'none' | 'cpi' | 'cpiPlus'; realGrowth: number }
-export type Withdrawal = { kind: 'fixedReal'; startMonth: number; monthly: number } | { kind: 'percent'; startMonth: number; rate: number } | { kind: 'abw'; startMonth: number; expectedRealReturn: number; floor?: number; cap?: number };
+export type Withdrawal = { kind: 'fixedReal'; startMonth: number; monthly: number } | { kind: 'percent'; startMonth: number; rate: number } | { kind: 'abw'; startMonth: number; expectedRealReturn: number; floor?: number; cap?: number } | { kind: 'guytonKlinger'; startMonth: number; initialRate: number; guardrail: number; adjustment: number; inflationCap: number };
 export interface OneOff { month: number; amount: number; real: boolean }                              // + wpływ, − wydatek
 export type RebalancePolicy = { kind: 'none' } | { kind: 'annual' } | { kind: 'band'; bandPp: number } | { kind: 'flows' };
 export type TaxMode = { kind: 'pl' } | { kind: 'none' } | { kind: 'flat'; rate: number };

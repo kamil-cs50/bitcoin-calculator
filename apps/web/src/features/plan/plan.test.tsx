@@ -85,15 +85,30 @@ describe('PlanEditor: horyzont', () => {
 });
 
 describe('PlanEditor: wypłaty', () => {
-  it('oferuje trzy strategie z opisami w prostym języku', () => {
+  it('oferuje cztery strategie z opisami w prostym języku', () => {
     view();
     expect(screen.getByRole('radio', { name: /Brak wypłat/ })).toBeChecked();
-    for (const name of [/Stała kwota/, /Stały procent portfela/, /Amortyzacja/]) {
+    for (const name of [/Stała kwota/, /Stały procent portfela/, /Amortyzacja/, /Guytona–Klingera/]) {
       expect(screen.getByRole('radio', { name })).toBeInTheDocument();
     }
     expect(screen.getByText(/co miesiąc tyle samo w dzisiejszych pieniądzach/)).toBeInTheDocument();
     expect(screen.getByText(/stały ułamek tego, co zostało/)).toBeInTheDocument();
     expect(screen.getByText(/rozkłada majątek równo na pozostałe lata/)).toBeInTheDocument();
+    expect(screen.getByText(/tniesz ją o 10%/)).toBeInTheDocument();
+  });
+
+  it('Guyton–Klinger: 5% na start, domyślne reguły (±20%, 10%, inflacja do 6%)', async () => {
+    view();
+    await userEvent.click(screen.getByRole('radio', { name: /Guytona–Klingera/ }));
+    await userEvent.type(screen.getByRole('textbox', { name: /Procent na start/ }), '5');
+    expect(sc().withdrawal).toEqual({
+      kind: 'guytonKlinger',
+      startMonth: 0,
+      initialRate: 0.05,
+      guardrail: 0.2,
+      adjustment: 0.1,
+      inflationCap: 0.06,
+    });
   });
 
   it('stała kwota: 4 000 zł od 15. roku; po wyborze „brak” wypłata znika', async () => {

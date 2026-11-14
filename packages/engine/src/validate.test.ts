@@ -108,6 +108,18 @@ describe('validateScenario', () => {
     expect(r.ok).toBe(true);
   });
 
+  it('Guyton–Klinger: poprawne parametry przechodzą, błędne wskazują ścieżkę', () => {
+    const gk = { kind: 'guytonKlinger' as const, startMonth: 0, initialRate: 0.05, guardrail: 0.2, adjustment: 0.1, inflationCap: 0.06 };
+    expect(validateScenario(makeScenario({ withdrawal: gk })).ok).toBe(true);
+    const bad = (patch: object) => errorPaths(makeScenario({ withdrawal: { ...gk, ...patch } }));
+    expect(bad({ initialRate: 0 })).toContain('withdrawal.initialRate');
+    expect(bad({ initialRate: 1.5 })).toContain('withdrawal.initialRate');
+    expect(bad({ guardrail: 1 })).toContain('withdrawal.guardrail');
+    expect(bad({ adjustment: 0 })).toContain('withdrawal.adjustment');
+    expect(bad({ inflationCap: -0.01 })).toContain('withdrawal.inflationCap');
+    expect(bad({ inflationCap: NaN })).toContain('withdrawal.inflationCap');
+  });
+
   it('pozycja z nieistniejącym assetId daje błąd positions[0].assetId', () => {
     const s = makeScenario();
     const p = s.positions[0]!;

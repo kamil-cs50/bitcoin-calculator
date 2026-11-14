@@ -254,9 +254,9 @@ export class Kernel {
         //    kwiecień płaci zobowiązanie; roczna wypłata ustalana w styczniu i w t = start (też poza styczniem)
         if (cm === 1 && t > 0) this.taxDue += this.tax.closeYear(y - 1);
         if (cm === 4 && this.taxDue > 0) this.payTax(t);
-        if (wd !== null && (cm === 1 || t === 0)) {
+        if (wd !== null && (cm === 1 || t === 0 || wd.needsStartCall(t))) {
           this.computeValues(t);
-          wd.onJanuary(t, this.afterTaxValue(t, this.wealthNow()), this.cpiNow);
+          wd.onJanuary(t, this.afterTaxValue(t, this.wealthNow()), this.cpiNow, twrLog, cm === 1);
         }
 
         // 2. przychody do gotówki: odsetki lokat (po podatku u źródła), wykupy EDO

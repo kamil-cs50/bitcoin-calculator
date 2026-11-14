@@ -90,6 +90,14 @@ const Withdrawal = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('fixedReal'), startMonth: num, monthly: num }),
   z.object({ kind: z.literal('percent'), startMonth: num, rate: num }),
   z.object({
+    kind: z.literal('guytonKlinger'),
+    startMonth: num,
+    initialRate: num,
+    guardrail: num,
+    adjustment: num,
+    inflationCap: num,
+  }),
+  z.object({
     kind: z.literal('abw'),
     startMonth: num,
     expectedRealReturn: num,

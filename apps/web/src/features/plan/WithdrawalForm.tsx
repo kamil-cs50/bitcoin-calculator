@@ -71,6 +71,9 @@ function buildWithdrawal(
   if (kind === 'percent') {
     return f.rate && f.rate > 0 ? { kind, startMonth, rate: f.rate } : undefined;
   }
+  if (kind === 'guytonKlinger') {
+    return f.rate && f.rate > 0 ? { kind, startMonth, initialRate: f.rate, guardrail: 0.2, adjustment: 0.1, inflationCap: 0.06 } : undefined;
+  }
   if (kind === 'abw' && est !== null) {
     return {
       kind,
@@ -83,7 +86,7 @@ function buildWithdrawal(
   return undefined;
 }
 
-/** Wypłaty: trzy strategie (spec 4.11) z opisami; ABW bierze `r` z `estimateRealReturn`. */
+/** Wypłaty: cztery strategie (spec 4.11) z opisami; ABW bierze `r` z `estimateRealReturn`. */
 export function WithdrawalForm() {
   const { t } = useLingui();
   const initial = useScenarioStore.getState().scenario.withdrawal;
@@ -95,7 +98,9 @@ export function WithdrawalForm() {
 
   const [kind, setKind] = useState<Kind>(initial?.kind ?? 'none');
   const [monthly, setMonthly] = useState<number | null>(initial?.kind === 'fixedReal' ? initial.monthly : null);
-  const [rate, setRate] = useState<number | null>(initial?.kind === 'percent' ? initial.rate : null);
+  const [rate, setRate] = useState<number | null>(
+    initial?.kind === 'percent' ? initial.rate : initial?.kind === 'guytonKlinger' ? initial.initialRate : null,
+  );
   const [startYears, setStartYears] = useState<number | null>(initial ? initial.startMonth / MONTHS_PER_YEAR : null);
   const [floor, setFloor] = useState<number | null>(initial?.kind === 'abw' ? (initial.floor ?? null) : null);
   const [cap, setCap] = useState<number | null>(initial?.kind === 'abw' ? (initial.cap ?? null) : null);
@@ -172,6 +177,13 @@ export function WithdrawalForm() {
             label={t`Amortyzacja (ABW)`}
             description={t`Co roku aplikacja rozkłada majątek równo na pozostałe lata, więc do końca horyzontu środki dobiegają zera. Możesz ustawić dolną i górną granicę wypłaty.`}
           />
+          <RadioOption
+            name="withdrawal-kind"
+            checked={kind === 'guytonKlinger'}
+            onChange={() => setKind('guytonKlinger')}
+            label={t`Reguły Guytona–Klingera`}
+            description={t`Zaczynasz od stałego procentu portfela, a potem co roku podnosisz wypłatę o inflację. Gdy rynek mocno spada i wypłata staje się zbyt duża w stosunku do portfela, tniesz ją o 10%; gdy portfel mocno rośnie, podnosisz ją o 10%. Po roku ze stratą nie podwyższasz wypłaty o inflację.`}
+          />
         </fieldset>
 
         {kind === 'fixedReal' && (
@@ -189,6 +201,14 @@ export function WithdrawalForm() {
             value={rate}
             onChange={setRate}
             hint={t`Ustalany w styczniu od wartości portfela, wypłacany w 12 ratach.`}
+          />
+        )}
+        {kind === 'guytonKlinger' && (
+          <PercentInput
+            label={t`Procent na start`}
+            value={rate}
+            onChange={setRate}
+            hint={t`Pierwsza wypłata to ten ułamek portfela w roku startu. Potem co styczeń sprawdzamy, czy wypłata nie wyszła poza pasmo ±20% tej stopy.`}
           />
         )}
         {kind === 'abw' && (
