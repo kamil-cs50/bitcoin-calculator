@@ -418,6 +418,14 @@ fieldset {
 }
 }
 
+/* Napis na ekranie startowym: biel przechodząca w chłodny błękit, jak światło na wykresach. */
+.hero-title {
+  background: linear-gradient(100deg, var(--fg) 0%, var(--fg) 45%, #b9cdff 75%, #7fa8ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 /* Animacje wejścia arkusza i podpowiedzi; wyłączane przy prefers-reduced-motion. */
 @keyframes sheet-in {
   from { transform: translateY(100%); }

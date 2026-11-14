@@ -30,7 +30,7 @@ export function ModelCheckPanel({ rows, means, labelOf = (id) => id }: ModelChec
   return (
     <Card
       title={t`Kontrola modelu`}
-      aside={bad === 0 ? <Badge tone="ok">{t`model skalibrowany ✓`}</Badge> : <Badge tone="warning">{t`${bad} z ${rows.length} pozycji odbiega od wejścia`}</Badge>}
+      aside={bad === 0 ? <Badge tone="ok">{t`model skalibrowany`}</Badge> : <Badge tone="warning">{t`${bad} z ${rows.length} pozycji odbiega od wejścia`}</Badge>}
     >
       <p className="mb-3 mt-0 text-sm text-muted">
         {t`Osobny przebieg samego rynku sprawdza, czy symulacja odtwarza założone zwroty, zmienności i korelacje.`}

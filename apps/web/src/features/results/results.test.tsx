@@ -104,9 +104,9 @@ describe('QualityBadge', () => {
 
   it('plakietka kalibracji i stan liczenia', () => {
     const { rerender } = wrap(<QualityBadge result={result} scenario={goalScenario} running={false} calibrated />);
-    expect(screen.getByText('model skalibrowany ✓')).toBeInTheDocument();
+    expect(screen.getByText('model skalibrowany')).toBeInTheDocument();
     rerender(shell(<QualityBadge result={result} scenario={goalScenario} running calibrated={false} />));
-    expect(screen.queryByText('model skalibrowany ✓')).not.toBeInTheDocument();
+    expect(screen.queryByText('model skalibrowany')).not.toBeInTheDocument();
     expect(screen.getByText(/liczę dalej/)).toBeInTheDocument();
   });
 });
@@ -116,9 +116,9 @@ describe('ModelCheckPanel', () => {
   it('tabela wejście vs symulacja i plakietka tylko gdy wszystkie ok', () => {
     const { rerender } = wrap(<ModelCheckPanel rows={[row('a', true), row('b', true)]} />);
     expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(3);
-    expect(screen.getByText('model skalibrowany ✓')).toBeInTheDocument();
+    expect(screen.getByText('model skalibrowany')).toBeInTheDocument();
     rerender(shell(<ModelCheckPanel rows={[row('a', true), row('b', false)]} />));
-    expect(screen.queryByText('model skalibrowany ✓')).not.toBeInTheDocument();
+    expect(screen.queryByText('model skalibrowany')).not.toBeInTheDocument();
     expect(screen.getByText('1 z 2 pozycji odbiega od wejścia')).toBeInTheDocument();
   });
 });

@@ -15,13 +15,13 @@ export interface QualityBadgeProps {
   showCalibration?: boolean;
 }
 
-/** „● Model skalibrowany ✓” (projekt v3: przy opisie mediany). */
+/** „● Model skalibrowany” (projekt v3: przy opisie mediany, bez znaku ✓). */
 export function CalibrationBadge() {
   const { t } = useLingui();
   return (
     <span className="eyebrow inline-flex items-center gap-2.5 !text-fg">
       <span aria-hidden="true" className="size-[7px] rounded-full bg-[#7fa8ff] shadow-[0_0_12px_#4d7dff]" />
-      {t`model skalibrowany ✓`}
+      {t`model skalibrowany`}
     </span>
   );
 }

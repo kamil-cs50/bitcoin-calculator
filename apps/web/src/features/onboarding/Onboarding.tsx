@@ -30,23 +30,32 @@ export function writeOnboarded(v: boolean): void {
   }
 }
 
-/** Pasek kroków w stylu v3: trzy świecące odcinki z mono podpisami. */
-function Stepper({ step, labels }: { step: 1 | 2 | 3; labels: [string, string, string] }) {
+/** Kroki przewodnika jako szklane karty: numer, tytuł, opis i świecący pasek postępu (stan także w tekście „Krok N z 3”). */
+function Stepper({ step, items }: { step: 1 | 2 | 3; items: [string, string][] }) {
   return (
-    <ol aria-hidden="true" className="m-0 grid list-none grid-cols-3 gap-2.5 p-0">
-      {labels.map((l, i) => {
+    <ol aria-hidden="true" className="m-0 grid list-none gap-3 p-0 sm:grid-cols-3">
+      {items.map(([title, desc], i) => {
         const n = i + 1;
-        const on = n <= step;
+        const done = n < step;
+        const active = n === step;
         return (
-          <li key={l} className="flex flex-col gap-2.5">
+          <li
+            key={title}
+            className={`glass relative flex flex-col gap-2 overflow-hidden rounded-tile px-5 pb-5 pt-6 max-sm:pb-4 max-sm:pt-5 transition-[border-color,opacity] duration-500 ${
+              active ? '!border-[rgba(157,185,255,0.45)]' : ''
+            }`}
+          >
             <span
-              className={`h-[5px] rounded-full transition-[background,box-shadow] duration-500 ${
-                on ? 'bg-accent-text shadow-[0_0_12px_rgba(61,107,255,0.85)]' : 'bg-soft'
+              className={`absolute inset-x-0 top-0 h-[3px] transition-[background,box-shadow] duration-500 ${
+                active || done ? 'bg-gradient-to-r from-[#2a55ff] to-[#9db9ff] shadow-[0_0_14px_#2a55ff]' : 'bg-soft'
               }`}
             />
-            <span className={`eyebrow-sm ${n === step ? '!text-fg' : ''}`}>
-              {String(n).padStart(2, '0')} · {l}
+            <span className="eyebrow flex items-center justify-between">
+              <span className={active ? '!text-fg' : ''}>{String(n).padStart(2, '0')}</span>
+              {done && <span className="text-accent-text">✓</span>}
             </span>
+            <span className="text-[19px] leading-tight font-light tracking-[-0.01em] text-fg">{title}</span>
+            <span className={`text-[13px] leading-normal font-light text-muted ${active ? '' : 'max-sm:hidden'}`}>{desc}</span>
           </li>
         );
       })}
@@ -138,7 +147,7 @@ export function Onboarding() {
   const h2 = 'm-0 text-[clamp(22px,2.2vw,30px)] leading-tight font-light tracking-[-0.02em]';
 
   return (
-    <div className="flex flex-col gap-[clamp(20px,2.4vw,28px)]">
+    <div id="start" tabIndex={-1} className="flex scroll-mt-6 flex-col gap-[clamp(20px,2.4vw,28px)] outline-none">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="eyebrow m-0" aria-live="polite">
           <Trans>Krok {step} z 3</Trans>
@@ -152,7 +161,14 @@ export function Onboarding() {
           <span aria-hidden="true">→</span>
         </button>
       </div>
-      <Stepper step={step} labels={[t`Co masz`, t`Plan`, t`Wynik`]} />
+      <Stepper
+        step={step}
+        items={[
+          [t`Co masz`, t`Aktywa i kwoty: ETF, bitcoin, obligacje, lokata, mieszkanie.`],
+          [t`Plan`, t`Na ile lat, ile dopłacasz albo wypłacasz i jaki masz cel.`],
+          [t`Wynik`, t`10 000 możliwych przyszłości: mediana, zakres, ryzyko.`],
+        ]}
+      />
 
       {step === 1 && (
         <>
@@ -170,25 +186,28 @@ export function Onboarding() {
           </section>
           {scenario.positions.length > 0 && (
             <section aria-labelledby="ob-pf" className={panel}>
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <h2 id="ob-pf" className="eyebrow m-0 font-normal">
-                  {t`Twój portfel`}
-                </h2>
-                <BigAmount text={formatMoneyShort(total, scenario.baseCurrency)} />
-              </div>
-              <ul className="m-0 flex list-none flex-col p-0">
+              <div className="grid items-start gap-6 md:grid-cols-[1fr_auto]">
+                <div className="flex min-w-0 flex-col gap-3">
+                  <h2 id="ob-pf" className="eyebrow m-0 font-normal">
+                    {t`Twój portfel`}
+                  </h2>
+                  <ul className="m-0 flex list-none flex-col p-0">
                 {scenario.positions.map((p, i) => (
                   <li key={`${p.assetId}-${i}`} className="flex justify-between gap-2 border-t border-hairline py-3 text-[15px] font-light first:border-t-0">
                     <span>{names.asset(p.assetId)}</span>
                     <span className="num text-fg/80">{formatMoney(p.value, scenario.baseCurrency)}</span>
                   </li>
                 ))}
-              </ul>
+                  </ul>
+                </div>
+                <BigAmount text={formatMoneyShort(total, scenario.baseCurrency)} />
+              </div>
             </section>
           )}
           <div className="flex flex-wrap items-center gap-4">
             <Button disabled={scenario.positions.length === 0 || formOpen} onClick={() => setStep(2)}>
               <Trans>Dalej</Trans>
+              <span aria-hidden="true">→</span>
             </Button>
             {formOpen && (
               <p className="m-0 text-sm text-muted">
@@ -250,6 +269,7 @@ export function Onboarding() {
             </Button>
             <Button disabled={!yearsOk || startBad} onClick={savePlan}>
               <Trans>Dalej</Trans>
+              <span aria-hidden="true">→</span>
             </Button>
           </div>
         </section>
