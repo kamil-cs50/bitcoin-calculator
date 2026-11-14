@@ -15,6 +15,8 @@
   "dependencies": {
     "@lingui/core": "^6.12.0",
     "@lingui/react": "^6.12.0",
+    "@sim/engine": "workspace:*",
+    "comlink": "^4.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

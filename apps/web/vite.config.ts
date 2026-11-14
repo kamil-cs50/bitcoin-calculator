@@ -28,6 +28,7 @@ export default defineConfig({
       },
     }),
   ],
+  worker: { format: 'es' },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
