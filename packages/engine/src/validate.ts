@@ -134,6 +134,12 @@ export function validateScenario(s: Scenario): ValidationResult {
     if (wr.limitGrowth !== undefined && (!isNum(wr.limitGrowth) || wr.limitGrowth <= -1)) err('wrappers.limitGrowth', 'Roczny wzrost limitów musi być większy niż -1.');
   }
 
+  const pe = s.person;
+  if (pe) {
+    if (!isNum(pe.age) || !Number.isInteger(pe.age) || pe.age < 0 || pe.age > 120) err('person.age', 'Wiek musi być liczbą całkowitą z przedziału 0..120 lat.');
+    if (pe.sex !== undefined && pe.sex !== 'M' && pe.sex !== 'K') err('person.sex', 'Płeć musi być wskazana jako M albo K.');
+  }
+
   const ids = new Set(s.assets.map((a) => a.id));
   s.positions.forEach((pos, i) => {
     if (!ids.has(pos.assetId)) err(`positions[${i}].assetId`, `Nieznane aktywo: ${pos.assetId}.`);

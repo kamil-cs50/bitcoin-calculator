@@ -325,7 +325,8 @@ export class Kernel {
         }
         if (wd !== null && (cm === 1 || t === 0 || wd.needsStartCall(t))) {
           this.computeValues(t);
-          wd.onJanuary(t, this.afterTaxValue(t, this.wealthNow()), this.cpiNow, twrLog, cm === 1);
+          // baza stopy wypłat: majątek płynny po podatku, bez niepłynnej nieruchomości (jej nie da się wypłacić)
+          wd.onJanuary(t, this.afterTaxValue(t, this.wealthNow() - this.heldRealEstate(), false), this.cpiNow, twrLog, cm === 1);
         }
 
         // 1b. sprzedaż nieruchomości („sprzedaż w roku X”: pierwszy miesiąc symulacji w tym roku), wpływ do gotówki
@@ -481,11 +482,19 @@ export class Kernel {
     return w;
   }
 
+  /** Wartość posiadanych (niesprzedanych) nieruchomości; `values` muszą być odświeżone. */
+  private heldRealEstate(): number {
+    let v = 0;
+    for (let r = 0; r < this.reSlots.length; r++) v += this.values[this.reSlots[r]!]!;
+    return v;
+  }
+
   /**
    * Wartość po podatku przy sprzedaży całości (spec Z-2): aktywa − zobowiązanie z zamkniętych lat − podatek roku
    * bieżącego przy likwidacji (dotychczasowe sprzedaże i niezrealizowane zyski łącznie; wartości muszą być odświeżone).
+   * `withRealEstate = false`: bez podatku od jeszcze nieposiadanej do sprzedaży nieruchomości (baza wypłat płynnych; `wealth` bez nieruchomości).
    */
-  private afterTaxValue(month: number, wealth: number): number {
+  private afterTaxValue(month: number, wealth: number, withRealEstate = true): number {
     let owed = this.taxDue;
     for (let r = 0; r < this.riskySlots.length; r++) {
       const i = this.riskySlots[r]!;
@@ -495,9 +504,11 @@ export class Kernel {
     }
     owed += this.tax.liquidationTax(this.latentPos, this.openYear);
     owed += this.rePending;
-    for (let r = 0; r < this.reSlots.length; r++) {
-      const i = this.reSlots[r]!;
-      if (this.reValue[i]! > 0) owed += this.realEstateTax(i, this.reValue[i]!, this.openYear);
+    if (withRealEstate) {
+      for (let r = 0; r < this.reSlots.length; r++) {
+        const i = this.reSlots[r]!;
+        if (this.reValue[i]! > 0) owed += this.realEstateTax(i, this.reValue[i]!, this.openYear);
+      }
     }
     for (let r = 0; r < this.edoSlots.length; r++) {
       const i = this.edoSlots[r]!;

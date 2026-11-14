@@ -74,9 +74,13 @@ describe('realEstateSaleTax (19% od zysku, zwolnienie po 5 latach podatkowych)',
     expect(realEstateSaleTax(0.19, 200_000, 2020, 2025)).toBeCloseTo(38_000, 9);
     expect(realEstateSaleTax(0.19, 200_000, 2020, 2026)).toBe(0);
   });
-  it('strata i brak roku zakupu: bez podatku', () => {
+  it('strata: bez podatku', () => {
     expect(realEstateSaleTax(0.19, -5_000, 2024, 2025)).toBe(0);
-    expect(realEstateSaleTax(0.19, 200_000, undefined, 2025)).toBe(0);
+    expect(realEstateSaleTax(0.19, -5_000, undefined, 2025)).toBe(0);
+  });
+  it('brak roku zakupu: konserwatywnie bez zwolnienia (19% od zysku), nie po cichu zwolnione', () => {
+    expect(realEstateSaleTax(0.19, 200_000, undefined, 2025)).toBeCloseTo(38_000, 9);
+    expect(realEstateSaleTax(0.19, 200_000, undefined, 2060)).toBeCloseTo(38_000, 9);
   });
 });
 
@@ -234,6 +238,53 @@ describe('Kernel: nieruchomość na wynajem', () => {
     k.simulate(1, 0, r);
     expect(r.after[0]).toBeCloseTo(1_000_000 - 0.19 * 500_000, 6);
     expect(r.after[0]!).toBeLessThan(r.wealth[0]!);
+  });
+
+  it('wartość po podatku bez roku zakupu nie zakłada zwolnienia (tak jak przy zakupie sprzed roku)', () => {
+    const run = (purchaseYear: number | undefined): number => {
+      const s = homeScenario({ netRentYield: 0, ...(purchaseYear === undefined ? {} : { purchaseYear }) }, { tax: { kind: 'pl' }, horizonMonths: 12 }, 1_000_000);
+      s.positions[0]!.costBasis = 500_000;
+      const k = new Kernel(s);
+      const r = new Rec(k);
+      k.simulate(1, 0, r);
+      return r.after[0]!;
+    };
+    const taxed = 1_000_000 - 0.19 * 500_000;
+    expect(run(undefined)).toBeCloseTo(taxed, 6);
+    expect(run(2025)).toBeCloseTo(taxed, 6);
+    expect(run(2000)).toBeCloseTo(1_000_000, 6); // zwolnione po 5 latach: bez podatku
+  });
+
+  describe('baza wypłat zależnych od majątku to majątek płynny (bez niepłynnej nieruchomości)', () => {
+    const withdrawalYear1 = (w: Scenario['withdrawal'], reValue: number): number => {
+      const base = makeScenario();
+      const dep: AssetParams = { kind: 'deposit', id: 'dep', k: 0, spread: 0, initialRate: 0 };
+      const s = makeScenario({
+        assets: [dep, flat({ netRentYield: 0, purchaseYear: 2000 })],
+        positions: [
+          { assetId: 'dep', wrapper: 'taxable', value: 100_000, costBasis: 100_000, targetWeight: 1 },
+          { assetId: 'flat', wrapper: 'taxable', value: reValue, costBasis: reValue, targetWeight: 0 },
+        ],
+        market: { ...base.market, factorIds: ['flat', 'cpi'], inflation: { ...base.market.inflation, sigmaEta: 0, meanSe: 0 } },
+        horizonMonths: 12,
+        withdrawal: w,
+      });
+      const k = new Kernel(s);
+      k.simulate(1, 0, new Rec(k));
+      return k.ledger.withdrawals;
+    };
+    it('procent: 4% płynnych 100 000 zł, niezależnie od wartości mieszkania', () => {
+      expect(withdrawalYear1({ kind: 'percent', startMonth: 0, rate: 0.04 }, 1_000_000)).toBeCloseTo(4_000, 6);
+      expect(withdrawalYear1({ kind: 'percent', startMonth: 0, rate: 0.04 }, 0.01)).toBeCloseTo(4_000, 6);
+    });
+    it('Guyton–Klinger: stopa startowa od majątku płynnego', () => {
+      const w = { kind: 'guytonKlinger', startMonth: 0, initialRate: 0.04, guardrail: 0.2, adjustment: 0.1, inflationCap: 0.06 } as const;
+      expect(withdrawalYear1(w, 1_000_000)).toBeCloseTo(4_000, 6);
+    });
+    it('ABW: amortyzacja majątku płynnego', () => {
+      const w = { kind: 'abw', startMonth: 0, expectedRealReturn: 0.02 } as const;
+      expect(withdrawalYear1(w, 1_000_000)).toBeCloseTo(withdrawalYear1(w, 0.01), 6);
+    });
   });
 
   it('T4: bilans księgi ≤ 1e-9 z nieruchomością, czynszem, sprzedażą, wypłatami i podatkiem pl', () => {

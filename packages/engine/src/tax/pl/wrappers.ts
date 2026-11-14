@@ -14,8 +14,9 @@ const DEFAULT_IKZE_TAX_RATE = 0.12;
 
 /**
  * Podatek od wypłaty `proceeds` z opakowania przy koszcie nabycia `costBasis` i wieku `ageYears`
- * (art. 30b ust. 1a pkt 1 i art. 30b ust. 1 PIT w zakresie IKE/IKZE; uproszczenie: wypłata przed wiekiem
- * to 19% od zysku, bez zwrotu odliczeń IKZE).
+ * (art. 30b ust. 1a pkt 1 i art. 30b ust. 1 PIT w zakresie IKE/IKZE; NIEZWERYFIKOWANE w ISAP, cytowane z pamięci;
+ * uproszczenia: wypłata przed wiekiem to 19% od zysku, bez zwrotu odliczeń IKZE; pominięty warunek 5 lat wpłat
+ * zarówno dla IKE (przed 60. r.ż.), jak i dla IKZE (od 65. r.ż.)).
  * IKE: po 60. roku życia 0, wcześniej 19% od zysku. IKZE: od 65. roku życia 10% od całej kwoty, wcześniej 19% od zysku.
  */
 export function wrapperWithdrawalTax(wrapper: Wrapper, proceeds: number, costBasis: number, ageYears: number): number {

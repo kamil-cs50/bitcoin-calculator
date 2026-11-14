@@ -96,13 +96,15 @@ Tryby „bez podatków” i „stawka ogólna”. Poza zakresem: danina solidarn
 Wpłaty z indeksacją (brak, inflacja, inflacja plus wzrost realny). Wypłaty: stała kwota realna, stały procent
 (styczeń, 12 rat), amortyzacja (PMT z góry; Waring i Siegel 2015), reguły Guytona i Klingera (2006) ze stałymi
 parametrami (próg 20%, korekta 10%, limit indeksacji 6%, ochrona kapitału tylko gdy do końca zostaje więcej niż 15
-lat). Zdarzenia jednorazowe.
+lat). Procent, Guyton–Klinger i amortyzacja liczą się od majątku płynnego po podatku, bez niepłynnej nieruchomości.
+Zdarzenia jednorazowe.
 
 ## Śmiertelność (spec 4.12)
 
 Tablice trwania życia GUS 2025 (`q_x`, wiek 0–100, mężczyźni i kobiety). Prawdopodobieństwo ruiny za życia to suma
-prawdopodobieństw ruiny w miesiącu `t` ważona prawdopodobieństwem dożycia. Opcja „+2 lata” (założenie). Przedział
-uwzględnia tylko błąd symulacji.
+prawdopodobieństw ruiny w miesiącu `t` ważona prawdopodobieństwem dożycia. Wiek i płeć są opcjonalnymi polami Planu (puste = bez krzywej przeżycia); wynik jest w
+Wynikach, liczony w workerze. Opcja „+2 lata” (założenie, domyślnie wyłączona). Przedział uwzględnia tylko błąd
+symulacji.
 
 ## Statystyki i solvery (spec 4.13)
 
@@ -156,11 +158,13 @@ użytkownika.
    lata dałoby inny podatek.
 6. **IKE i IKZE.** Limity rosną w symulacji o inflację plus 1 pp (założenie). Wypłata z IKE po 60. r.ż. bez podatku,
    wcześniej 19% od zysku (FIFO sprzedanej części). IKZE po 65. r.ż. 10% od całej kwoty, wcześniej 19% od zysku, bez
-   zwrotu wcześniej odliczonych kwot. Pominięty warunek 5 lat wpłat do IKE. Wpłaty początkowe nie zużywają limitu. Wiek
-   startowy jest zakładany (35 lat), dopóki go nie wpiszesz.
+   zwrotu wcześniej odliczonych kwot. Pominięty warunek 5 lat wpłat do IKE (przed 60. r.ż.) i do IKZE (od 65. r.ż.) oraz wyższy limit IKZE dla
+   działalności gospodarczej. Wpłaty początkowe nie zużywają limitu. Wiek jest wymagany przy wyborze IKE/IKZE i nie
+   jest zakładany po cichu. Przepisy z pamięci, niezweryfikowane w ISAP (przypomnienie przy polu wieku i w Założeniach).
 7. **Nieruchomość.** Niepłynna; brak częściowej i automatycznej sprzedaży; przy ruinie jej wartość też jest zerowana w
    modelu (spójność bilansu). Podatek od sprzedaży 19% od zysku bez kosztów zbycia i nakładów; ryczałt 8,5% i 12,5%
-   (progi niezweryfikowane). Interfejs nie ma jeszcze pól: rok zakupu, cena zakupu, rok sprzedaży.
+   (progi niezweryfikowane). Rok zakupu, cena zakupu i rok sprzedaży są polami formularza i kafelka pozycji; bez roku zakupu nie zakładamy
+   zwolnienia (konserwatywnie 19% od zysku), a wartość „po podatku” odejmuje podatek od sprzedaży mieszkania.
 8. **Krypto.** Parametry dryfu są założeniami. Upadek to stan pochłaniający, wpisane `g` jest medianą warunkową na
    przetrwaniu. Nakładka potęgowa (opcjonalna) opiera się na regresji bez podstaw ekonomicznych; jej parametry są
    niezweryfikowane.

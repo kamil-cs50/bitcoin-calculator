@@ -4,7 +4,7 @@
  * UPROSZCZENIA NIEZWERYFIKOWANE W ISAP (spec 6.4, wiersz „Stawki i zasady podatkowe”: przepisy cytowane z pamięci):
  *  - ryczałt od najmu prywatnego 8,5% do 100 000 zł przychodu rocznie i 12,5% od nadwyżki (ustawa o zryczałtowanym podatku),
  *    liczony i pobierany tu miesięcznie narastająco od przychodu (czynsz netto z założenia), bez odliczeń i bez wyboru skali;
- *  - sprzedaż: 19% od zysku (przychód − koszt nabycia, bez nakładów i kosztów zbycia); zwolnienie, gdy sprzedaż następuje
+ *  - sprzedaż: 19% od zysku (przychód − koszt nabycia, bez nakładów i kosztów zbycia); zwolnienie (tylko przy podanym roku zakupu), gdy sprzedaż następuje
  *    po upływie 5 lat od końca roku kalendarzowego nabycia (art. 10 ust. 1 pkt 8 ustawy o PIT), czyli w roku
  *    `purchaseYear + 6` lub później;
  *  - bez ulgi mieszkaniowej, bez składki zdrowotnej, bez kosztów utrzymania poza uwzględnionymi w czynszu netto.
@@ -28,9 +28,12 @@ export function rentalIncomeTax(cumulativeBefore: number, revenue: number): numb
   return RENTAL_RATE_LOW * low + RENTAL_RATE_HIGH * (revenue - low);
 }
 
-/** Podatek od sprzedaży: `rate` · zysk, chyba że sprzedaż w roku `saleYear` jest zwolniona (brak `purchaseYear`: zwolniona). */
+/**
+ * Podatek od sprzedaży: `rate` · zysk, chyba że sprzedaż w roku `saleYear` jest zwolniona. Brak `purchaseYear`
+ * traktujemy konserwatywnie jako sprzedaż bez zwolnienia (nie „zwolnioną po cichu”): zwolnienie wymaga podania roku zakupu.
+ */
 export function realEstateSaleTax(rate: number, gain: number, purchaseYear: number | undefined, saleYear: number): number {
-  if (!(gain > 0) || purchaseYear === undefined) return 0;
-  if (saleYear > purchaseYear + EXEMPT_YEARS_AFTER_PURCHASE) return 0;
+  if (!(gain > 0)) return 0;
+  if (purchaseYear !== undefined && saleYear > purchaseYear + EXEMPT_YEARS_AFTER_PURCHASE) return 0;
   return rate * gain;
 }

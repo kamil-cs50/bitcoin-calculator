@@ -27,6 +27,16 @@ describe('validateScenario', () => {
     expect(validateScenario(makeScenario({ horizonMonths: 960 })).ok).toBe(true);
   });
 
+  it('person (wiek i płeć, opcjonalne): wiek 0..120 i płeć M/K', () => {
+    expect(validateScenario(makeScenario({ person: { age: 60, sex: 'M' } })).ok).toBe(true);
+    expect(validateScenario(makeScenario({ person: { age: 60, sex: 'K', cohortBonus: true } })).ok).toBe(true);
+    expect(validateScenario(makeScenario({ person: { age: 40 } })).ok).toBe(true);
+    expect(errorPaths(makeScenario({ person: { age: 121, sex: 'M' } }))).toContain('person.age');
+    expect(errorPaths(makeScenario({ person: { age: -1, sex: 'M' } }))).toContain('person.age');
+    expect(errorPaths(makeScenario({ person: { age: 60.5, sex: 'M' } }))).toContain('person.age');
+    expect(errorPaths(makeScenario({ person: { age: 60, sex: 'X' as 'M' } }))).toContain('person.sex');
+  });
+
   it('odrzuca nu < 3 w trybie realistic, przyjmuje nu = 3; w gbm nu nie jest wymagane', () => {
     const s = makeScenario();
     const real = { ...s.market, mode: 'realistic' as const };
