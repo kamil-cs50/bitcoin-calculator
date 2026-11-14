@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+// CSP aplikacji nie dopuszcza 'unsafe-eval': zod bez JIT (inaczej jego próba `new Function` daje naruszenie CSP).
+z.config({ jitless: true });
+
 /** Data w formacie ISO `YYYY-MM-DD` (istniejąca data kalendarzowa). */
 const isoDate = z
   .string()

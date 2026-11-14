@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 import { APP_NAME } from './src/app/appConfig';
+import { previewSecurityHeaders } from './src/deploy/vercelHeaders';
 
 export default defineConfig({
   plugins: [
@@ -38,7 +39,11 @@ export default defineConfig({
       },
     }),
   ],
+  // Fonty (KaTeX) jako pliki, nie data: URI: CSP ma `font-src 'self'` bez `data:`.
+  build: { assetsInlineLimit: (file) => (file.endsWith('.woff2') ? false : undefined) },
   worker: { format: 'es' },
+  // Podgląd produkcyjnego buildu z tymi samymi nagłówkami (CSP) co na Vercel.
+  preview: { headers: previewSecurityHeaders() },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],

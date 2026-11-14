@@ -1,5 +1,6 @@
 import type { Scenario } from '@sim/engine';
 import { z } from 'zod';
+import '../app/zodConfig'; // zod bez JIT, zanim powstanie pierwszy schemat (CSP bez 'unsafe-eval')
 
 // Schemat Zod odpowiada typowi Scenario z @sim/engine (schemaVersion 1). Służy do
 // walidacji danych wczytanych z IndexedDB: wpis uszkodzony lub ręcznie zmieniony nie może
