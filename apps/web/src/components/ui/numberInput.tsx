@@ -25,6 +25,8 @@ export interface DecimalInputProps {
   scale?: number;
   placeholder?: string;
   disabled?: boolean;
+  /** Pole wymagane (aria-required); sama walidacja i komunikat błędu po stronie wywołującego. */
+  required?: boolean;
 }
 
 function show(v: number | null, scale: number): string {
@@ -43,6 +45,7 @@ export function DecimalInput({
   scale = 1,
   placeholder,
   disabled,
+  required,
 }: DecimalInputProps) {
   const [text, setText] = useState(() => show(value, scale));
   const [lastEmitted, setLastEmitted] = useState<number | null>(value);
@@ -63,6 +66,7 @@ export function DecimalInput({
             value={text}
             placeholder={placeholder}
             disabled={disabled}
+            required={required}
             className={`${inputClass} ${suffix ? 'pr-14' : ''}`}
             onChange={(e) => {
               const next = e.target.value;

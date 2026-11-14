@@ -7,29 +7,243 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pl\n"
 
+#: src/features/portfolio/tiles.ts:41
+msgid "Akcje polskie"
+msgstr "Akcje polskie"
+
+#: src/features/portfolio/tiles.ts:40
+msgid "Akcje rynków wschodzących"
+msgstr "Akcje rynków wschodzących"
+
+#: src/features/portfolio/PositionForm.tsx:254
+msgid "Anuluj"
+msgstr "Anuluj"
+
+#: src/features/portfolio/PositionForm.tsx:212
+msgid "Bez ceny nie przeliczymy BTC na złotówki."
+msgstr "Bez ceny nie przeliczymy BTC na złotówki."
+
+#: src/features/portfolio/tiles.ts:21
+msgid "Bitcoin"
+msgstr "Bitcoin"
+
+#: src/features/onboarding/Onboarding.tsx:115
+msgid "Cel (w dzisiejszych zł)"
+msgstr "Cel (w dzisiejszych zł)"
+
+#: src/features/portfolio/PositionForm.tsx:203
+msgid "Cena 1 BTC (zł), wymagana"
+msgstr "Cena 1 BTC (zł), wymagana"
+
+#: src/features/portfolio/PositionForm.tsx:229
+msgid "Cena z ostatniej minuty, możesz ją poprawić. Powered by CoinGecko"
+msgstr "Cena z ostatniej minuty, możesz ją poprawić. Powered by CoinGecko"
+
+#: src/features/onboarding/Onboarding.tsx:56
+msgid "Co masz?"
+msgstr "Co masz?"
+
+#: src/features/portfolio/PositionForm.tsx:145
+msgid "Co wpisujesz?"
+msgstr "Co wpisujesz?"
+
+#: src/features/onboarding/Onboarding.tsx:79
+#: src/features/onboarding/Onboarding.tsx:126
+msgid "Dalej"
+msgstr "Dalej"
+
+#: src/features/portfolio/PositionForm.tsx:251
+msgid "Dodaj do portfela"
+msgstr "Dodaj do portfela"
+
+#: src/features/onboarding/Onboarding.tsx:83
+msgid "Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej."
+msgstr "Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej."
+
+#: src/features/portfolio/tiles.ts:22
+msgid "ETF na świat"
+msgstr "ETF na świat"
+
+#: src/features/portfolio/PositionForm.tsx:166
+msgid "ETF na złoto"
+msgstr "ETF na złoto"
+
+#: src/features/portfolio/PositionForm.tsx:140
+msgid "ETF/ETP na bitcoina"
+msgstr "ETF/ETP na bitcoina"
+
+#: src/features/portfolio/tiles.ts:34
+msgid "Ethereum"
+msgstr "Ethereum"
+
+#: src/features/portfolio/PositionForm.tsx:163
+msgid "Fizyczne (sztabki, monety)"
+msgstr "Fizyczne (sztabki, monety)"
+
+#: src/features/portfolio/PositionForm.tsx:134
+msgid "Gdzie trzymasz bitcoina?"
+msgstr "Gdzie trzymasz bitcoina?"
+
+#: src/features/portfolio/PositionForm.tsx:137
+msgid "Giełda lub własny portfel"
+msgstr "Giełda lub własny portfel"
+
 #: src/app/Layout.tsx:26
 msgid "Główna nawigacja"
 msgstr "Główna nawigacja"
 
-#: src/app/pages.tsx:44
+#: src/features/onboarding/Onboarding.tsx:134
+msgid "Gotowe"
+msgstr "Gotowe"
+
+#: src/features/onboarding/Onboarding.tsx:94
+msgid "Horyzont (lata)"
+msgstr "Horyzont (lata)"
+
+#: src/features/portfolio/PositionForm.tsx:160
+msgid "Jakie złoto?"
+msgstr "Jakie złoto?"
+
+#: src/features/portfolio/AssetTile.tsx:38
+msgid "Konto"
+msgstr "Konto"
+
+#: src/features/onboarding/Onboarding.tsx:51
+msgid "Krok {step} z 3"
+msgstr "Krok {step} z 3"
+
+#: src/features/portfolio/PositionForm.tsx:241
+msgid "Kwota"
+msgstr "Kwota"
+
+#: src/features/portfolio/PositionForm.tsx:151
+msgid "Kwotę w zł"
+msgstr "Kwotę w zł"
+
+#: src/features/onboarding/Onboarding.tsx:95
+msgid "lat"
+msgstr "lat"
+
+#: src/features/portfolio/PositionForm.tsx:201
+msgid "Liczba BTC"
+msgstr "Liczba BTC"
+
+#: src/features/portfolio/PositionForm.tsx:148
+msgid "Liczbę BTC"
+msgstr "Liczbę BTC"
+
+#: src/features/portfolio/tiles.ts:25
+msgid "Lokata"
+msgstr "Lokata"
+
+#: src/features/portfolio/tiles.ts:27
+msgid "Mieszkanie"
+msgstr "Mieszkanie"
+
+#: src/features/portfolio/PortfolioEditor.tsx:15
+msgid "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
+msgstr "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
+
+#: src/features/onboarding/Onboarding.tsx:105
+msgid "Możesz zostawić puste, jeśli nie dopłacasz."
+msgstr "Możesz zostawić puste, jeśli nie dopłacasz."
+
+#: src/features/portfolio/PositionForm.tsx:173
+msgid "Nazwa"
+msgstr "Nazwa"
+
+#: src/app/pages.tsx:51
 msgid "Nie ma takiej strony"
 msgstr "Nie ma takiej strony"
 
+#: src/features/portfolio/PositionForm.tsx:226
+msgid "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie powyżej."
+msgstr "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie powyżej."
+
+#: src/features/portfolio/tiles.ts:24
+msgid "Obligacje EDO"
+msgstr "Obligacje EDO"
+
+#: src/features/portfolio/tiles.ts:42
+msgid "Obligacje polskie"
+msgstr "Obligacje polskie"
+
+#: src/features/portfolio/tiles.ts:43
+msgid "Obligacje świata"
+msgstr "Obligacje świata"
+
+#: src/features/portfolio/PositionForm.tsx:185
+msgid "Oczekiwany roczny wzrost"
+msgstr "Oczekiwany roczny wzrost"
+
+#: src/features/onboarding/Onboarding.tsx:119
+msgid "Opcjonalnie: kwota, którą chcesz mieć na końcu horyzontu."
+msgstr "Opcjonalnie: kwota, którą chcesz mieć na końcu horyzontu."
+
+#: src/features/onboarding/Onboarding.tsx:112
+msgid "Opcjonalnie. Zaczyna się po zakończeniu horyzontu."
+msgstr "Opcjonalnie. Zaczyna się po zakończeniu horyzontu."
+
 #: src/app/Layout.tsx:9
-#: src/app/pages.tsx:31
+#: src/app/pages.tsx:38
+#: src/features/onboarding/Onboarding.tsx:91
 msgid "Plan"
 msgstr "Plan"
 
+#: src/features/portfolio/PositionForm.tsx:224
+msgid "Pobieram cenę…"
+msgstr "Pobieram cenę…"
+
+#: src/features/portfolio/PositionForm.tsx:221
+msgid "Pobierz cenę"
+msgstr "Pobierz cenę"
+
+#: src/features/onboarding/Onboarding.tsx:98
+msgid "Podaj pełną liczbę lat od 1 do 60."
+msgstr "Podaj pełną liczbę lat od 1 do 60."
+
+#: src/features/onboarding/Onboarding.tsx:146
+msgid "Pokaż wynik"
+msgstr "Pokaż wynik"
+
 #: src/app/Layout.tsx:8
-#: src/app/pages.tsx:28
+#: src/app/pages.tsx:32
 msgid "Portfel"
 msgstr "Portfel"
+
+#: src/features/portfolio/PortfolioEditor.tsx:64
+msgid "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
+msgstr "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
+
+#. placeholder {0}: scenario.positions.length
+#. placeholder {1}: formatMoney(total, scenario.baseCurrency)
+#. placeholder {2}: scenario.horizonMonths / MONTHS_PER_YEAR
+#: src/features/onboarding/Onboarding.tsx:136
+msgid "Portfel: {0} poz., razem {1}. Horyzont: {2} lat."
+msgstr "Portfel: {0} poz., razem {1}. Horyzont: {2} lat."
 
 #: src/app/Layout.tsx:20
 msgid "Przejdź do treści"
 msgstr "Przejdź do treści"
 
-#: src/app/pages.tsx:21
+#. placeholder {0}: formatMoney(total, baseCurrency)
+#: src/features/portfolio/PortfolioEditor.tsx:68
+msgid "Razem: {0}"
+msgstr "Razem: {0}"
+
+#: src/features/portfolio/PositionForm.tsx:191
+msgid "Roczna zmienność"
+msgstr "Roczna zmienność"
+
+#: src/features/portfolio/PortfolioEditor.tsx:21
+msgid "Rozumiem"
+msgstr "Rozumiem"
+
+#: src/features/portfolio/tiles.ts:23
+msgid "S&P 500"
+msgstr "S&P 500"
+
+#: src/app/pages.tsx:23
 msgid "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
 msgstr "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
 
@@ -37,10 +251,30 @@ msgstr "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możli
 msgid "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 
+#: src/features/portfolio/PositionForm.tsx:186
+msgid "To założenie, nie prognoza. Zmienisz je później w Założeniach."
+msgstr "To założenie, nie prognoza. Zmienisz je później w Założeniach."
+
+#: src/features/onboarding/Onboarding.tsx:66
+msgid "Twój portfel"
+msgstr "Twój portfel"
+
+#: src/features/portfolio/PositionForm.tsx:192
+msgid "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
+msgstr "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
+
 #: src/app/Layout.tsx:12
-#: src/app/pages.tsx:40
+#: src/app/pages.tsx:47
 msgid "Ustawienia"
 msgstr "Ustawienia"
+
+#: src/features/portfolio/AssetTile.tsx:53
+msgid "Usuń"
+msgstr "Usuń"
+
+#: src/features/portfolio/AssetTile.tsx:52
+msgid "Usuń {name}"
+msgstr "Usuń {name}"
 
 #: src/lib/format.ts:72
 msgid "w {k} na 10 przyszłości"
@@ -66,23 +300,73 @@ msgstr "w ponad 99 na 100 przyszłości"
 msgid "w żadnej przyszłości"
 msgstr "w żadnej przyszłości"
 
-#: src/app/pages.tsx:46
+#: src/features/portfolio/AssetTile.tsx:29
+msgid "Wartość"
+msgstr "Wartość"
+
+#. placeholder {0}: value.toLocaleString('pl-PL')
+#: src/features/portfolio/PositionForm.tsx:235
+msgid "Wartość pozycji: {0} zł"
+msgstr "Wartość pozycji: {0} zł"
+
+#: src/features/portfolio/PositionForm.tsx:245
+msgid "Wartość Twoich obligacji EDO dziś."
+msgstr "Wartość Twoich obligacji EDO dziś."
+
+#: src/features/portfolio/tiles.ts:28
+msgid "Własne"
+msgstr "Własne"
+
+#: src/features/portfolio/PositionForm.tsx:211
+msgid "Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen sama i działa bez internetu, więc cenę możesz podać ręcznie."
+msgstr "Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen sama i działa bez internetu, więc cenę możesz podać ręcznie."
+
+#: src/features/portfolio/AssetTile.tsx:32
+msgid "Wpisz kwotę."
+msgstr "Wpisz kwotę."
+
+#: src/features/onboarding/Onboarding.tsx:101
+msgid "Wpłata miesięczna"
+msgstr "Wpłata miesięczna"
+
+#: src/features/onboarding/Onboarding.tsx:123
+#: src/features/onboarding/Onboarding.tsx:143
+msgid "Wstecz"
+msgstr "Wstecz"
+
+#: src/features/onboarding/Onboarding.tsx:58
+msgid "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
+msgstr "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
+
+#: src/app/pages.tsx:53
 msgid "Wybierz coś z menu na górze."
 msgstr "Wybierz coś z menu na górze."
 
 #: src/app/Layout.tsx:10
-#: src/app/pages.tsx:34
+#: src/app/pages.tsx:41
 msgid "Wynik"
 msgstr "Wynik"
+
+#: src/features/onboarding/Onboarding.tsx:108
+msgid "Wypłata miesięczna po horyzoncie (w dzisiejszych zł)"
+msgstr "Wypłata miesięczna po horyzoncie (w dzisiejszych zł)"
 
 #: src/app/Layout.tsx:11
 msgid "Założenia"
 msgstr "Założenia"
 
-#: src/app/pages.tsx:37
+#: src/app/pages.tsx:44
 msgid "Założenia i źródła"
 msgstr "Założenia i źródła"
 
 #: src/components/ui/Sheet.tsx:28
 msgid "Zamknij"
 msgstr "Zamknij"
+
+#: src/features/portfolio/tiles.ts:26
+msgid "Złoto"
+msgstr "Złoto"
+
+#: src/features/portfolio/AssetTile.tsx:46
+msgid "Zwykłe"
+msgstr "Zwykłe"

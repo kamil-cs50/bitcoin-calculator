@@ -1,6 +1,8 @@
 import { Trans } from '@lingui/react/macro';
 import type { ReactNode } from 'react';
 import { Card } from '../components/ui/Card';
+import { Onboarding } from '../features/onboarding/Onboarding';
+import { PortfolioEditor } from '../features/portfolio/PortfolioEditor';
 import { APP_NAME } from './appConfig';
 
 function Page({ title, children }: { title: ReactNode; children: ReactNode }) {
@@ -21,11 +23,16 @@ export function HomePage() {
           <Trans>Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości.</Trans>
         </p>
       </Card>
+      <Onboarding />
     </Page>
   );
 }
 export function PortfolioPage() {
-  return <Page title={<Trans>Portfel</Trans>}>{null}</Page>;
+  return (
+    <Page title={<Trans>Portfel</Trans>}>
+      <PortfolioEditor />
+    </Page>
+  );
 }
 export function PlanPage() {
   return <Page title={<Trans>Plan</Trans>}>{null}</Page>;
