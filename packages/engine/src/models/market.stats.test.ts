@@ -182,8 +182,6 @@ describe('[Z-7] kowariancja i korelacje w symulacji (tryb realistic, α, b ≠ 0
     const sq = d.map((v) => (v - m) * (v - m));
     const v = mean(sq);
     const se = Math.sqrt(variance(sq) / n);
-    // eslint-disable-next-line no-console
-    console.log('R-2 sim: sd =', Math.sqrt(v), 'cel σ_q =', sigmaQ, 'różnica wariancji / SE =', (v - sigmaQ * sigmaQ) / se);
     expect(Math.abs(v - sigmaQ * sigmaQ)).toBeLessThan(4 * se);
   });
 });
