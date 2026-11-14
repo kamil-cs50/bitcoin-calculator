@@ -11,6 +11,7 @@ export function parseDecimal(text: string): number | null {
 
 /** Dozwolone znaki wpisu: cyfry, spacje, jeden separator dziesiętny (przecinek lub kropka). */
 const ALLOWED = /^[\d\s\u00a0\u202f]*[,.]?[\d]*$/;
+const ALLOWED_NEGATIVE = /^-?[\d\s\u00a0\u202f]*[,.]?[\d]*$/;
 
 export interface DecimalInputProps {
   label: string;
@@ -27,6 +28,8 @@ export interface DecimalInputProps {
   disabled?: boolean;
   /** Pole wymagane (aria-required); sama walidacja i komunikat błędu po stronie wywołującego. */
   required?: boolean;
+  /** Dopuszcza wiodący minus (np. spread lokaty o ujemnej wartości). */
+  allowNegative?: boolean;
 }
 
 function show(v: number | null, scale: number): string {
@@ -46,6 +49,7 @@ export function DecimalInput({
   placeholder,
   disabled,
   required,
+  allowNegative,
 }: DecimalInputProps) {
   const [text, setText] = useState(() => show(value, scale));
   const [lastEmitted, setLastEmitted] = useState<number | null>(value);
@@ -70,7 +74,7 @@ export function DecimalInput({
             className={`${inputClass} ${suffix ? 'pr-14' : ''}`}
             onChange={(e) => {
               const next = e.target.value;
-              if (!ALLOWED.test(next)) return;
+              if (!(allowNegative ? ALLOWED_NEGATIVE : ALLOWED).test(next)) return;
               setText(next);
               const parsed = parseDecimal(next);
               const out = parsed === null ? null : parsed / scale;

@@ -1,6 +1,7 @@
 import { Trans } from '@lingui/react/macro';
 import type { ReactNode } from 'react';
 import { Card } from '../components/ui/Card';
+import { AssumptionsPanel } from '../features/assumptions/AssumptionsPanel';
 import { Dashboard } from '../features/results/Dashboard';
 import { Onboarding } from '../features/onboarding/Onboarding';
 import { PlanEditor } from '../features/plan/PlanEditor';
@@ -47,7 +48,7 @@ export function ResultPage() {
     </Page>;
 }
 export function AssumptionsPage() {
-  return <Page title={<Trans>Założenia i źródła</Trans>}>{null}</Page>;
+  return <Page title={<Trans>Założenia i źródła</Trans>}><AssumptionsPanel /></Page>;
 }
 export function SettingsPage() {
   return <Page title={<Trans>Ustawienia</Trans>}>{null}</Page>;
