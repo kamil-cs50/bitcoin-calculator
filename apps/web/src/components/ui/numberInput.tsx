@@ -43,9 +43,12 @@ export interface DecimalInputProps {
   display?: boolean;
 }
 
-function show(v: number | null, scale: number): string {
+function show(v: number | null, scale: number, group = false): string {
   if (v === null) return '';
-  const t = String(Math.round(v * scale * 1e8) / 1e8);
+  const n = Math.round(v * scale * 1e8) / 1e8;
+  // pole „wyświetlacza” grupuje tysiące („12 500”) jak w projekcie; parseDecimal przyjmuje ten zapis z powrotem
+  if (group) return new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 8 }).format(n);
+  const t = String(n);
   return isEn() ? t : t.replace('.', ',');
 }
 
@@ -64,12 +67,12 @@ export function DecimalInput({
   allowNegative,
   display,
 }: DecimalInputProps) {
-  const [text, setText] = useState(() => show(value, scale));
+  const [text, setText] = useState(() => show(value, scale, display));
   const [lastEmitted, setLastEmitted] = useState<number | null>(value);
   // Zewnętrzna zmiana wartości (np. reset) odświeża tekst; własny wpis nie.
   if (value !== lastEmitted) {
     setLastEmitted(value);
-    setText(show(value, scale));
+    setText(show(value, scale, display));
   }
   return (
     <Field label={label} hint={hint} error={error}>
@@ -99,6 +102,7 @@ export function DecimalInput({
               setLastEmitted(out);
               onChange(out);
             }}
+            onBlur={display ? () => setText(show(lastEmitted, scale, true)) : undefined}
           />
           {suffix && (
             <span

@@ -3,9 +3,9 @@ import { useEffect, useRef } from 'react';
 /*
  * Tło „żyjące” z projektu Claude Design (v3): shader WebGL (fbm) rysowany w 60% rozdzielczości,
  * z poświatą podążającą za wskaźnikiem (w bezruchu dryfuje po torze Lissajous), plus nakładka szumu.
- * Wyłącznie oprawa: kanwa nie niesie żadnych danych. Wartości z Tweaks: motion 1,3, glow 1.
+ * Wyłącznie oprawa: kanwa nie niesie żadnych danych. Wartości z Tweaks: motion 1, glow 1.
  */
-const MOTION = 1.3;
+const MOTION = 1;
 const GLOW = 1;
 
 const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
@@ -122,7 +122,7 @@ export function Ambient() {
         <filter id="lgx" x="0%" y="0%" width="100%" height="100%" colorInterpolationFilters="sRGB">
           <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="7" result="warp" />
           <feGaussianBlur in="warp" stdDeviation="4" result="warpB" />
-          <feDisplacementMap in="SourceGraphic" in2="warpB" scale="60" xChannelSelector="R" yChannelSelector="G" />
+          <feDisplacementMap in="SourceGraphic" in2="warpB" scale="10" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </svg>
       <div aria-hidden="true" className="ambient">

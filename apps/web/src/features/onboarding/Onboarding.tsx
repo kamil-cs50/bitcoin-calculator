@@ -2,15 +2,71 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
 import { MoneyInput } from '../../components/ui/MoneyInput';
-import { formatMoney } from '../../lib/format';
+import { Flap, splitAmount } from '../../components/ui/Flap';
+import { formatMoney, formatMoneyShort } from '../../lib/format';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { AssetPicker } from '../portfolio/PortfolioEditor';
 import { useAssetNames } from '../portfolio/tiles';
 import { currencyWord } from '../results/basis';
 
 const MONTHS_PER_YEAR = 12;
+const DONE_KEY = 'ui:onboarded';
+
+/** Czy przewodnik startowy był już ukończony albo pominięty (zapamiętane na tym urządzeniu). */
+export function readOnboarded(): boolean {
+  try {
+    return localStorage.getItem(DONE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+export function writeOnboarded(v: boolean): void {
+  try {
+    if (v) localStorage.setItem(DONE_KEY, '1');
+    else localStorage.removeItem(DONE_KEY);
+  } catch {
+    // bez localStorage przewodnik pokaże się znowu przy następnym wejściu
+  }
+}
+
+/** Pasek kroków w stylu v3: trzy świecące odcinki z mono podpisami. */
+function Stepper({ step, labels }: { step: 1 | 2 | 3; labels: [string, string, string] }) {
+  return (
+    <ol aria-hidden="true" className="m-0 grid list-none grid-cols-3 gap-2.5 p-0">
+      {labels.map((l, i) => {
+        const n = i + 1;
+        const on = n <= step;
+        return (
+          <li key={l} className="flex flex-col gap-2.5">
+            <span
+              className={`h-[5px] rounded-full transition-[background,box-shadow] duration-500 ${
+                on ? 'bg-accent-text shadow-[0_0_12px_rgba(61,107,255,0.85)]' : 'bg-soft'
+              }`}
+            />
+            <span className={`eyebrow-sm ${n === step ? '!text-fg' : ''}`}>
+              {String(n).padStart(2, '0')} · {l}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** Duża kwota w klapkach z jednostką w kolorze akcentu (jak zegar na wyniku). */
+function BigAmount({ text }: { text: string }) {
+  const parts = splitAmount(text);
+  if (!parts) return <span className="text-[clamp(48px,7vw,96px)] leading-none font-light">{text}</span>;
+  return (
+    <span aria-hidden="true" className="flex flex-wrap items-end gap-[clamp(10px,1.2vw,16px)]">
+      <span className="flex text-[clamp(48px,7vw,96px)] leading-none font-light">
+        <Flap text={parts[0]} />
+      </span>
+      <span className="text-[clamp(24px,3vw,40px)] leading-none font-light tracking-[-0.02em] text-accent-text">{parts[1]}</span>
+    </span>
+  );
+}
 
 /** Start w trzech krokach: (1) co masz, (2) plan, (3) wynik. Działa w całości bez sieci. */
 export function Onboarding() {
@@ -70,41 +126,72 @@ export function Onboarding() {
     setStep(3);
   }
 
+  const finish = () => {
+    writeOnboarded(true);
+    void navigate('/wynik');
+  };
+  const skip = () => {
+    writeOnboarded(true);
+    void navigate('/portfel');
+  };
+  const panel = 'glass flex flex-col gap-5 rounded-card p-[clamp(20px,2.6vw,36px)]';
+  const h2 = 'm-0 text-[clamp(22px,2.2vw,30px)] leading-tight font-light tracking-[-0.02em]';
+
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-sm text-muted" aria-live="polite">
-        <Trans>Krok {step} z 3</Trans>
-      </p>
+    <div className="flex flex-col gap-[clamp(20px,2.4vw,28px)]">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="eyebrow m-0" aria-live="polite">
+          <Trans>Krok {step} z 3</Trans>
+        </p>
+        <button
+          type="button"
+          onClick={skip}
+          className="eyebrow inline-flex min-h-11 cursor-pointer items-center gap-2 border-0 bg-transparent p-0 hover:!text-fg"
+        >
+          <Trans>Pomiń przewodnik</Trans>
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <Stepper step={step} labels={[t`Co masz`, t`Plan`, t`Wynik`]} />
 
       {step === 1 && (
         <>
-          <Card title={t`Co masz?`}>
-            <p className="mb-3 text-muted">
+          <section aria-labelledby="ob-1" className={panel}>
+            <h2 id="ob-1" className={h2}>
+              {t`Co masz?`}
+            </h2>
+            <p className="m-0 max-w-[620px] text-[15px] leading-[1.55] font-light text-fg/75">
               <Trans>
                 Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera
                 żadnych cen, dopóki sam o to nie poprosisz.
               </Trans>
             </p>
             <AssetPicker onOpenChange={setFormOpen} />
-          </Card>
+          </section>
           {scenario.positions.length > 0 && (
-            <Card title={t`Twój portfel`}>
-              <ul className="m-0 list-none space-y-1 p-0">
+            <section aria-labelledby="ob-pf" className={panel}>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <h2 id="ob-pf" className="eyebrow m-0 font-normal">
+                  {t`Twój portfel`}
+                </h2>
+                <BigAmount text={formatMoneyShort(total, scenario.baseCurrency)} />
+              </div>
+              <ul className="m-0 flex list-none flex-col p-0">
                 {scenario.positions.map((p, i) => (
-                  <li key={`${p.assetId}-${i}`} className="flex justify-between gap-2">
+                  <li key={`${p.assetId}-${i}`} className="flex justify-between gap-2 border-t border-hairline py-3 text-[15px] font-light first:border-t-0">
                     <span>{names.asset(p.assetId)}</span>
-                    <span className="num">{formatMoney(p.value, scenario.baseCurrency)}</span>
+                    <span className="num text-fg/80">{formatMoney(p.value, scenario.baseCurrency)}</span>
                   </li>
                 ))}
               </ul>
-            </Card>
+            </section>
           )}
-          <div>
+          <div className="flex flex-wrap items-center gap-4">
             <Button disabled={scenario.positions.length === 0 || formOpen} onClick={() => setStep(2)}>
               <Trans>Dalej</Trans>
             </Button>
             {formOpen && (
-              <p className="mt-1 text-sm text-muted">
+              <p className="m-0 text-sm text-muted">
                 <Trans>Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej.</Trans>
               </p>
             )}
@@ -113,8 +200,11 @@ export function Onboarding() {
       )}
 
       {step === 2 && (
-        <Card title={t`Plan`}>
-          <div className="flex flex-col gap-4">
+        <section aria-labelledby="ob-2" className={panel}>
+          <h2 id="ob-2" className={h2}>
+            {t`Plan`}
+          </h2>
+          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
             <MoneyInput
               label={t`Horyzont (lata)`}
               suffix={t`lat`}
@@ -153,35 +243,52 @@ export function Onboarding() {
               onChange={setGoal}
               hint={t`Opcjonalnie: kwota, którą chcesz mieć na końcu horyzontu.`}
             />
-            <div className="flex flex-wrap gap-2">
-              <Button variant="ghost" onClick={() => setStep(1)}>
-                <Trans>Wstecz</Trans>
-              </Button>
-              <Button disabled={!yearsOk || startBad} onClick={savePlan}>
-                <Trans>Dalej</Trans>
-              </Button>
-            </div>
           </div>
-        </Card>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => setStep(1)}>
+              <Trans>Wstecz</Trans>
+            </Button>
+            <Button disabled={!yearsOk || startBad} onClick={savePlan}>
+              <Trans>Dalej</Trans>
+            </Button>
+          </div>
+        </section>
       )}
 
       {step === 3 && (
-        <Card title={t`Gotowe`}>
-          <p>
+        <section aria-labelledby="ob-3" className={panel}>
+          <h2 id="ob-3" className={h2}>
+            {t`Gotowe`}
+          </h2>
+          <p className="sr-only">
             <Trans>
               Portfel: {scenario.positions.length} poz., razem {formatMoney(total, scenario.baseCurrency)}.
               Horyzont: {scenario.horizonMonths / MONTHS_PER_YEAR} lat.
             </Trans>
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Button variant="ghost" onClick={() => setStep(2)}>
+          <div aria-hidden="true" className="grid gap-6 sm:grid-cols-2">
+            <div className="flex flex-col gap-3">
+              <span className="eyebrow">{t`Portfel · razem`}</span>
+              <BigAmount text={formatMoneyShort(total, scenario.baseCurrency)} />
+            </div>
+            <div className="flex flex-col gap-3">
+              <span className="eyebrow">{t`Horyzont`}</span>
+              <BigAmount text={`${scenario.horizonMonths / MONTHS_PER_YEAR} ${t`lat`}`} />
+            </div>
+          </div>
+          <p className="m-0 max-w-[620px] text-[15px] leading-[1.55] font-light text-fg/75">
+            {t`Policzymy 10 000 możliwych przyszłości Twojego portfela: od najgorszych do najlepszych, realnie i po podatku.`}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => setStep(2)}>
               <Trans>Wstecz</Trans>
             </Button>
-            <Button onClick={() => void navigate('/wynik')}>
+            <Button onClick={finish}>
               <Trans>Pokaż wynik</Trans>
+              <span aria-hidden="true">→</span>
             </Button>
           </div>
-        </Card>
+        </section>
       )}
     </div>
   );

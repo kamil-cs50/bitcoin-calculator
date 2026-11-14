@@ -239,3 +239,12 @@ describe('Onboarding krok 2: plan', () => {
     expect(sc().goal).toEqual({ amountReal: 900_000, month: 200 });
   });
 });
+
+describe('Onboarding: zapamiętanie', () => {
+  it('„Pomiń przewodnik” zapamiętuje wybór i prowadzi do portfela', async () => {
+    const router = view();
+    await userEvent.click(screen.getByRole('button', { name: /Pomiń przewodnik/ }));
+    expect(localStorage.getItem('ui:onboarded')).toBe('1');
+    expect(router.state.location.pathname).toBe('/portfel');
+  });
+});

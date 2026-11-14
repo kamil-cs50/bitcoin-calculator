@@ -9,7 +9,7 @@ import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
 import { routes } from '../../app/routes';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { i18n } from '../../i18n';
-import { formatMoney } from '../../lib/format';
+import { formatMoneyShort } from '../../lib/format';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useUiStore } from '../../state/uiStore';
 import { syncWorker } from '../../workers/syncWorker';
@@ -34,7 +34,8 @@ const shell = (ui: React.ReactNode) => (
 );
 const wrap = (ui: React.ReactNode) => render(shell(ui));
 const nb = (s: string | null) => (s ?? '').replace(/[\s\u00a0\u202f]/g, ' ');
-const money2 = (v: number) => formatMoney(v, 'PLN', { sigDigits: 2 });
+// kwoty na wynikach w krótkim zapisie projektu v3 („130 tys. zł”); liczby z silnika bez zmian
+const money2 = (v: number) => formatMoneyShort(v, 'PLN');
 
 const goalScenario: Scenario = makeScenario({ horizonMonths: 120, goal: { amountReal: 120_000, month: 120 } });
 const result: RunResult = runBatch(goalScenario, { seed: SIM_SEED, paths: 1000 });
@@ -98,7 +99,7 @@ describe('QualityBadge', () => {
     const g = summarize(result, goalScenario, { month: 120, real: true, afterTax: true }).probGoal!;
     const [lo, hi] = wilson(Math.round(g.p * 1000), 1000);
     const pp = (((hi - lo) / 2) * 100).toFixed(1).replace('.', ',');
-    expect(nb(screen.getByTestId('quality').textContent)).toBe(nb(`${new Intl.NumberFormat('pl-PL').format(1000)} przyszłości · dokładność ±${pp} pp`));
+    expect(nb(screen.getByTestId('quality').textContent)).toBe(nb(`${new Intl.NumberFormat('pl-PL').format(1000)} przyszłości · ±${pp} pp`));
   });
 
   it('plakietka kalibracji i stan liczenia', () => {
@@ -342,7 +343,7 @@ describe('Dashboard', () => {
     const before = screen.getByTestId('kpi-median').textContent;
     fireSlider(slider, '4' as unknown as number);
     await waitFor(() => expect(screen.getByTestId('kpi-median').textContent).not.toBe(before));
-    expect(screen.getByText(/Typowy wynik za (\d+|\d+,\d+) (lat|lata|rok|roku)/)).toBeInTheDocument();
+    expect(screen.getByText(/Typowy wynik za (\d+|\d+,\d+) (lat|lata|rok|roku) \(/)).toBeInTheDocument();
   });
 
   it('tryb eksperta odsłania średnią i kontrolę modelu', async () => {

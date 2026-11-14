@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatMoney, formatPercent, naturalFrequency, roundSig } from './format';
+import { formatMoney, formatMoneyShort, formatPercent, naturalFrequency, roundSig } from './format';
 
 // Intl używa twardych spacji (U+00A0 / U+202F); w testach normalizujemy do zwykłej.
 const n = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ');
@@ -54,5 +54,23 @@ describe('naturalFrequency', () => {
     expect(naturalFrequency(0.03)).toBe('w 3 na 100 przyszłości');
     expect(naturalFrequency(0)).toBe('w żadnej przyszłości');
     expect(naturalFrequency(1)).toBe('w każdej przyszłości');
+  });
+});
+
+describe('formatMoneyShort', () => {
+  it('skraca tysiące i miliony do 2 cyfr znaczących (projekt v3)', () => {
+    expect(n(formatMoneyShort(483_210, 'PLN'))).toBe('480 tys. zł');
+    expect(n(formatMoneyShort(123_456, 'PLN'))).toBe('120 tys. zł');
+    expect(n(formatMoneyShort(24_400, 'PLN'))).toBe('24 tys. zł');
+    expect(n(formatMoneyShort(1_234, 'PLN'))).toBe('1,2 tys. zł');
+    expect(n(formatMoneyShort(2_210_000, 'PLN'))).toBe('2,2 mln zł');
+  });
+  it('granica zaokrąglenia przechodzi w miliony, małe kwoty bez skrótu', () => {
+    expect(n(formatMoneyShort(996_000, 'PLN'))).toBe('1 mln zł');
+    expect(n(formatMoneyShort(950, 'PLN'))).toBe('950 zł');
+    expect(n(formatMoneyShort(0, 'PLN'))).toBe('0 zł');
+  });
+  it('ujemne kwoty', () => {
+    expect(n(formatMoneyShort(-48_000, 'PLN'))).toBe('-48 tys. zł');
   });
 });

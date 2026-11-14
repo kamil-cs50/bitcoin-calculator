@@ -5,8 +5,10 @@ import { useId } from 'react';
  * na szczycie. To czysta oprawa graficzna: kształt jest stały i NIE przedstawia obliczonego rozkładu
  * (liczby rozkładu ceny pokazuje tabela obok); z tego powodu cały element jest ukryty przed czytnikami ekranu.
  */
-const BX = (z: number): number => 260 + (z / 4.2) * 250;
+export const BX = (z: number): number => 260 + (z / 4.2) * 250;
 const BY = (z: number): number => 192 - 164 * Math.exp(-(z * z) / 2 / 0.55);
+/** Odwrotność BX: pozycja w układzie 520 px → z. */
+export const zAt = (px: number): number => ((px - 260) / 250) * 4.2;
 
 /** Gładka krzywa przez punkty (Catmull-Rom → Bézier), jak w prototypie. */
 function smooth(pts: [number, number][]): string {
@@ -25,7 +27,7 @@ const LINE = smooth(Array.from({ length: 61 }, (_, i) => -4.2 + (8.4 * i) / 60).
 const BARS = Array.from({ length: 64 }, (_, i) => {
   const z = -3.6 + (7.2 * i) / 63;
   const y = BY(z) + 7;
-  return { x: BX(z) - 1, y, h: Math.max(0, 200 - y), op: 0.3 + 0.7 * Math.exp(-(z * z) / 1.2), dl: -(1 - i / 63) * 6 };
+  return { z, x: BX(z) - 1, y, h: Math.max(0, 200 - y), op: 0.3 + 0.7 * Math.exp(-(z * z) / 1.2), dl: -(1 - i / 63) * 6 };
 });
 
 const FLOW = [
@@ -35,12 +37,33 @@ const FLOW = [
   { c: '#ffffff', w: 2.2, f: 0.07, o: 0.9, b: 1.4, dl: -0.69 },
 ];
 
-export function BtcBell() {
+export interface BtcBellProps {
+  /** Wybrany punkt krzywej (z, przesuwanie); null = mediana. */
+  z?: number | null;
+  /** Przesuwanie po krzywej: z albo null po opuszczeniu. Bez niego krzywa jest tylko ozdobą. */
+  onScrub?: (z: number | null) => void;
+}
+
+export function BtcBell({ z = null, onScrub }: BtcBellProps) {
   const id = useId().replace(/:/g, '');
-  const mx = BX(0);
-  const my = BY(0);
+  const zz = z ?? 0;
+  const mx = BX(zz);
+  const my = BY(zz);
+  const scrub = (e: { currentTarget: SVGSVGElement; clientX: number }): void => {
+    const r = e.currentTarget.getBoundingClientRect();
+    if (!onScrub || r.width === 0) return;
+    onScrub(zAt(((e.clientX - r.left) / r.width) * 520));
+  };
   return (
-    <svg viewBox="0 0 520 230" aria-hidden="true" focusable="false" className="block h-auto w-full overflow-visible">
+    <svg
+      viewBox="0 0 520 230"
+      aria-hidden="true"
+      focusable="false"
+      className={`block h-auto w-full overflow-visible ${onScrub ? 'cursor-crosshair touch-pan-y' : ''}`}
+      onPointerMove={onScrub ? scrub : undefined}
+      onPointerDown={onScrub ? scrub : undefined}
+      onPointerLeave={onScrub ? () => onScrub(null) : undefined}
+    >
       <defs>
         <linearGradient id={`${id}-streak`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" style={{ stopColor: '#dbe5ff', stopOpacity: 0.95 }} />
@@ -67,9 +90,9 @@ export function BtcBell() {
           height={b.h.toFixed(1)}
           rx={1}
           fill={`url(#${id}-streak)`}
-          opacity={b.op.toFixed(2)}
+          opacity={(z === null ? b.op : b.z >= z ? 0.95 : 0.16).toFixed(2)}
           className="fv-shimmer"
-          style={{ animationDelay: `${b.dl.toFixed(2)}s` }}
+          style={{ animationDelay: `${b.dl.toFixed(2)}s`, transition: 'opacity .25s' }}
         />
       ))}
       <line x1={0} x2={520} y1={200} y2={200} stroke="rgba(255,255,255,0.14)" />
@@ -92,7 +115,7 @@ export function BtcBell() {
           }}
         />
       ))}
-      <g style={{ transform: `translate(${mx}px,${my}px)` }}>
+      <g style={{ transform: `translate(${mx}px,${my}px)`, transition: 'transform .18s ease-out' }}>
         <line x1={0} x2={0} y1={12} y2={200 - my} stroke="rgba(255,255,255,0.3)" strokeDasharray="2 4" />
         <circle r={34} fill={`url(#${id}-bloom)`} />
         <circle r={11} fill="none" stroke="#9db9ff" strokeWidth={1} className="fv-ring" />

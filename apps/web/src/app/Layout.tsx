@@ -1,11 +1,67 @@
 import { Trans, useLingui } from '@lingui/react/macro';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
+import { useLocaleStore } from '../state/localeStore';
+import { numberLocale } from '../i18n';
 import { DatasetNotice } from '../features/settings/DatasetNotice';
 import { StorageNotice } from '../features/settings/StorageNotice';
 import { UpdateBanner } from '../features/settings/UpdateBanner';
 import { APP_NAME } from './appConfig';
 import { Ambient } from '../components/Ambient';
 import { ErrorBoundary } from './ErrorBoundary';
+
+/** Godzina w Warszawie (HH:MM), odświeżana co 20 s jak w projekcie. */
+function useWarsawClock(): string {
+  const fmt = (): string => {
+    try {
+      return new Intl.DateTimeFormat(numberLocale(), { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Warsaw' }).format(new Date());
+    } catch {
+      return '';
+    }
+  };
+  const [now, setNow] = useState(fmt);
+  useEffect(() => {
+    const id = setInterval(() => setNow(fmt()), 20_000);
+    return () => clearInterval(id);
+  });
+  return now;
+}
+
+/** „PL / EN · Warszawa — 16:43”: przełącznik języka i zegar (prawa strona nagłówka w projekcie v3). */
+function HeaderAside() {
+  const { t } = useLingui();
+  const locale = useLocaleStore((s) => s.locale);
+  const setLocale = useLocaleStore((s) => s.setLocale);
+  const clock = useWarsawClock();
+  const btn = (l: 'pl' | 'en', text: string, name: string) => (
+    <button
+      type="button"
+      lang={l}
+      title={name}
+      aria-pressed={locale === l}
+      onClick={() => void setLocale(l)}
+      className={`inline-flex min-h-9 min-w-6 cursor-pointer items-center justify-center border-0 bg-transparent p-0 font-mono text-[11px] tracking-[0.06em] uppercase transition-colors ${
+        locale === l ? 'text-fg' : 'text-label hover:text-fg'
+      }`}
+    >
+      {text}
+    </button>
+  );
+  return (
+    <div className="eyebrow hidden items-center justify-end gap-x-4 lg:flex">
+      <div className="flex items-center gap-1.5">
+        {btn('pl', 'PL', 'Polski')}
+        <span aria-hidden="true">/</span>
+        {btn('en', 'EN', 'English')}
+      </div>
+      {clock && (
+        <span>
+          {t`Warszawa`} — <time className="tabular-nums">{clock}</time>
+        </span>
+      )}
+    </div>
+  );
+}
 
 export function Layout() {
   const { t } = useLingui();
@@ -50,7 +106,7 @@ export function Layout() {
               ))}
             </ul>
           </nav>
-          <span aria-hidden="true" className="hidden lg:block" />
+          <HeaderAside />
         </header>
         <StorageNotice />
         <DatasetNotice />
@@ -71,6 +127,7 @@ export function Layout() {
             <Trans>Metodologia</Trans>
             <span aria-hidden="true">&nbsp;↗</span>
           </NavLink>
+          <span className="sm:justify-self-end">© {new Date().getFullYear()}</span>
         </footer>
       </div>
     </>

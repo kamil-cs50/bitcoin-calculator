@@ -5,7 +5,7 @@ import { Flap, splitAmount } from '../../components/ui/Flap';
 import { Button } from '../../components/ui/Button';
 import { MoneyInput } from '../../components/ui/MoneyInput';
 import { Card } from '../../components/ui/Card';
-import { formatMoney } from '../../lib/format';
+import { formatMoney, formatMoneyShort } from '../../lib/format';
 import type { Wrapper } from '@sim/engine';
 import { knownAge, useScenarioStore } from '../../state/scenarioStore';
 import { AssetTile } from './AssetTile';
@@ -40,7 +40,7 @@ export function AssetPicker({ onOpenChange }: { onOpenChange?: (open: boolean) =
   };
   return (
     <div className="flex flex-col gap-4 border-t border-hairline pt-5">
-      <div role="group" aria-label={t`Dodaj aktywo`} className="flex flex-wrap items-center gap-2.5">
+      <section aria-label={t`Dodaj aktywo`} className="flex flex-wrap items-center gap-2.5">
         <span aria-hidden="true" className="eyebrow mr-2.5">
           {t`Dodaj aktywo`}
         </span>
@@ -59,7 +59,7 @@ export function AssetPicker({ onOpenChange }: { onOpenChange?: (open: boolean) =
             </li>
           ))}
         </ul>
-      </div>
+      </section>
       {open === 'home' && <HomeNote onClose={() => setOpen(null)} />}
       {open && open !== 'home' && (
         <PositionForm key={open} kind={open} onDone={() => setOpen(null)} onCancel={() => setOpen(null)} />
@@ -168,13 +168,16 @@ export function PortfolioEditor() {
     } else setPending({ index, wrapper });
   };
   const total = positions.reduce((a, p) => a + p.value, 0);
-  const totalText = formatMoney(total, baseCurrency);
+  // widoczny zegar w krótkim zapisie projektu („250 tys. zł”); pełna kwota zostaje w tekście dla czytników
+  const totalText = formatMoneyShort(total, baseCurrency);
+  const btcValue = positions.filter((p) => /^btc/.test(p.assetId)).reduce((a, p) => a + p.value, 0);
+  const pctOf = (v: number): string => `${total > 0 ? Math.round((v / total) * 100) : 0}%`;
   const parts = splitAmount(totalText);
-  // paski udziałów: szerokość segmentu = wartość pozycji (flex), bez przeliczania na procenty
+  // paski udziałów: szerokość segmentu = wartość pozycji (flex); procenty tylko w legendzie
   const tints = ['rgba(255,255,255,0.85)', 'rgba(255,255,255,0.45)', 'rgba(255,255,255,0.25)', 'rgba(255,255,255,0.14)'];
   const alloc = positions.map((p, i) => {
     const btc = /^btc/.test(p.assetId);
-    return { name: names.asset(p.assetId), flex: Math.max(p.value, 1), color: btc ? '#7fa8ff' : tints[i % 4]!, glow: btc ? '#2a55ff' : 'transparent' };
+    return { name: names.asset(p.assetId), flex: Math.max(p.value, 1), pct: pctOf(p.value), color: btc ? '#7fa8ff' : tints[i % 4]!, glow: btc ? '#2a55ff' : 'transparent' };
   });
   return (
     <div className="flex flex-col gap-[clamp(32px,5vw,56px)]">
@@ -187,6 +190,10 @@ export function PortfolioEditor() {
           <div className="flex flex-col gap-[3px]">
             <dt className="text-label after:content-[':']">{t`Waluta`}</dt>
             <dd className="m-0 text-fg">{baseCurrency}</dd>
+          </div>
+          <div className="flex flex-col gap-[3px]">
+            <dt className="text-label after:content-[':']">{t`Udział BTC`}</dt>
+            <dd className="m-0 text-fg">{pctOf(btcValue)}</dd>
           </div>
         </dl>
         <div className="flex flex-wrap items-end justify-between gap-6">
@@ -254,7 +261,7 @@ export function PortfolioEditor() {
               {alloc.map((a, i) => (
                 <span key={i} className="flex items-center gap-2">
                   <span className="size-1.5 rounded-full" style={{ background: a.color }} />
-                  {a.name}
+                  {a.name} <span className="text-label">{a.pct}</span>
                 </span>
               ))}
             </div>

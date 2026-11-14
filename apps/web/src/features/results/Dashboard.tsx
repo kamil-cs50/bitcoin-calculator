@@ -7,7 +7,7 @@ import { FanChart } from '../../charts/FanChart';
 import { Histogram } from '../../charts/Histogram';
 import { Card } from '../../components/ui/Card';
 import { Toggle } from '../../components/ui/Toggle';
-import { formatMoney } from '../../lib/format';
+import { formatMoneyShort } from '../../lib/format';
 import { useAssetNames } from '../portfolio/tiles';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useUiStore } from '../../state/uiStore';
@@ -21,7 +21,7 @@ import { yearsText } from './periods';
 import { Solvers } from './Solvers';
 import { RiskCard } from './RiskCard';
 import { RuinAliveCard } from './RuinAliveCard';
-import { QualityBadge } from './QualityBadge';
+import { CalibrationBadge, QualityBadge } from './QualityBadge';
 import { SIM_SEED, useSimulation, type SimOptions } from './useSimulation';
 import { calendarYear, gridIndex, valuesAt, winsorize } from './values';
 import { numberLocale } from '../../i18n';
@@ -110,13 +110,18 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const [real, setReal] = useState(true);
   const [afterTax, setAfterTax] = useState(true);
   const [pickedMonth, setPickedMonth] = useState<number | null>(null);
+  /** Okno wachlarza w latach (przyciski 5L/10L/20L); null = cały horyzont. Tylko widok, scenariusz bez zmian. */
+  const [windowYears, setWindowYears] = useState<number | null>(null);
   const [check, setCheck] = useState<ModelCheckFull | null>(null);
   const checkRows = check?.rows ?? null;
 
   const state = useSimulation(scenario, { maxPaths: expert ? defaultMaxPaths() : 10_000, ...sim });
   const { result } = state;
   const cur = scenario.baseCurrency;
-  const money = (v: number) => formatMoney(v, cur, { sigDigits: 2 });
+  const money = (v: number) => formatMoneyShort(v, cur);
+  // dzisiejsza wartość portfela (suma pozycji w walucie bazowej) i udział BTC: tylko do opisów
+  const today = scenario.positions.reduce((a, p) => a + p.value, 0);
+  const btcToday = scenario.positions.filter((p) => /^btc/.test(p.assetId)).reduce((a, p) => a + p.value, 0);
 
   const fan = useMemo(() => (result ? fanChart(result, { real, afterTax }) : null), [result, real, afterTax]);
   const G = result?.grid.length ?? 0;
@@ -191,15 +196,42 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const calibrated = checkRows ? checkRows.every((r) => r.ok) : undefined;
   const year = calendarYear(scenario.startYear, scenario.startMonth, month);
   const label = t`Wachlarz możliwych wartości portfela (${basis.full})`;
+  const horizonMonths = result.grid[G - 1]!;
+  const horizonYears = horizonMonths / 12;
+  const endYear = calendarYear(scenario.startYear, scenario.startMonth, horizonMonths);
+  // przyciski okna: 5, 10, 20 lat (krótsze od horyzontu) i pełny horyzont
+  const windows = [...[5, 10, 20].filter((h) => h < horizonYears), horizonYears].filter((h, i, a) => a.indexOf(h) === i);
+  const win = windowYears !== null && windows.includes(windowYears) ? windowYears : horizonYears;
+  const nf1 = new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 1 });
+  const btcShare = today > 0 ? Math.round((btcToday / today) * 100) : 0;
 
   // sterowanie wachlarzem w nagłówku jego panelu: pasma realne/nominalne, po podatku, tryb eksperta i rok na wykresie
   const fanAside = (
     <div className="flex flex-wrap items-center gap-2">
       <Toggle label={t`Realnie`} checked={real} onCheckedChange={setReal} />
       <Toggle label={t`Po podatku`} checked={afterTax} onCheckedChange={setAfterTax} />
-      <Toggle label={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
+      <Toggle label={t`Ekspert`} ariaLabel={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
       <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-hairline sm:block" />
-      <label className="flex min-h-11 items-center">
+      <div role="group" aria-label={t`Zakres wykresu`} className="flex rounded-full border border-hairline p-[3px]">
+        {windows.map((h) => (
+          <button
+            key={h}
+            type="button"
+            aria-pressed={win === h}
+            onClick={() => {
+              setWindowYears(h);
+              if (month > h * 12) setPickedMonth(h * 12);
+            }}
+            className={`min-h-[30px] cursor-pointer rounded-full border-0 px-[11px] font-mono text-[11px] tracking-[0.04em] transition-[background,color] duration-300 ${
+              win === h ? 'bg-white/14 text-fg' : 'bg-transparent text-fg/60 hover:text-fg'
+            }`}
+          >
+            {`${nf1.format(h)}${t`L`}`}
+            <span className="sr-only">{` — ${yearsText(h * 12)}`}</span>
+          </button>
+        ))}
+      </div>
+      <label className="sr-only focus-within:not-sr-only focus-within:flex focus-within:min-h-11 focus-within:items-center">
         <span className="sr-only">{t`Rok na wykresie: za ${yearsText(month)} (${year})`}</span>
         <input
           type="range"
@@ -219,10 +251,11 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   return (
     <div className="flex flex-col gap-[clamp(20px,2.4vw,28px)]">
       <dl className="eyebrow m-0 grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-x-6 gap-y-3.5 border-b border-hairline pb-[18px]">
-        <Meta label={t`Horyzont`} value={yearsText(result.grid[G - 1]!)} />
-        <Meta label={t`Waluta`} value={cur} />
+        <Meta label={t`Horyzont`} value={t`${yearsText(horizonMonths)} · do ${endYear}`} />
+        <Meta label={t`Waluta`} value={`${cur} · ${basis.short}`} />
+        {btcToday > 0 && <Meta label={t`Udział BTC`} value={`${btcShare}%`} />}
         <Meta label={t`Próba`}>
-          <QualityBadge result={result} scenario={scenario} running={state.running} calibrated={calibrated} />
+          <QualityBadge result={result} scenario={scenario} running={state.running} calibrated={calibrated} showCalibration={false} />
         </Meta>
       </dl>
       {afterTax && scenario.tax.kind === 'pl' && scenario.positions.some((p) => scenario.assets.find((a) => a.id === p.assetId)?.kind === 'realEstate') && (
@@ -231,12 +264,21 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
         </p>
       )}
       <WarningBanners warnings={state.warnings} />
-      <KpiHero stats={stats} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
+      <KpiHero
+        stats={stats}
+        scenario={scenario}
+        month={month}
+        real={real}
+        afterTax={afterTax}
+        expert={expert}
+        today={today}
+        heroAside={calibrated === true ? <CalibrationBadge /> : undefined}
+      />
       <Card
         title={t`Wachlarz możliwych przyszłości (${basis.full})`}
         titleNode={
           <span className="text-[clamp(22px,2.2vw,30px)]">
-            {t`Możliwe przyszłości`} <span className="text-accent-text">{basis.full}</span>
+            {t`Możliwe przyszłości`} <span className="text-accent-text">{basis.short}</span>
           </span>
         }
         aside={fanAside}
@@ -249,11 +291,23 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
           formatValue={money}
           label={label}
           tipTitle={t`Za ${yearsText(month)} · ${year}`}
+          windowMonths={win * 12}
+          startYear={scenario.startYear}
+          startMonth={scenario.startMonth}
         />
       </Card>
       <div className="flex flex-wrap items-stretch gap-[clamp(20px,2.4vw,28px)]">
-        <Card title={t`Rozkład wartości za ${yearsText(month)} (${basis.full})`} className="flex min-w-0 grow-[7] basis-[520px] flex-col">
+        <Card
+          title={t`Rozkład wartości za ${yearsText(month)} (${basis.full})`}
+          titleNode={
+            <span className="text-[clamp(20px,1.9vw,26px)]">
+              {t`Wartość za ${yearsText(month)}`} <span className="text-accent-text">{basis.short}</span>
+            </span>
+          }
+          className="flex min-w-0 grow-[7] basis-[520px] flex-col"
+        >
           <Histogram
+            readout
             values={histValues}
             formatValue={money}
             label={t`Rozkład wartości portfela (${basis.full})`}
@@ -264,7 +318,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
             żeby nie konkurować z nimi o rdzenie (budżet < 1 s do pierwszego etapu). */}
         {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} createWorker={createWorker} />}
       </div>
-      <KpiTiles stats={stats} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
+      <KpiTiles stats={stats} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} today={today} />
       <RuinAliveCard result={result} scenario={scenario} dataset={dataset} createWorker={createWorker} />
       {!state.running && <RiskCard scenario={scenario} createWorker={createWorker} />}
       <Solvers scenario={scenario} createWorker={sim.createWorker} />

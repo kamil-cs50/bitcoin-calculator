@@ -52,6 +52,24 @@ export function formatMoney(value: number, currency: Currency, o: { sigDigits?: 
   return money(currency).format(v);
 }
 
+/**
+ * Krótka kwota do wyświetlania (projekt v3): 2 cyfry znaczące, tysiące też skrócone
+ * („480 tys. zł”, „2,2 mln zł”; po angielsku „PLN 480k”). Tylko prezentacja: wartość nie jest
+ * nigdzie dalej liczona. Kwoty poniżej 1000 i ujemne poniżej −1000 w ten sam sposób.
+ */
+export function formatMoneyShort(value: number, currency: Currency): string {
+  if (!Number.isFinite(value)) return formatMoney(value, currency);
+  const v = roundSig(value, 2);
+  const abs = Math.abs(v);
+  // od miliona (po zaokrągleniu) obowiązuje istniejące skracanie formatMoney (mln / mld)
+  if (abs >= 1e6 || abs < 1e3) return formatMoney(value, currency, { sigDigits: 2 });
+  const en = numberLocale() === 'en-GB';
+  const num = new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 1 }).format(v / 1e3);
+  const sym = symbolOf(currency);
+  if (en) return `${sym}${/^[A-Za-z]/.test(sym) ? ' ' : ''}${num}k`;
+  return `${num} tys. ${sym}`;
+}
+
 /** Procent z ułamka: 0,123 -> „12,3%”. */
 export function formatPercent(p: number, digits = 0): string {
   return new Intl.NumberFormat(numberLocale(), {
@@ -76,4 +94,14 @@ export function naturalFrequency(p: number): string {
   }
   const k = Math.round(p * 10);
   return t`w ${k} na 10 przyszłości`;
+}
+
+/**
+ * Krótka częstość do dużych liczb na kafelkach (projekt v3): „3 na 10”, „92 na 100”, „mniej niż 1 na 100”.
+ * Te same progi co `naturalFrequency`; pełne zdanie zostaje dla czytników ekranu.
+ */
+export function shortFrequency(p: number): string {
+  return naturalFrequency(p)
+    .replace(/^(w|in)\s+/, '')
+    .replace(/\s+(przyszłości|futures?)$/, '');
 }
