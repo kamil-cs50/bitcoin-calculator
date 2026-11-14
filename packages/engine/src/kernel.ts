@@ -9,6 +9,7 @@ import { allocateInflow, allocateOutflow, rebalanceTrades } from './portfolio/re
 import { createTaxEngine } from './tax/taxEngine';
 import type { TaxEngine } from './tax/taxEngine';
 import { PL_CAPITAL_GAINS_RATE } from './tax/pl/securities';
+import { WrapperAccounts, wrapperWithdrawalTax } from './tax/pl/wrappers';
 import type { Scenario, TaxForm, Warning, Wrapper } from './types';
 import { validateScenario } from './validate';
 
@@ -90,6 +91,11 @@ export class Kernel {
   private readonly wd: WithdrawalPolicy | null;
   private readonly horizon: number;
   private readonly depositTaxRate: number; // stawka u źródła dla opakowania „taxable”
+  /** Limity i reguły IKE/IKZE (null: scenariusz bez `wrappers`, stare zachowanie). */
+  private readonly wrap: WrapperAccounts | null;
+  /** Reguły podatkowe opakowań (zwrot IKZE, podatek od wypłat) działają tylko w trybie `pl`. */
+  private readonly wrapTax: boolean;
+  private readonly twin: Int32Array; // slot opodatkowany tego samego aktywa (nadwyżka ponad limit), −1 = brak
 
   // sloty (jeden na pozycję)
   private readonly n: number;
@@ -130,6 +136,11 @@ export class Kernel {
   private ruined = false;
   private ruinMonth = -1;
   private depInterestNet = 0;
+  private pendingWrapperTax = 0;
+  private noWrapperTax = false;
+  private lastProceeds = 0;
+  private lastCost = 0;
+  private readonly pool = new Float64Array(3); // wpływy ze sprzedaży w opakowaniu podczas rebalansu (1 = IKE, 2 = IKZE)
 
   constructor(scenario: Scenario) {
     const v = validateScenario(scenario);
@@ -146,6 +157,12 @@ export class Kernel {
     this.wd = scenario.withdrawal ? new WithdrawalPolicy(scenario.withdrawal, this.horizon) : null;
     this.warnings.push(...v.warnings, ...this.market.warnings);
     this.depositTaxRate = scenario.tax.kind === 'pl' ? PL_CAPITAL_GAINS_RATE : scenario.tax.kind === 'flat' ? scenario.tax.rate : 0;
+
+    this.wrap =
+      scenario.wrappers !== undefined
+        ? new WrapperAccounts(scenario.wrappers, scenario.startYear, scenario.market.inflation.mean + 0.01)
+        : null;
+    this.wrapTax = this.wrap !== null && scenario.tax.kind === 'pl';
 
     this.collapsedAsset = Int32Array.from(this.market.riskyIds.map((id) => scenario.assets.findIndex((a) => a.id === id)));
 
@@ -164,6 +181,7 @@ export class Kernel {
     this.eff = new Float64Array(n);
     this.out = new Float64Array(n);
     this.edoFirstRate = new Float64Array(n);
+    this.twin = new Int32Array(n).fill(-1);
     const lotCapacity = 3 * this.horizon + 8;
     const risky: number[] = [];
     const deps: number[] = [];
@@ -205,6 +223,15 @@ export class Kernel {
         edos.push(i);
       }
     });
+    for (let i = 0; i < n; i++) {
+      if (this.wrapper[i] === 'taxable' || this.kind[i] === K_EDO) continue;
+      for (let j = 0; j < n; j++) {
+        if (this.wrapper[j] === 'taxable' && this.kind[j] !== K_EDO && scenario.positions[j]!.assetId === scenario.positions[i]!.assetId) {
+          this.twin[i] = j;
+          break;
+        }
+      }
+    }
     this.riskySlots = Int32Array.from(risky);
     this.depositSlots = Int32Array.from(deps);
     this.edoSlots = Int32Array.from(edos);
@@ -247,6 +274,7 @@ export class Kernel {
       const y = s.startYear + Math.floor(mi / 12);
       this.openYear = y;
       this.depInterestNet = 0;
+      this.wrap?.newMonth(y);
       let lr = 0;
 
       if (!this.ruined) {
@@ -254,6 +282,13 @@ export class Kernel {
         //    kwiecień płaci zobowiązanie; roczna wypłata ustalana w styczniu i w t = start (też poza styczniem)
         if (cm === 1 && t > 0) this.taxDue += this.tax.closeYear(y - 1);
         if (cm === 4 && this.taxDue > 0) this.payTax(t);
+        if (cm === 4 && this.wrapTax) {
+          const refund = this.wrap!.takeRefund();
+          if (refund > 0) {
+            this.toCash(refund);
+            l.taxesPaid -= refund; // zwrot podatku IKZE jako ujemny podatek zapłacony
+          }
+        }
         if (wd !== null && (cm === 1 || t === 0 || wd.needsStartCall(t))) {
           this.computeValues(t);
           wd.onJanuary(t, this.afterTaxValue(t, this.wealthNow()), this.cpiNow, twrLog, cm === 1);
@@ -354,6 +389,9 @@ export class Kernel {
     this.ruined = false;
     this.ruinMonth = -1;
     this.depInterestNet = 0;
+    this.pendingWrapperTax = 0;
+    this.noWrapperTax = false;
+    this.wrap?.reset();
     for (let i = 0; i < this.n; i++) {
       const pos = s.positions[i]!;
       const value = pos.value > 0 && Number.isFinite(pos.value) ? pos.value : 0;
@@ -413,6 +451,14 @@ export class Kernel {
       const i = this.edoSlots[r]!;
       const rate = this.slotTaxRate[i]!;
       if (rate > 0) owed += this.edos[i]!.netValue(month, 0) - this.edos[i]!.netValue(month, rate);
+    }
+    if (this.wrapTax) {
+      const age = this.wrap!.settings.age + month / 12;
+      for (let i = 0; i < this.n; i++) {
+        if (this.wrapper[i] === 'taxable') continue;
+        const v = this.values[i]!;
+        owed += wrapperWithdrawalTax(this.wrapper[i]!, v, this.kind[i] === K_RISKY ? this.lots[i]!.basis : v, age);
+      }
     }
     const a = wealth - owed;
     return a > 0 ? a : 0;
@@ -479,8 +525,24 @@ export class Kernel {
     const fee = gross * this.bps[i]!;
     const proceeds = gross - fee;
     this.tax.onSale(this.form[i]!, this.wrapper[i]!, proceeds, costFifo, t, holding);
+    this.lastProceeds = proceeds;
+    this.lastCost = costFifo;
     this.ledger.costs += fee;
     return proceeds;
+  }
+
+  private placeBuy(i: number, a: number, t: number): void {
+    if (!(a > 0)) return;
+    if (this.kind[i] === K_RISKY) this.buyRisky(i, a, t);
+    else this.deposits[i]!.deposit(a);
+  }
+
+  /** Nadwyżka ponad limit opakowania: konto opodatkowane tego samego aktywa, a gdy go brak, gotówka. */
+  private placeExcess(i: number, x: number, t: number): void {
+    if (!(x > 0)) return;
+    const j = this.twin[i]!;
+    if (j >= 0) this.placeBuy(j, x, t);
+    else this.toCash(x);
   }
 
   /** Wpływ z zewnątrz `amount` > 0 (wartości odświeżone). Zwraca faktycznie ulokowaną kwotę brutto. */
@@ -490,8 +552,11 @@ export class Kernel {
     for (let i = 0; i < this.n; i++) {
       const a = this.out[i]!;
       if (!(a > 0)) continue;
-      if (this.kind[i] === K_RISKY) this.buyRisky(i, a, t);
-      else this.deposits[i]!.deposit(a);
+      if (this.wrap !== null && this.wrapper[i] !== 'taxable') {
+        const allowed = this.wrap.admit(this.wrapper[i]!, a, 0);
+        this.placeBuy(i, allowed, t);
+        this.placeExcess(i, a - allowed, t);
+      } else this.placeBuy(i, a, t);
       sum += a;
     }
     const rest = amount - sum;
@@ -507,6 +572,21 @@ export class Kernel {
    * na końcu przedterminowy wykup EDO. Zwraca niedobór (≥ 0; 0 gdy pokryto w całości).
    */
   private settleOutflow(amount: number, t: number): number {
+    let unpaid = this.settleCore(amount, t);
+    if (this.pendingWrapperTax > 0) {
+      // podatek opakowań od wypłaty jest pobierany od razu (płatnik potrąca), bez podatku od podatku
+      const tax = this.pendingWrapperTax;
+      this.pendingWrapperTax = 0;
+      this.noWrapperTax = true;
+      unpaid += this.settleCore(tax, t);
+      this.noWrapperTax = false;
+      this.ledger.taxesPaid += tax;
+    }
+    return unpaid;
+  }
+
+  private settleCore(amount: number, t: number): number {
+    const age = this.wrapTax && !this.noWrapperTax ? this.wrap!.settings.age + t / 12 : -1;
     const tol = 1e-9 * (1 + amount);
     let rest = amount;
     if (this.cashIdle > 0) {
@@ -515,7 +595,10 @@ export class Kernel {
       rest -= take;
     }
     for (let r = 0; r < this.depositSlots.length && rest > 0; r++) {
-      rest -= this.deposits[this.depositSlots[r]!]!.withdraw(rest);
+      const i = this.depositSlots[r]!;
+      const got = this.deposits[i]!.withdraw(rest);
+      rest -= got;
+      if (age >= 0 && this.wrapper[i] !== 'taxable') this.pendingWrapperTax += wrapperWithdrawalTax(this.wrapper[i]!, got, got, age);
     }
     if (rest > tol && this.riskySlots.length > 0) {
       // wartości efektywne (po prowizji), żeby sprzedaż dostarczyła dokładnie żądaną kwotę netto
@@ -526,7 +609,12 @@ export class Kernel {
       for (let r = 0; r < this.riskySlots.length; r++) {
         const i = this.riskySlots[r]!;
         const a = -this.out[i]!;
-        if (a > 0) rest -= this.sellRisky(i, a / (1 - this.bps[i]!), t);
+        if (a > 0) {
+          rest -= this.sellRisky(i, a / (1 - this.bps[i]!), t);
+          if (age >= 0 && this.wrapper[i] !== 'taxable') {
+            this.pendingWrapperTax += wrapperWithdrawalTax(this.wrapper[i]!, this.lastProceeds, this.lastCost, age);
+          }
+        }
       }
     }
     for (let r = 0; r < this.edoSlots.length && rest > tol; r++) {
@@ -573,10 +661,14 @@ export class Kernel {
     if (!rebalanceTrades(this.values, this.target, this.liquid, policy, isJanuary, this.out)) return;
     let proceeds = 0;
     let buys = 0;
+    this.pool.fill(0);
     for (let i = 0; i < this.n; i++) {
       const a = this.out[i]!;
       if (a < 0) {
-        proceeds += this.kind[i] === K_RISKY ? this.sellRisky(i, -a, t) : this.deposits[i]!.withdraw(-a);
+        const p = this.kind[i] === K_RISKY ? this.sellRisky(i, -a, t) : this.deposits[i]!.withdraw(-a);
+        proceeds += p;
+        if (this.wrapper[i] === 'IKE') this.pool[1]! += p;
+        else if (this.wrapper[i] === 'IKZE') this.pool[2]! += p;
       } else if (a > 0) buys += a;
     }
     if (!(buys > 0)) {
@@ -588,8 +680,15 @@ export class Kernel {
     for (let i = 0; i < this.n; i++) {
       const a = this.out[i]!;
       if (!(a > 0)) continue;
-      if (this.kind[i] === K_RISKY) this.buyRisky(i, a * k, t);
-      else this.deposits[i]!.deposit(a * k);
+      const w = this.wrapper[i]!;
+      if (this.wrap !== null && w !== 'taxable') {
+        // przeniesienie w obrębie opakowania nie jest wpłatą; reszta zużywa roczny limit, nadwyżka idzie na konto opodatkowane
+        const pi = w === 'IKE' ? 1 : 2;
+        const allowed = this.wrap.admit(w, a * k, this.pool[pi]!);
+        this.pool[pi]! -= this.wrap.lastInternal;
+        this.placeBuy(i, allowed, t);
+        this.placeExcess(i, a * k - allowed, t);
+      } else this.placeBuy(i, a * k, t);
     }
   }
 

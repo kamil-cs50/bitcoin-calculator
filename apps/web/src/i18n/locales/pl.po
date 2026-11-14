@@ -526,6 +526,7 @@ msgstr "Kwotę w zł"
 #: src/features/plan/PlanEditor.tsx:158
 #: src/features/plan/PlanEditor.tsx:213
 #: src/features/plan/PlanEditor.tsx:238
+#: src/features/portfolio/PortfolioEditor.tsx:64
 msgid "lat"
 msgstr "lat"
 
@@ -617,7 +618,7 @@ msgstr "Miesięczna wpłata (w dzisiejszych zł, rosnąca z inflacją), przy kt�
 msgid "Mieszkanie"
 msgstr "Mieszkanie"
 
-#: src/features/portfolio/PortfolioEditor.tsx:15
+#: src/features/portfolio/PortfolioEditor.tsx:16
 msgid "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
 msgstr "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
 
@@ -935,7 +936,7 @@ msgstr "Porównanie"
 msgid "Portfel"
 msgstr "Portfel"
 
-#: src/features/portfolio/PortfolioEditor.tsx:64
+#: src/features/portfolio/PortfolioEditor.tsx:89
 msgid "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
 msgstr "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
 
@@ -1008,7 +1009,7 @@ msgid "Puste oznacza: na końcu horyzontu."
 msgstr "Puste oznacza: na końcu horyzontu."
 
 #. placeholder {0}: formatMoney(total, baseCurrency)
-#: src/features/portfolio/PortfolioEditor.tsx:68
+#: src/features/portfolio/PortfolioEditor.tsx:93
 msgid "Razem: {0}"
 msgstr "Razem: {0}"
 
@@ -1090,7 +1091,7 @@ msgstr "Różnica typowego wyniku"
 msgid "Różnice względem „{0}”"
 msgstr "Różnice względem „{0}”"
 
-#: src/features/portfolio/PortfolioEditor.tsx:21
+#: src/features/portfolio/PortfolioEditor.tsx:22
 msgid "Rozumiem"
 msgstr "Rozumiem"
 
@@ -1260,6 +1261,10 @@ msgstr "Tryb eksperta"
 #: src/features/onboarding/Onboarding.tsx:90
 msgid "Twój portfel"
 msgstr "Twój portfel"
+
+#: src/features/portfolio/PortfolioEditor.tsx:63
+msgid "Twój wiek"
+msgstr "Twój wiek"
 
 #: src/features/settings/Settings.tsx:99
 msgid "Twoje dane"
@@ -1568,6 +1573,10 @@ msgstr "Wypłaty"
 #: src/features/onboarding/Onboarding.tsx:145
 msgid "Wypłaty muszą zacząć się przed końcem horyzontu."
 msgstr "Wypłaty muszą zacząć się przed końcem horyzontu."
+
+#: src/features/portfolio/PortfolioEditor.tsx:66
+msgid "Wypłaty z IKE są bez podatku od 60 lat, z IKZE (10%) od 65 lat."
+msgstr "Wypłaty z IKE są bez podatku od 60 lat, z IKZE (10%) od 65 lat."
 
 #: src/features/plan/WithdrawalForm.tsx:217
 #~ msgid "Wypłaty zaczynają się po końcu horyzontu, więc nigdy nie nastąpią."

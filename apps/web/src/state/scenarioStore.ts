@@ -1,5 +1,5 @@
 import { loadDataset, type Dataset } from '@sim/data';
-import type { Position, Scenario, Wrapper } from '@sim/engine';
+import { defaultWrapperSettings, type Position, type Scenario, type Wrapper } from '@sim/engine';
 import { create } from 'zustand';
 import { COMPARE_ID, CURRENT_ID, db } from './db';
 import {
@@ -10,6 +10,15 @@ import {
   rebuildMarket,
 } from './defaults';
 import { migrate } from './migrations';
+
+/** Wiek zakładany do czasu, aż użytkownik wpisze własny (reguły IKE od 60 lat, IKZE od 65). */
+const DEFAULT_AGE = 35;
+
+/** Pierwsze opakowanie IKE/IKZE w scenariuszu włącza limity wpłat i reguły wypłat z ustawieniami domyślnymi. */
+function withWrappers(sc: Scenario, wrapper: Wrapper | undefined): Scenario {
+  if (!wrapper || wrapper === 'taxable' || sc.wrappers) return sc;
+  return { ...sc, wrappers: defaultWrapperSettings(sc.startYear, DEFAULT_AGE, sc.market.inflation.mean + 0.01) };
+}
 
 /** Najwyżej tyle scenariuszy naraz w porównaniu (spec 4.15). */
 export const MAX_COMPARE = 3;
@@ -133,7 +142,10 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
         ? st.scenario.assets
         : [...st.scenario.assets, asset];
       return {
-        scenario: syncAssets({ ...st.scenario, positions: [...st.scenario.positions, position] }, st.dataset, assets),
+        scenario: withWrappers(
+          syncAssets({ ...st.scenario, positions: [...st.scenario.positions, position] }, st.dataset, assets),
+          position.wrapper,
+        ),
       };
     }),
 
@@ -142,7 +154,7 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
       const cur = st.scenario.positions[index];
       if (!cur) return st;
       const positions = st.scenario.positions.map((x, i) => (i === index ? { ...x, ...patch } : x));
-      return { scenario: { ...st.scenario, positions } };
+      return { scenario: withWrappers({ ...st.scenario, positions }, patch.wrapper) };
     }),
 
   removePosition: (index) =>

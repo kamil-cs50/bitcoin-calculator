@@ -1,6 +1,7 @@
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
 import { Button } from '../../components/ui/Button';
+import { MoneyInput } from '../../components/ui/MoneyInput';
 import { Card } from '../../components/ui/Card';
 import { formatMoney } from '../../lib/format';
 import { useScenarioStore } from '../../state/scenarioStore';
@@ -51,9 +52,33 @@ export function AssetPicker({ onOpenChange }: { onOpenChange?: (open: boolean) =
   );
 }
 
+/** Wiek użytkownika: od niego zależy, czy wypłata z IKE (60 lat) i IKZE (65 lat) jest bez podatku. */
+function AgeField() {
+  const { t } = useLingui();
+  const stored = useScenarioStore((s) => s.scenario.wrappers?.age ?? null);
+  // Wersja robocza: puste pole nie cofa się do wartości ze store w trakcie pisania.
+  const [age, setAge] = useState<number | null>(stored);
+  return (
+    <MoneyInput
+      label={t`Twój wiek`}
+      suffix={t`lat`}
+      value={age}
+      hint={t`Wypłaty z IKE są bez podatku od 60 lat, z IKZE (10%) od 65 lat.`}
+      onChange={(v) => {
+        setAge(v);
+        const { scenario, setScenario } = useScenarioStore.getState();
+        if (v !== null && scenario.wrappers && v >= 0 && v <= 120) {
+          setScenario({ ...scenario, wrappers: { ...scenario.wrappers, age: v } });
+        }
+      }}
+    />
+  );
+}
+
 export function PortfolioEditor() {
   const names = useAssetNames();
   const { positions, baseCurrency } = useScenarioStore((s) => s.scenario);
+  const hasWrapper = positions.some((p) => p.wrapper !== 'taxable');
   const { updatePosition, removePosition } = useScenarioStore.getState();
   const total = positions.reduce((a, p) => a + p.value, 0);
   return (
@@ -81,6 +106,7 @@ export function PortfolioEditor() {
           />
         ))}
       </div>
+      {hasWrapper && <AgeField />}
       <AssetPicker />
     </div>
   );

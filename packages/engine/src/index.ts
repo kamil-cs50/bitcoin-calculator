@@ -19,3 +19,4 @@ export { meanExpHalfVar, buildScaleTable } from './math/scaleTable';
 export type { SolverOptions, SolverResult } from './solvers/bisect';
 export { stationaryBootstrap, resample, resampleRows } from './models/bootstrap';
 export type { BootstrapDraw } from './models/bootstrap';
+export { defaultWrapperSettings, wrapperWithdrawalTax } from './tax/pl/wrappers';

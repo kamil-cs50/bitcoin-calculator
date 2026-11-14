@@ -119,6 +119,26 @@ describe('PortfolioEditor', () => {
     });
   });
 
+  describe('opakowania IKE/IKZE', () => {
+    it('wybór IKE włącza limity z domyślnymi ustawieniami i pokazuje pole wieku', async () => {
+      useScenarioStore.getState().addPosition({ presetId: 'globalEquity', value: 50_000 });
+      expect(useScenarioStore.getState().scenario.wrappers).toBeUndefined();
+      view();
+      expect(screen.queryByRole('textbox', { name: /Twój wiek/ })).toBeNull();
+      const tile = screen.getByRole('group', { name: /ETF na świat/ });
+      await userEvent.selectOptions(within(tile).getByRole('combobox', { name: /Konto/ }), 'IKE');
+      const sc = useScenarioStore.getState().scenario;
+      expect(sc.positions[0]!.wrapper).toBe('IKE');
+      expect(sc.wrappers).toMatchObject({ ikeLimit: 28_260, ikzeLimit: 11_304, ikzeTaxRate: 0.12 });
+      const age = screen.getByRole('textbox', { name: /Twój wiek/ });
+      await userEvent.clear(age);
+      await userEvent.type(age, '62');
+      expect(useScenarioStore.getState().scenario.wrappers!.age).toBe(62);
+      expect(ScenarioSchema.safeParse(useScenarioStore.getState().scenario).success).toBe(true);
+      expect(validateScenario(useScenarioStore.getState().scenario).ok).toBe(true);
+    });
+  });
+
   describe('wiek pobranej ceny', () => {
     const openBtc = async () => {
       view();

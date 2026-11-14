@@ -134,5 +134,8 @@ export const ScenarioSchema = z.object({
   events: z.array(z.object({ month: num, amount: num, real: z.boolean() })),
   rebalance: Rebalance,
   tax: Tax,
+  wrappers: z
+    .object({ ikeLimit: num, ikzeLimit: num, ikzeTaxRate: num, age: num, limitGrowth: num.optional() })
+    .optional(),
   goal: z.object({ amountReal: num, month: num }).optional(),
 }) satisfies z.ZodType<Scenario>;

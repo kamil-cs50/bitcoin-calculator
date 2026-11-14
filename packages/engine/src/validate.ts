@@ -108,6 +108,15 @@ export function validateScenario(s: Scenario): ValidationResult {
     if (!isNum(wd.inflationCap) || wd.inflationCap < 0) err('withdrawal.inflationCap', 'Limit indeksacji inflacją nie może być ujemny.');
   }
 
+  const wr = s.wrappers;
+  if (wr) {
+    if (!isNum(wr.ikeLimit) || wr.ikeLimit < 0) err('wrappers.ikeLimit', 'Limit wpłat do IKE nie może być ujemny.');
+    if (!isNum(wr.ikzeLimit) || wr.ikzeLimit < 0) err('wrappers.ikzeLimit', 'Limit wpłat do IKZE nie może być ujemny.');
+    if (!isNum(wr.ikzeTaxRate) || wr.ikzeTaxRate < 0 || wr.ikzeTaxRate >= 1) err('wrappers.ikzeTaxRate', 'Stawka zwrotu podatku z IKZE musi mieścić się w przedziale [0, 1).');
+    if (!isNum(wr.age) || wr.age < 0 || wr.age > 120) err('wrappers.age', 'Wiek musi mieścić się w przedziale 0..120 lat.');
+    if (wr.limitGrowth !== undefined && (!isNum(wr.limitGrowth) || wr.limitGrowth <= -1)) err('wrappers.limitGrowth', 'Roczny wzrost limitów musi być większy niż -1.');
+  }
+
   const ids = new Set(s.assets.map((a) => a.id));
   s.positions.forEach((pos, i) => {
     if (!ids.has(pos.assetId)) err(`positions[${i}].assetId`, `Nieznane aktywo: ${pos.assetId}.`);
