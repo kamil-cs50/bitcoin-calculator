@@ -12,10 +12,12 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
     "build": "pnpm -r build",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lighthouse": "lhci autorun"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.16.1",
     "@types/node": "^22.20.5",
     "eslint": "^10.15.0",
     "globals": "^17.14.0",

@@ -1,5 +1,5 @@
 import { useLingui } from '@lingui/react/macro';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { loadKatex } from './loadKatex';
 import type { FormulaId } from './formulas';
 import { formulaTex } from './formulas';
@@ -12,8 +12,30 @@ export function Formula({ id, children }: { id: FormulaId; children: ReactNode }
   const { t } = useLingui();
   const tex = formulaTex(id);
   const [html, setHtml] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  // Wzory poza ekranem renderujemy dopiero w pobliżu widoku (38 wzorów naraz blokowało główny
+  // wątek na słabszym telefonie). Bez IntersectionObserver (jsdom) renderujemy od razu.
+  const [near, setNear] = useState(() => typeof IntersectionObserver === 'undefined');
 
   useEffect(() => {
+    if (near) return;
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '800px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [near]);
+
+  useEffect(() => {
+    if (!near) return;
     let alive = true;
     loadKatex()
       .then((katex) => {
@@ -32,10 +54,10 @@ export function Formula({ id, children }: { id: FormulaId; children: ReactNode }
     return () => {
       alive = false;
     };
-  }, [tex]);
+  }, [tex, near]);
 
   return (
-    <div data-formula={id} className="rounded-xl border border-border bg-surface-2 p-3">
+    <div ref={ref} data-formula={id} className="rounded-xl border border-border bg-surface-2 p-3">
       <div className="text-sm text-muted">{children}</div>
       {html ? (
         <div

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FAN_LEVELS, fanChart, histogram, samplePathIndices, summarize } from './summary';
-import { quantile7 } from './quantiles';
+import { quantile7, quantilesSelect } from './quantiles';
 import { quantileCI, wilson } from './intervals';
 import { arithmeticMeanFromLogReturns, arithmeticMeanMonthly, sampleCorrelation } from './modelCheck';
 import { Xoshiro128ss } from '../rng/xoshiro128ss';
@@ -278,5 +278,21 @@ describe('summarize: P(cel) dokładnie w miesiącu celu (poza siatką kwartalną
     let hit = 0;
     for (let p = 0; p < r.paths; p++) if (r.wealthAfterTax[p * G + j]! / r.cpi[p * G + j]! >= amount) hit++;
     expect(sm.probGoal!.p).toBeCloseTo(hit / 300, 12);
+  });
+});
+
+describe('quantilesSelect (wybór zamiast sortowania)', () => {
+  it('daje dokładnie te same wartości co quantile7 na posortowanej próbie (z powtórzeniami i zerami)', () => {
+    const rng = Xoshiro128ss.fromSeed(11);
+    const ps = [0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0, 1];
+    for (const n of [1, 2, 3, 7, 40, 1001, 10_000]) {
+      const a = new Float64Array(n).map(() => Math.floor(rng.nextUniform() * 50) * (rng.nextUniform() < 0.1 ? 0 : 1));
+      const sorted = Float64Array.from(a).sort();
+      const got = quantilesSelect(Float64Array.from(a), ps);
+      ps.forEach((p, i) => expect(got[i]).toBe(quantile7(sorted, p)));
+    }
+  });
+  it('pusta próba daje NaN', () => {
+    expect(quantilesSelect(new Float64Array(0), [0.5])[0]).toBeNaN();
   });
 });

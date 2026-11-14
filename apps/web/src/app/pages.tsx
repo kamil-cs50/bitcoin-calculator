@@ -1,23 +1,10 @@
 import { Trans } from '@lingui/react/macro';
-import type { ReactNode } from 'react';
+import { Page } from '../components/Page';
 import { Card } from '../components/ui/Card';
-import { AssumptionsPanel } from '../features/assumptions/AssumptionsPanel';
-import { Compare } from '../features/compare/Compare';
-import { Dashboard } from '../features/results/Dashboard';
 import { Onboarding } from '../features/onboarding/Onboarding';
 import { PlanEditor } from '../features/plan/PlanEditor';
-import { Settings } from '../features/settings/Settings';
 import { PortfolioEditor } from '../features/portfolio/PortfolioEditor';
 import { APP_NAME } from './appConfig';
-
-function Page({ title, children }: { title: ReactNode; children: ReactNode }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      {children}
-    </div>
-  );
-}
 
 // Szkielety stron; treść dochodzi w kolejnych zadaniach (30+).
 export function HomePage() {
@@ -44,17 +31,6 @@ export function PlanPage() {
       <PlanEditor />
     </Page>;
 }
-export function ResultPage() {
-  return <Page title={<Trans>Wynik</Trans>}>
-      <Dashboard />
-    </Page>;
-}
-export function AssumptionsPage() {
-  return <Page title={<Trans>Założenia i źródła</Trans>}><AssumptionsPanel /></Page>;
-}
-export function SettingsPage() {
-  return <Page title={<Trans>Ustawienia</Trans>}><Settings /></Page>;
-}
 export function NotFoundPage() {
   return (
     <Page title={<Trans>Nie ma takiej strony</Trans>}>
@@ -63,7 +39,4 @@ export function NotFoundPage() {
       </p>
     </Page>
   );
-}
-export function ComparePage() {
-  return <Page title={<Trans>Porównanie</Trans>}><Compare /></Page>;
 }

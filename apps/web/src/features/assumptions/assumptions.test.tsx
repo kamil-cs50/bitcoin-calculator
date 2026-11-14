@@ -294,14 +294,14 @@ describe('AssumptionsPanel: przepisy podatkowe i limity ze statusem', () => {
 });
 
 describe('trasa /zalozenia', () => {
-  it('renderuje panel Założenia i źródła', () => {
+  it('renderuje panel Założenia i źródła', async () => {
     const router = createMemoryRouter(routes, { initialEntries: ['/zalozenia'] });
     render(
       <I18nProvider i18n={i18n}>
         <RouterProvider router={router} />
       </I18nProvider>,
     );
-    expect(screen.getByRole('heading', { level: 1, name: 'Założenia i źródła' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Założenia i źródła' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'ETF na świat' })).toBeInTheDocument();
   });
 });

@@ -25,9 +25,10 @@ describe('układ i trasy', () => {
     ['/wynik', 'Wynik'],
     ['/zalozenia', 'Założenia i źródła'],
     ['/ustawienia', 'Ustawienia'],
-  ])('trasa %s ma nagłówek %s, nawigację i zastrzeżenie', (path, heading) => {
+  ])('trasa %s ma nagłówek %s, nawigację i zastrzeżenie', async (path, heading) => {
     at(path);
-    expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument();
+    // trasy wynik/założenia/ustawienia są ładowane leniwie (osobne chunki)
+    expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Główna nawigacja' })).toBeInTheDocument();
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(

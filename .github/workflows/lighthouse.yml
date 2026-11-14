@@ -1,0 +1,32 @@
+name: Lighthouse
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sim/web build
+      # Budżet rozmiaru (chunk ≤ 250 kB gzip) i manifest PWA (ikony PNG 192/512 + maskable, service worker) na dist/.
+      - name: Budżet rozmiaru i manifest PWA
+        run: pnpm --filter @sim/web exec vitest run src/bundleBudget.test.ts
+      # Lighthouse (mobile, throttling domyślny): wydajność ≥ 0,95, dostępność ≥ 0,95 (lighthouserc.json).
+      # Nowy Lighthouse nie ma kategorii PWA; instalowalność sprawdza test powyżej i e2e/pwa.spec.ts.
+      - name: Lighthouse CI
+        run: pnpm exec lhci autorun
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci
+          retention-days: 7

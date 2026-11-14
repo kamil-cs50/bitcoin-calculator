@@ -1,6 +1,6 @@
 import type { RunResult, Scenario } from '../types';
 import { quantileCI, wilson } from './intervals';
-import { quantile7 } from './quantiles';
+import { quantile7, quantilesSelect } from './quantiles';
 
 export const FAN_LEVELS = [0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95] as const;
 
@@ -52,8 +52,8 @@ export function fanChart(r: RunResult, o: { real: boolean; afterTax: boolean }):
   const L = FAN_LEVELS.length;
   const values = new Float32Array(L * G);
   for (let j = 0; j < G; j++) {
-    const sorted = column(r, j, o.real, o.afterTax).sort();
-    for (let l = 0; l < L; l++) values[l * G + j] = quantile7(sorted, FAN_LEVELS[l]!);
+    const q = quantilesSelect(column(r, j, o.real, o.afterTax), FAN_LEVELS);
+    for (let l = 0; l < L; l++) values[l * G + j] = q[l]!;
   }
   return { months: Int32Array.from(r.grid), levels: FAN_LEVELS, values };
 }
