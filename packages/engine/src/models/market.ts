@@ -112,6 +112,9 @@ export class MarketSimulator {
   private readonly collapsedNow: Uint8Array;
   /** Roczne przesunięcia log-dryfu losowane w initPath (niepewność parametrów, spec 4.5). */
   private readonly driftShift: Float64Array;
+  private readonly driftConst: Float64Array;
+  private readonly hasDecay: Uint8Array;
+  private readonly sigmaConst: Float64Array;
   private regime: 0 | 1 = 0;
 
   constructor(readonly scenario: Scenario, deps: MarketDeps = DEFAULT_DEPS) {
@@ -245,6 +248,9 @@ export class MarketSimulator {
     this.prevFx = new Float64Array(this.nfx);
     this.collapsedNow = new Uint8Array(this.nr);
     this.driftShift = new Float64Array(this.nr);
+    this.driftConst = new Float64Array(this.nr);
+    this.hasDecay = Uint8Array.from(this.assets.map((a) => (a.decay ? 1 : 0)));
+    this.sigmaConst = Float64Array.from(this.assets.map((a) => a.sigma));
   }
 
   /** Nowy, prealokowany stan wyjściowy dla `step`. */
@@ -273,6 +279,10 @@ export class MarketSimulator {
     for (let i = 0; i <= this.nr; i++) this.zUnc[i] = normalInv(this.rngParam.nextUniform());
     for (let i = 0; i < this.nr; i++) this.zAssetsUnc[i] = this.zUnc[i + 1]!;
     drawDriftShifts(this.zAssetsUnc, this.seAssets, this.cholAssets, this.nr, this.uncScale, this.driftShift);
+    // stały dryf miesięczny aktywów bez zaniku (ta sama kolejność działań co w gAt: log1p(g)/12 + shift/12)
+    for (let i = 0; i < this.nr; i++) {
+      if (this.hasDecay[i] === 0) this.driftConst[i] = Math.log1p(this.assets[i]!.g) / 12 + this.driftShift[i]! / 12;
+    }
     this.infl.init(this.meanInflation + this.meanInflationSe * this.uncScale * this.zUnc[0]!);
     for (let k = 0; k < this.nfx; k++) {
       this.fxp[k]!.init();
@@ -315,13 +325,13 @@ export class MarketSimulator {
     const baseFx = this.baseFxIndex;
     const baseD = baseFx >= 0 ? this.fxp[baseFx]!.logRate - this.prevFx[baseFx]! : 0;
     for (let i = 0; i < nr; i++) {
-      const a = this.assets[i]!;
       const dead = this.collapsedNow[i] === 1;
+      const decayed = this.hasDecay[i] === 1;
       // po upadku: σ = σ_∞ (jeśli jest zanik), dryf wyłączony; wzory g(t), σ(t) wspólne z gAt/sigmaAt
-      const sigma = dead && a.decay ? a.decay.sigmaInf : this.sigmaAt(i, t);
+      const sigma = decayed ? (dead ? this.assets[i]!.decay!.sigmaInf : this.sigmaAt(i, t)) : this.sigmaConst[i]!;
       const kap = sPrev === 0 ? this.kap0[i]! : this.kap1[i]!;
       let r = this.alpha[i]! * sigma * delta + sigma * this.fMonthly[i]! * kap * this.eps[this.factorIndex[i]!]!;
-      if (!dead) r += Math.log1p(this.gAt(i, t)) / 12 + this.driftShift[i]! / 12;
+      if (!dead) r += decayed ? Math.log1p(this.gAt(i, t)) / 12 + this.driftShift[i]! / 12 : this.driftConst[i]!;
       // 5. upadek (strumień collapse:<id>)
       const rc = this.rngCollapse[i];
       if (rc && !dead && rc.nextUniform() < this.pCollapse[i]!) {

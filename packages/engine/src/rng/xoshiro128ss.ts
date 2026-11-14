@@ -1,20 +1,18 @@
 /** xoshiro128** (Blackman i Vigna 2021) z inicjalizacją przez SplitMix32. */
 function rotl(x: number, k: number): number {
-  return ((x << k) | (x >>> (32 - k))) >>> 0;
+  return (x << k) | (x >>> (32 - k)); // int32 (bez >>> 0: unika konwersji do liczb zmiennoprzecinkowych)
 }
 
 export class Xoshiro128ss {
-  private s0 = 0;
-  private s1 = 0;
-  private s2 = 0;
-  private s3 = 0;
+  // stan w Int32Array: pola o wartościach ≥ 2^30 byłyby pudełkowanymi liczbami (alokacje, wolniejsza pętla)
+  private readonly s = new Int32Array(4);
 
   static fromState(a: number, b: number, c: number, d: number): Xoshiro128ss {
     const g = new Xoshiro128ss();
-    g.s0 = a >>> 0;
-    g.s1 = b >>> 0;
-    g.s2 = c >>> 0;
-    g.s3 = d >>> 0;
+    g.s[0] = a;
+    g.s[1] = b;
+    g.s[2] = c;
+    g.s[3] = d;
     return g;
   }
 
@@ -31,33 +29,35 @@ export class Xoshiro128ss {
     let z = x >>> 0;
     z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
     z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
-    this.s0 = (z ^ (z >>> 16)) >>> 0;
+    this.s[0] = z ^ (z >>> 16);
     x = (x + 0x9e3779b9) >>> 0;
     z = x;
     z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
     z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
-    this.s1 = (z ^ (z >>> 16)) >>> 0;
+    this.s[1] = z ^ (z >>> 16);
     x = (x + 0x9e3779b9) >>> 0;
     z = x;
     z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
     z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
-    this.s2 = (z ^ (z >>> 16)) >>> 0;
+    this.s[2] = z ^ (z >>> 16);
     x = (x + 0x9e3779b9) >>> 0;
     z = x;
     z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
     z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
-    this.s3 = (z ^ (z >>> 16)) >>> 0;
+    this.s[3] = z ^ (z >>> 16);
   }
 
   nextU32(): number {
-    const result = Math.imul(rotl(Math.imul(this.s1, 5), 7), 9) >>> 0;
-    const t = (this.s1 << 9) >>> 0;
-    this.s2 = (this.s2 ^ this.s0) >>> 0;
-    this.s3 = (this.s3 ^ this.s1) >>> 0;
-    this.s1 = (this.s1 ^ this.s2) >>> 0;
-    this.s0 = (this.s0 ^ this.s3) >>> 0;
-    this.s2 = (this.s2 ^ t) >>> 0;
-    this.s3 = rotl(this.s3, 11);
+    const s = this.s;
+    const s0 = s[0]!;
+    const s1 = s[1]!;
+    const s2 = s[2]! ^ s0;
+    const s3 = s[3]! ^ s1;
+    const result = Math.imul(rotl(Math.imul(s1, 5), 7), 9) >>> 0;
+    s[1] = s1 ^ s2;
+    s[0] = s0 ^ s3;
+    s[2] = s2 ^ (s1 << 9);
+    s[3] = rotl(s3, 11);
     return result;
   }
 

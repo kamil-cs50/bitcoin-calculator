@@ -8,6 +8,11 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build": "tsc --noEmit"
+    "build": "tsc --noEmit",
+    "bench": "vitest bench --run",
+    "bench:node": "tsx bench/measure.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }

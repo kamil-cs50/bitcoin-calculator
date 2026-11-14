@@ -202,6 +202,11 @@ export class Kernel {
     this.firstDeposit = deps.length > 0 ? deps[0]! : -1;
   }
 
+  /** Wartości pozycji (indeks jak w `scenario.positions`) z ostatniego `emit`; ważne tylko wewnątrz `PathSink.onGrid`. */
+  positionValues(): Float64Array {
+    return this.values;
+  }
+
   /** Symuluje ścieżkę `path` ziarna `seed`; wyniki na siatce i podsumowanie trafiają do `sink`. */
   simulate(seed: number, path: number, sink: PathSink): void {
     const s = this.s;
@@ -549,6 +554,7 @@ export class Kernel {
   private rebalance(t: number, isJanuary: boolean): void {
     const policy = this.s.rebalance;
     if (policy.kind === 'none' || policy.kind === 'flows') return;
+    if (policy.kind === 'annual' && !isJanuary) return; // rebalanceTrades i tak zwróciłby false
     this.computeValues(t);
     if (!rebalanceTrades(this.values, this.target, this.liquid, policy, isJanuary, this.out)) return;
     let proceeds = 0;

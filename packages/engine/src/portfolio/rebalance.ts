@@ -12,6 +12,9 @@ function weight(targets: Float64Array, liquid: Uint8Array, i: number): number {
   return liquid[i] !== 0 && w > 0 && Number.isFinite(w) ? w : 0;
 }
 
+// współdzielony wynik (bez alokacji w gorącej pętli; kod jednowątkowy i bez zagnieżdżonych wywołań)
+const SUMS = { v: 0, w: 0 };
+
 function liquidSums(values: Float64Array, targets: Float64Array, liquid: Uint8Array): { v: number; w: number } {
   let v = 0;
   let w = 0;
@@ -20,7 +23,9 @@ function liquidSums(values: Float64Array, targets: Float64Array, liquid: Uint8Ar
     v += values[i]! > 0 ? values[i]! : 0;
     w += weight(targets, liquid, i);
   }
-  return { v, w };
+  SUMS.v = v;
+  SUMS.w = w;
+  return SUMS;
 }
 
 /**

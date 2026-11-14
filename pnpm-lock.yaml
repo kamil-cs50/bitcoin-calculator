@@ -125,7 +125,11 @@ importers:
         specifier: ^4.23.15
         version: 4.23.15
 
-  packages/engine: {}
+  packages/engine:
+    devDependencies:
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
 
 packages:
 
