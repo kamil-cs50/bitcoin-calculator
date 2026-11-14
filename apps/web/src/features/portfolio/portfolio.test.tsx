@@ -189,4 +189,18 @@ describe('PortfolioEditor', () => {
     expect(ScenarioSchema.safeParse(s).success).toBe(true);
     expect(validateScenario(s).ok).toBe(true);
   });
+  it('kafelek „Mieszkanie na wynajem” dodaje niepłynną nieruchomość (poprawny scenariusz), obok wariantu „mieszkam”', async () => {
+    view();
+    expect(screen.getByRole('button', { name: 'Mieszkanie' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Mieszkanie na wynajem' }));
+    await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '600000');
+    await userEvent.click(screen.getByRole('button', { name: 'Dodaj do portfela' }));
+    const s = useScenarioStore.getState().scenario;
+    expect(s.positions[0]).toMatchObject({ assetId: 'realEstate', value: 600_000, targetWeight: 0, wrapper: 'taxable' });
+    expect(s.assets[0]).toMatchObject({ kind: 'realEstate', netRentYield: 0.035 });
+    expect((s.assets[0] as { realGrowth: number }).realGrowth).toBeCloseTo(0.01, 12);
+    expect(s.market.factorIds).toContain('realEstate');
+    expect(ScenarioSchema.safeParse(s).success).toBe(true);
+    expect(validateScenario(s).ok).toBe(true);
+  });
 });

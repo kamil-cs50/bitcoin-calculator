@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { Xoshiro128ss } from './xoshiro128ss';
 import { factorKey, fmix32, streamSeed } from './streams';
 
-describe('Xoshiro128ss', () => {
+// jawny, hojny limit: testy z 1e6 losowań przekraczają domyślne 5 s pod obciążeniem (równoległe pakiety)
+const TEST_TIMEOUT_MS = 30_000;
+
+describe('Xoshiro128ss', { timeout: TEST_TIMEOUT_MS }, () => {
   it('zgadza się z wartościami referencyjnymi dla stanu (1,2,3,4)', () => {
     const g = Xoshiro128ss.fromState(1, 2, 3, 4);
     expect([g.nextU32(), g.nextU32(), g.nextU32()]).toEqual([11520, 0, 5927040]);
@@ -45,7 +48,7 @@ describe('Xoshiro128ss', () => {
   });
 });
 
-describe('strumienie', () => {
+describe('strumienie', { timeout: TEST_TIMEOUT_MS }, () => {
   const k = factorKey('asset:BTC');
 
   it('streamSeed rozróżnia ścieżki i ziarna', () => {

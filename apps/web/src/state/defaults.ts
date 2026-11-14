@@ -81,6 +81,19 @@ function baseAssetFromPreset(d: Dataset, presetId: string): AssetParams {
         initialRate: Math.max(0, d.inflation.x0.value + (a.depositSpread?.value ?? 0)),
       };
     }
+    if (a.class === 'realEstate') {
+      // spec 4.8: cena rośnie o inflację + 1 pp; w zbiorze danych g jest nominalne (inflacja długookresowa + 1 pp)
+      return {
+        kind: 'realEstate',
+        id: presetId,
+        netRentYield: a.netRentYield?.value ?? 0.035,
+        realGrowth: a.g.value - d.inflation.longRun.value,
+        sigma: a.sigma.value,
+        se: a.se.value,
+        alpha: a.alpha.value,
+        b: a.b.value,
+      };
+    }
     return {
       kind: 'risky',
       id: presetId,
@@ -160,9 +173,10 @@ export function rebuildMarket(
   assets: readonly AssetParams[],
   baseCurrency: Currency,
 ): MarketModel {
-  const risky = assets.filter((a) => a.kind === 'risky');
+  // nieruchomość jest czynnikiem rynku jak aktywo ryzykowne (w walucie bazowej, więc bez kursu)
+  const risky = assets.filter((a) => a.kind === 'risky' || a.kind === 'realEstate');
   const currencies = new Set<'USD' | 'EUR'>();
-  for (const a of risky) if (a.currency !== 'PLN') currencies.add(a.currency);
+  for (const a of risky) if (a.kind === 'risky' && a.currency !== 'PLN') currencies.add(a.currency);
   if (baseCurrency !== 'PLN') currencies.add(baseCurrency);
   const fxList = (['USD', 'EUR'] as const).filter((c) => currencies.has(c));
 

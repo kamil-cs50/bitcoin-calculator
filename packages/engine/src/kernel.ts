@@ -2,6 +2,7 @@ import { contributionAt, eventAmount } from './cashflows/contributions';
 import { WithdrawalPolicy } from './cashflows/withdrawals';
 import { DepositAccount } from './models/deposit';
 import { EdoHoldings } from './models/edo';
+import { REAL_ESTATE_GAIN_RATE, realEstateSaleTax, rentalIncomeTax } from './models/realEstate';
 import { MarketSimulator } from './models/market';
 import type { MarketState } from './models/market';
 import { LotQueue } from './portfolio/lots';
@@ -10,7 +11,7 @@ import { createTaxEngine } from './tax/taxEngine';
 import type { TaxEngine } from './tax/taxEngine';
 import { PL_CAPITAL_GAINS_RATE } from './tax/pl/securities';
 import { WrapperAccounts, wrapperWithdrawalTax } from './tax/pl/wrappers';
-import type { Scenario, TaxForm, Warning, Wrapper } from './types';
+import type { RealEstateParams, Scenario, TaxForm, Warning, Wrapper } from './types';
 import { validateScenario } from './validate';
 
 /** Odbiorca wyników jednej ścieżki (wołany z pętli; implementacja nie powinna alokować). */
@@ -58,6 +59,7 @@ export function buildGrid(horizonMonths: number, extraMonths: readonly number[] 
 const K_RISKY = 0;
 const K_DEPOSIT = 1;
 const K_EDO = 2;
+const K_RE = 3; // nieruchomość na wynajem: niepłynna, poza rebalansem i wypłatami
 /** Miesiąc zakupu pozycji początkowych (traktowane jako dawno kupione: złoto fizyczne zwolnione). */
 const INITIAL_LOT_MONTH = -1000;
 const FULL_SALE_EPS = 1e-12;
@@ -90,6 +92,9 @@ export class Kernel {
   private readonly tax: TaxEngine;
   private readonly wd: WithdrawalPolicy | null;
   private readonly horizon: number;
+  /** Zasady podatkowe nieruchomości: 0 = brak, 1 = pl (ryczałt, 19% ze zwolnieniem), 2 = flat (jedna stawka). */
+  private readonly reTaxMode: number;
+  private readonly reFlatRate: number;
   private readonly depositTaxRate: number; // stawka u źródła dla opakowania „taxable”
   /** Limity i reguły IKE/IKZE (null: scenariusz bez `wrappers`, stare zachowanie). */
   private readonly wrap: WrapperAccounts | null;
@@ -118,6 +123,11 @@ export class Kernel {
   private readonly edoSlots: Int32Array;
   private readonly edoFirstRate: Float64Array;
   private readonly firstDeposit: number;
+  private readonly reSlots: Int32Array;
+  private readonly reParams: (RealEstateParams | undefined)[] = [];
+  private readonly reValue: Float64Array; // wartość nieruchomości (0 po sprzedaży)
+  private readonly reBasis: Float64Array; // koszt nabycia (podstawa podatku od sprzedaży)
+  private readonly reSold: Uint8Array;
   private readonly collapsedAsset: Int32Array; // indeks aktywa w scenariuszu dla każdego czynnika ryzykownego rynku
 
   // bufory robocze
@@ -137,6 +147,10 @@ export class Kernel {
   private ruinMonth = -1;
   private depInterestNet = 0;
   private pendingWrapperTax = 0;
+  private rePending = 0; // podatek od sprzedaży nieruchomości do dopisania do zobowiązania przy styczniowym zamknięciu roku
+  private reIncomeNet = 0; // czynsz netto wpłacony w bieżącym miesiącu (do TWR)
+  private rentCum = 0; // przychód z najmu w bieżącym roku podatkowym
+  private rentYear = -1;
   private noWrapperTax = false;
   private lastProceeds = 0;
   private lastCost = 0;
@@ -156,6 +170,8 @@ export class Kernel {
     this.tax = createTaxEngine(scenario.tax);
     this.wd = scenario.withdrawal ? new WithdrawalPolicy(scenario.withdrawal, this.horizon) : null;
     this.warnings.push(...v.warnings, ...this.market.warnings);
+    this.reTaxMode = scenario.tax.kind === 'pl' ? 1 : scenario.tax.kind === 'flat' ? 2 : 0;
+    this.reFlatRate = scenario.tax.kind === 'flat' ? scenario.tax.rate : 0;
     this.depositTaxRate = scenario.tax.kind === 'pl' ? PL_CAPITAL_GAINS_RATE : scenario.tax.kind === 'flat' ? scenario.tax.rate : 0;
 
     this.wrap =
@@ -181,11 +197,15 @@ export class Kernel {
     this.eff = new Float64Array(n);
     this.out = new Float64Array(n);
     this.edoFirstRate = new Float64Array(n);
+    this.reValue = new Float64Array(n);
+    this.reBasis = new Float64Array(n);
+    this.reSold = new Uint8Array(n);
     this.twin = new Int32Array(n).fill(-1);
     const lotCapacity = 3 * this.horizon + 8;
     const risky: number[] = [];
     const deps: number[] = [];
     const edos: number[] = [];
+    const res: number[] = [];
     scenario.positions.forEach((pos, i) => {
       const a = scenario.assets.find((x) => x.id === pos.assetId)!;
       this.wrapper.push(pos.wrapper);
@@ -205,6 +225,15 @@ export class Kernel {
         this.edos.push(undefined);
         risky.push(i);
         this.latentPos.push({ form: a.taxForm, wrapper: pos.wrapper, value: 0, basis: 0 });
+      } else if (a.kind === 'realEstate') {
+        this.kind[i] = K_RE;
+        this.form.push('none');
+        this.riskyIdx[i] = this.market.riskyIds.indexOf(a.id);
+        this.lots.push(undefined);
+        this.deposits.push(undefined);
+        this.edos.push(undefined);
+        this.reParams[i] = a;
+        res.push(i);
       } else if (a.kind === 'deposit') {
         this.kind[i] = K_DEPOSIT;
         this.form.push('none');
@@ -235,6 +264,7 @@ export class Kernel {
     this.riskySlots = Int32Array.from(risky);
     this.depositSlots = Int32Array.from(deps);
     this.edoSlots = Int32Array.from(edos);
+    this.reSlots = Int32Array.from(res);
     this.firstDeposit = deps.length > 0 ? deps[0]! : -1;
   }
 
@@ -274,13 +304,17 @@ export class Kernel {
       const y = s.startYear + Math.floor(mi / 12);
       this.openYear = y;
       this.depInterestNet = 0;
+      this.reIncomeNet = 0;
       this.wrap?.newMonth(y);
       let lr = 0;
 
       if (!this.ruined) {
         // 1. zdarzenia kalendarzowe: styczeń zamyka rok podatkowy (wygaśnięcie strat, naliczenie zobowiązania),
         //    kwiecień płaci zobowiązanie; roczna wypłata ustalana w styczniu i w t = start (też poza styczniem)
-        if (cm === 1 && t > 0) this.taxDue += this.tax.closeYear(y - 1);
+        if (cm === 1 && t > 0) {
+          this.taxDue += this.tax.closeYear(y - 1) + this.rePending;
+          this.rePending = 0;
+        }
         if (cm === 4 && this.taxDue > 0) this.payTax(t);
         if (cm === 4 && this.wrapTax) {
           const refund = this.wrap!.takeRefund();
@@ -294,8 +328,12 @@ export class Kernel {
           wd.onJanuary(t, this.afterTaxValue(t, this.wealthNow()), this.cpiNow, twrLog, cm === 1);
         }
 
-        // 2. przychody do gotówki: odsetki lokat (po podatku u źródła), wykupy EDO
+        // 1b. sprzedaż nieruchomości („sprzedaż w roku X”: pierwszy miesiąc symulacji w tym roku), wpływ do gotówki
+        if (this.reSlots.length > 0) this.sellRealEstate(y);
+
+        // 2. przychody do gotówki: odsetki lokat (po podatku u źródła), wykupy EDO, czynsz netto z najmu
         this.incomes(t);
+        if (this.reSlots.length > 0) this.rents(y);
 
         // 3. wpłaty, wypłaty, zdarzenia jednorazowe (z góry)
         let inflow = 0;
@@ -391,6 +429,10 @@ export class Kernel {
     this.depInterestNet = 0;
     this.pendingWrapperTax = 0;
     this.noWrapperTax = false;
+    this.rePending = 0;
+    this.reIncomeNet = 0;
+    this.rentCum = 0;
+    this.rentYear = -1;
     this.wrap?.reset();
     for (let i = 0; i < this.n; i++) {
       const pos = s.positions[i]!;
@@ -408,6 +450,10 @@ export class Kernel {
         }
       } else if (k === K_DEPOSIT) {
         this.deposits[i]!.reset(value);
+      } else if (k === K_RE) {
+        this.reValue[i] = value;
+        this.reBasis[i] = Math.max(pos.costBasis, 0);
+        this.reSold[i] = 0;
       } else {
         const e = this.edos[i]!;
         e.reset();
@@ -423,6 +469,7 @@ export class Kernel {
       const k = this.kind[i]!;
       if (k === K_RISKY) this.values[i] = this.lots[i]!.units * this.price[i]!;
       else if (k === K_DEPOSIT) this.values[i] = this.deposits[i]!.balance;
+      else if (k === K_RE) this.values[i] = this.reValue[i]!;
       else this.values[i] = this.edos[i]!.value(month);
     }
   }
@@ -447,6 +494,11 @@ export class Kernel {
       p.basis = this.lots[i]!.basis;
     }
     owed += this.tax.liquidationTax(this.latentPos, this.openYear);
+    owed += this.rePending;
+    for (let r = 0; r < this.reSlots.length; r++) {
+      const i = this.reSlots[r]!;
+      if (this.reValue[i]! > 0) owed += this.realEstateTax(i, this.reValue[i]!, this.openYear);
+    }
     for (let r = 0; r < this.edoSlots.length; r++) {
       const i = this.edoSlots[r]!;
       const rate = this.slotTaxRate[i]!;
@@ -493,6 +545,49 @@ export class Kernel {
         this.ledger.taxesPaid += before - e.value(t) - cash;
         this.toCash(cash);
       }
+    }
+  }
+
+  /** Podatek od sprzedaży nieruchomości `i` o wartości `value` w roku `year` (spec 4.10; zasady w models/realEstate.ts). */
+  private realEstateTax(i: number, value: number, year: number): number {
+    if (this.reTaxMode === 0) return 0;
+    const gain = value - this.reBasis[i]!;
+    if (this.reTaxMode === 1) return realEstateSaleTax(REAL_ESTATE_GAIN_RATE, gain, this.reParams[i]!.purchaseYear, year);
+    return realEstateSaleTax(this.reFlatRate, gain, year, year); // flat: bez zwolnienia
+  }
+
+  /** „Sprzedaż w roku X”: całość za wartość rynkową do gotówki; podatek trafia do zobowiązania przy zamknięciu roku. */
+  private sellRealEstate(year: number): void {
+    for (let r = 0; r < this.reSlots.length; r++) {
+      const i = this.reSlots[r]!;
+      const sale = this.reParams[i]!.saleYear;
+      const v = this.reValue[i]!;
+      if (this.reSold[i] === 1 || sale === undefined || sale > year || !(v > 0)) continue;
+      this.rePending += this.realEstateTax(i, v, year);
+      this.reSold[i] = 1;
+      this.reValue[i] = 0;
+      this.toCash(v);
+    }
+  }
+
+  /** Czynsz netto = `netRentYield`·wartość/12 z początku miesiąca; ryczałt pobierany od razu (narastająco w roku), reszta do gotówki. */
+  private rents(year: number): void {
+    if (year !== this.rentYear) {
+      this.rentYear = year;
+      this.rentCum = 0;
+    }
+    const l = this.ledger;
+    for (let r = 0; r < this.reSlots.length; r++) {
+      const i = this.reSlots[r]!;
+      const v = this.reValue[i]!;
+      if (!(v > 0)) continue;
+      const rent = (v * this.reParams[i]!.netRentYield) / 12;
+      const tax = this.reTaxMode === 1 ? rentalIncomeTax(this.rentCum, rent) : this.reTaxMode === 2 ? this.reFlatRate * rent : 0;
+      this.rentCum += rent;
+      l.marketGains += rent;
+      l.taxesPaid += tax;
+      this.reIncomeNet += rent - tax;
+      this.toCash(rent - tax);
     }
   }
 
@@ -646,9 +741,11 @@ export class Kernel {
       const k = this.kind[i]!;
       if (k === K_RISKY) this.lots[i]!.reset();
       else if (k === K_DEPOSIT) this.deposits[i]!.reset(0);
+      else if (k === K_RE) this.reValue[i] = 0;
       else this.edos[i]!.reset();
     }
     this.taxDue = 0;
+    this.rePending = 0;
   }
 
   // ---------------------------------------------------------------- krok 4: rebalans
@@ -697,9 +794,9 @@ export class Kernel {
   /** Zwroty miesiąca z TER, księgowanie i log-zwrot portfela ważony wartościami sprzed zwrotu (bez przepływów i kosztów transakcji). */
   private applyReturns(t: number): number {
     this.computeValues(t);
-    let base = this.cashIdle - this.depInterestNet;
+    let base = this.cashIdle - this.depInterestNet - this.reIncomeNet;
     for (let i = 0; i < this.n; i++) base += this.values[i]!;
-    let gainNet = this.depInterestNet;
+    let gainNet = this.depInterestNet + this.reIncomeNet;
     const lr = this.mstate.assetLogRet;
     const l = this.ledger;
     for (let r = 0; r < this.riskySlots.length; r++) {
@@ -712,6 +809,16 @@ export class Kernel {
       l.marketGains += gain;
       l.fees += fee;
       gainNet += gain - fee;
+    }
+    for (let r = 0; r < this.reSlots.length; r++) {
+      const i = this.reSlots[r]!;
+      const v = this.reValue[i]!;
+      if (!(v > 0)) continue;
+      const e = Math.exp(lr[this.riskyIdx[i]!]!);
+      this.reValue[i] = v * e;
+      const gain = v * (e - 1);
+      l.marketGains += gain;
+      gainNet += gain;
     }
     for (let r = 0; r < this.edoSlots.length; r++) {
       const i = this.edoSlots[r]!;

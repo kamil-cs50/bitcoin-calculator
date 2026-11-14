@@ -6,7 +6,14 @@ export interface CollapseParams { hazard: number; loss: number }                
 export interface RiskyAssetParams { kind: 'risky'; id: string; currency: Currency; g: number; sigma: number; se: number; alpha: number; b: number; ter: number; costBps: number; taxForm: TaxForm; decay?: DecayParams; collapse?: CollapseParams }
 export interface DepositParams { kind: 'deposit'; id: string; k: number; spread: number; initialRate: number }
 export interface EdoParams { kind: 'edo'; id: string; firstYearRate: number; margin: number; earlyFeePer100: number; onMaturity: 'roll' | 'cash' }
-export type AssetParams = RiskyAssetParams | DepositParams | EdoParams;
+/**
+ * Mieszkanie na wynajem (spec 4.8): cena jak aktywo ryzykowne o dryfie nominalnym = inflacja (x_t) + `realGrowth`,
+ * czynsz netto `netRentYield` wartości rocznie trafia co miesiąc do gotówki po ryczałcie. Niepłynne: bez rebalansu
+ * i częściowej sprzedaży. Wariant „mieszkam” (tylko majątek netto) nie jest aktywem symulacji.
+ * `purchaseYear` (rok kalendarzowy nabycia; brak = zwolnione) i `saleYear` (sprzedaż w styczniu tego roku; brak = bez sprzedaży).
+ */
+export interface RealEstateParams { kind: 'realEstate'; id: string; netRentYield: number; realGrowth: number; sigma: number; se: number; alpha: number; b: number; purchaseYear?: number; saleYear?: number }
+export type AssetParams = RiskyAssetParams | DepositParams | EdoParams | RealEstateParams;
 export interface Position { assetId: string; wrapper: Wrapper; value: number; costBasis: number; targetWeight: number } // wartości w walucie bazowej
 export interface RegimeParams { p01: number; p10: number; kappa1: number; delta: number }           // kappa0 = 1
 export interface InflationParams { x0: number; mean: number; meanSe: number; phi: number; sigmaEta: number; cpiHistory: number[] } // 13 poziomów, ostatni = teraz

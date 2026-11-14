@@ -53,7 +53,7 @@ export function closedFormSafeWithdrawal(s: Scenario, o: { targetProb: number; s
   }
   const wSum = w.reduce((x, y) => x + y, 0);
   const weights = wSum > 0 ? w.map((x) => x / wSum) : v0.map((x) => (w0 > 0 ? x / w0 : 0));
-  const riskyOf = Int32Array.from(s.assets.map((a) => (a.kind === 'risky' ? market.riskyIds.indexOf(a.id) : -1)));
+  const riskyOf = Int32Array.from(s.assets.map((a) => (a.kind === 'risky' || a.kind === 'realEstate' ? market.riskyIds.indexOf(a.id) : -1)));
   const terRetain = Float64Array.from(s.assets.map((a) => (a.kind === 'risky' ? Math.exp(Math.log1p(-Math.min(Math.max(a.ter, 0), 0.999999)) / 12) : 1)));
   const fixedRate = Float64Array.from(s.assets.map((a) => (a.kind === 'deposit' ? a.initialRate / 12 : a.kind === 'edo' ? a.firstYearRate / 12 : 0)));
 

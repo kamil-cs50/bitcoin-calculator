@@ -45,11 +45,11 @@ msgstr "{n} przyszłości · dokładność ±{pp} pp"
 msgid "{n} roku"
 msgstr "{n} roku"
 
-#: src/features/portfolio/tiles.ts:52
+#: src/features/portfolio/tiles.ts:55
 msgid "{name} (ETF)"
 msgstr "{name} (ETF)"
 
-#: src/features/portfolio/tiles.ts:52
+#: src/features/portfolio/tiles.ts:55
 msgid "{name} (ETF/ETP)"
 msgstr "{name} (ETF/ETP)"
 
@@ -113,11 +113,11 @@ msgstr "9 na 10"
 msgid "95 na 100"
 msgstr "95 na 100"
 
-#: src/features/portfolio/tiles.ts:42
+#: src/features/portfolio/tiles.ts:45
 msgid "Akcje polskie"
 msgstr "Akcje polskie"
 
-#: src/features/portfolio/tiles.ts:41
+#: src/features/portfolio/tiles.ts:44
 msgid "Akcje rynków wschodzących"
 msgstr "Akcje rynków wschodzących"
 
@@ -129,13 +129,14 @@ msgstr "Aktywo"
 msgid "Amortyzacja (ABW)"
 msgstr "Amortyzacja (ABW)"
 
-#: src/features/portfolio/PositionForm.tsx:268
+#: src/features/portfolio/PositionForm.tsx:275
 #: src/features/results/Solvers.tsx:98
 #: src/features/settings/Settings.tsx:143
 msgid "Anuluj"
 msgstr "Anuluj"
 
 #: src/features/assumptions/useParamRows.ts:43
+#: src/features/assumptions/useParamRows.ts:73
 msgid "b (udział w zmienności kryzysu){sfx}"
 msgstr "b (udział w zmienności kryzysu){sfx}"
 
@@ -143,7 +144,7 @@ msgstr "b (udział w zmienności kryzysu){sfx}"
 msgid "Bazowy"
 msgstr "Bazowy"
 
-#: src/features/portfolio/PositionForm.tsx:226
+#: src/features/portfolio/PositionForm.tsx:227
 msgid "Bez ceny nie przeliczymy BTC na złotówki."
 msgstr "Bez ceny nie przeliczymy BTC na złotówki."
 
@@ -151,7 +152,7 @@ msgstr "Bez ceny nie przeliczymy BTC na złotówki."
 msgid "Bez indeksacji (stała kwota)"
 msgstr "Bez indeksacji (stała kwota)"
 
-#: src/features/portfolio/tiles.ts:22
+#: src/features/portfolio/tiles.ts:23
 msgid "Bitcoin"
 msgstr "Bitcoin"
 
@@ -208,12 +209,12 @@ msgstr "Cel: {0} w dzisiejszych {unit} za {1}, {2} (±{goalPp} pp)"
 #~ msgid "Cel: {0} w dzisiejszych zł za {1} (±{goalPp} pp)"
 #~ msgstr "Cel: {0} w dzisiejszych zł za {1} (±{goalPp} pp)"
 
-#: src/features/portfolio/PositionForm.tsx:216
+#: src/features/portfolio/PositionForm.tsx:217
 msgid "Cena 1 BTC (zł), wymagana"
 msgstr "Cena 1 BTC (zł), wymagana"
 
 #. placeholder {0}: ageText(fetchedAt)
-#: src/features/portfolio/PositionForm.tsx:243
+#: src/features/portfolio/PositionForm.tsx:244
 msgid "Cena z CoinGecko, pobrana {0}. Możesz ją poprawić. Powered by CoinGecko"
 msgstr "Cena z CoinGecko, pobrana {0}. Możesz ją poprawić. Powered by CoinGecko"
 
@@ -241,7 +242,7 @@ msgstr "Co roku bierzesz stały ułamek tego, co zostało. Portfel nigdy się ni
 msgid "Co sprawdzamy"
 msgstr "Co sprawdzamy"
 
-#: src/features/portfolio/PositionForm.tsx:157
+#: src/features/portfolio/PositionForm.tsx:158
 msgid "Co wpisujesz?"
 msgstr "Co wpisujesz?"
 
@@ -264,6 +265,10 @@ msgstr "Częstość"
 #: src/features/plan/PlanEditor.tsx:188
 msgid "Czy wpłata rośnie z czasem, żeby nadążać za cenami."
 msgstr "Czy wpłata rośnie z czasem, żeby nadążać za cenami."
+
+#: src/features/assumptions/useParamRows.ts:80
+msgid "Czynsz netto (% wartości rocznie)"
+msgstr "Czynsz netto (% wartości rocznie)"
 
 #: src/features/onboarding/Onboarding.tsx:103
 #: src/features/onboarding/Onboarding.tsx:160
@@ -302,7 +307,7 @@ msgstr "Docelowy zwrot roczny (po latach)"
 msgid "Dodaj bieżący scenariusz"
 msgstr "Dodaj bieżący scenariusz"
 
-#: src/features/portfolio/PositionForm.tsx:265
+#: src/features/portfolio/PositionForm.tsx:272
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
 
@@ -349,31 +354,31 @@ msgstr "Dzisiejsza cena 1 BTC (USD)"
 msgid "Dzisiejsza cena 1 BTC (zł)"
 msgstr "Dzisiejsza cena 1 BTC (zł)"
 
-#: src/features/portfolio/tiles.ts:23
+#: src/features/portfolio/tiles.ts:24
 msgid "ETF na świat"
 msgstr "ETF na świat"
 
-#: src/features/portfolio/PositionForm.tsx:178
+#: src/features/portfolio/PositionForm.tsx:179
 msgid "ETF na złoto"
 msgstr "ETF na złoto"
 
-#: src/features/portfolio/PositionForm.tsx:152
+#: src/features/portfolio/PositionForm.tsx:153
 msgid "ETF/ETP na bitcoina"
 msgstr "ETF/ETP na bitcoina"
 
-#: src/features/portfolio/tiles.ts:35
+#: src/features/portfolio/tiles.ts:37
 msgid "Ethereum"
 msgstr "Ethereum"
 
-#: src/features/portfolio/PositionForm.tsx:175
+#: src/features/portfolio/PositionForm.tsx:176
 msgid "Fizyczne (sztabki, monety)"
 msgstr "Fizyczne (sztabki, monety)"
 
-#: src/features/portfolio/PositionForm.tsx:146
+#: src/features/portfolio/PositionForm.tsx:147
 msgid "Gdzie trzymasz bitcoina?"
 msgstr "Gdzie trzymasz bitcoina?"
 
-#: src/features/portfolio/PositionForm.tsx:149
+#: src/features/portfolio/PositionForm.tsx:150
 msgid "Giełda lub własny portfel"
 msgstr "Giełda lub własny portfel"
 
@@ -423,7 +428,7 @@ msgstr "Inflacja"
 msgid "Inflacją"
 msgstr "Inflacją"
 
-#: src/features/assumptions/useParamRows.ts:104
+#: src/features/assumptions/useParamRows.ts:123
 msgid "Inflacja długookresowa"
 msgstr "Inflacja długookresowa"
 
@@ -436,7 +441,7 @@ msgid "Inflacją i realnym wzrostem"
 msgstr "Inflacją i realnym wzrostem"
 
 #. placeholder {0}: f.currency
-#: src/features/assumptions/useParamRows.ts:118
+#: src/features/assumptions/useParamRows.ts:137
 msgid "Inflacja zagraniczna ({0})"
 msgstr "Inflacja zagraniczna ({0})"
 
@@ -461,7 +466,7 @@ msgstr "Jak podać długość planu?"
 msgid "Jak w systemie"
 msgstr "Jak w systemie"
 
-#: src/features/portfolio/PositionForm.tsx:172
+#: src/features/portfolio/PositionForm.tsx:173
 msgid "Jakie złoto?"
 msgstr "Jakie złoto?"
 
@@ -503,7 +508,7 @@ msgstr "Krok {step} z 3"
 msgid "Kurs {0}"
 msgstr "Kurs {0}"
 
-#: src/features/portfolio/PositionForm.tsx:255
+#: src/features/portfolio/PositionForm.tsx:256
 msgid "Kwota"
 msgstr "Kwota"
 
@@ -515,7 +520,7 @@ msgstr "Kwota celu"
 msgid "Kwota miesięczna"
 msgstr "Kwota miesięczna"
 
-#: src/features/portfolio/PositionForm.tsx:163
+#: src/features/portfolio/PositionForm.tsx:164
 msgid "Kwotę w zł"
 msgstr "Kwotę w zł"
 
@@ -534,7 +539,7 @@ msgstr "lat"
 msgid "lata od dziś"
 msgstr "lata od dziś"
 
-#: src/features/portfolio/PositionForm.tsx:214
+#: src/features/portfolio/PositionForm.tsx:215
 msgid "Liczba BTC"
 msgstr "Liczba BTC"
 
@@ -546,11 +551,11 @@ msgstr "Liczba lat"
 msgid "Liczba przyszłości"
 msgstr "Liczba przyszłości"
 
-#: src/features/assumptions/useParamRows.ts:128
+#: src/features/assumptions/useParamRows.ts:147
 msgid "Liczba stopni swobody ν (grubość ogonów)"
 msgstr "Liczba stopni swobody ν (grubość ogonów)"
 
-#: src/features/portfolio/PositionForm.tsx:160
+#: src/features/portfolio/PositionForm.tsx:161
 msgid "Liczbę BTC"
 msgstr "Liczbę BTC"
 
@@ -578,7 +583,7 @@ msgstr "Liczymy porównanie…"
 msgid "Liczymy… to potrwa kilka sekund. Możesz w tym czasie oglądać wyniki."
 msgstr "Liczymy… to potrwa kilka sekund. Możesz w tym czasie oglądać wyniki."
 
-#: src/features/portfolio/tiles.ts:26
+#: src/features/portfolio/tiles.ts:27
 msgid "Lokata"
 msgstr "Lokata"
 
@@ -586,7 +591,7 @@ msgstr "Lokata"
 msgid "Macierz korelacji po korekcie"
 msgstr "Macierz korelacji po korekcie"
 
-#: src/features/assumptions/useParamRows.ts:93
+#: src/features/assumptions/useParamRows.ts:112
 msgid "Marża ponad inflację"
 msgstr "Marża ponad inflację"
 
@@ -614,15 +619,19 @@ msgstr "Miesiąc"
 msgid "Miesięczna wpłata (w dzisiejszych zł, rosnąca z inflacją), przy której osiągniesz cel z planu."
 msgstr "Miesięczna wpłata (w dzisiejszych zł, rosnąca z inflacją), przy której osiągniesz cel z planu."
 
-#: src/features/portfolio/tiles.ts:28
+#: src/features/portfolio/tiles.ts:29
 msgid "Mieszkanie"
 msgstr "Mieszkanie"
+
+#: src/features/portfolio/tiles.ts:30
+msgid "Mieszkanie na wynajem"
+msgstr "Mieszkanie na wynajem"
 
 #: src/features/portfolio/PortfolioEditor.tsx:16
 msgid "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
 msgstr "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
 
-#: src/features/assumptions/useParamRows.ts:132
+#: src/features/assumptions/useParamRows.ts:151
 msgid "Mnożnik zmienności w kryzysie (κ₁)"
 msgstr "Mnożnik zmienności w kryzysie (κ₁)"
 
@@ -673,7 +682,7 @@ msgstr "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 msgid "Nakładka potęgowa"
 msgstr "Nakładka potęgowa"
 
-#: src/features/portfolio/PositionForm.tsx:185
+#: src/features/portfolio/PositionForm.tsx:186
 msgid "Nazwa"
 msgstr "Nazwa"
 
@@ -693,7 +702,7 @@ msgstr "Nie możemy zapisać planu na tym urządzeniu (np. tryb prywatny). Aplik
 msgid "Nie udało się oszacować zwrotu portfela."
 msgstr "Nie udało się oszacować zwrotu portfela."
 
-#: src/features/portfolio/PositionForm.tsx:240
+#: src/features/portfolio/PositionForm.tsx:241
 msgid "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie powyżej."
 msgstr "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie powyżej."
 
@@ -717,11 +726,12 @@ msgstr "Nie udało się wczytać pliku: to nie jest poprawny plan z tej aplikacj
 msgid "Nie udało się wczytać zapisanego planu"
 msgstr "Nie udało się wczytać zapisanego planu"
 
-#: src/features/assumptions/useParamRows.ts:105
+#: src/features/assumptions/useParamRows.ts:124
 msgid "Niepewność inflacji długookresowej (SE)"
 msgstr "Niepewność inflacji długookresowej (SE)"
 
 #: src/features/assumptions/useParamRows.ts:48
+#: src/features/assumptions/useParamRows.ts:78
 msgid "Niepewność oczekiwanego zwrotu (SE)"
 msgstr "Niepewność oczekiwanego zwrotu (SE)"
 
@@ -737,19 +747,19 @@ msgstr "O aplikacji"
 msgid "Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie albo odśwież stronę, żeby spróbować ponownie."
 msgstr "Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie albo odśwież stronę, żeby spróbować ponownie."
 
-#: src/features/portfolio/tiles.ts:25
+#: src/features/portfolio/tiles.ts:26
 msgid "Obligacje EDO"
 msgstr "Obligacje EDO"
 
-#: src/features/portfolio/tiles.ts:43
+#: src/features/portfolio/tiles.ts:46
 msgid "Obligacje polskie"
 msgstr "Obligacje polskie"
 
-#: src/features/portfolio/tiles.ts:44
+#: src/features/portfolio/tiles.ts:47
 msgid "Obligacje świata"
 msgstr "Obligacje świata"
 
-#: src/features/portfolio/PositionForm.tsx:198
+#: src/features/portfolio/PositionForm.tsx:199
 msgid "Oczekiwany roczny wzrost"
 msgstr "Oczekiwany roczny wzrost"
 
@@ -797,11 +807,11 @@ msgstr "Opcjonalnie. Domyślnie zaczyna się od razu; rok startu podasz poniżej
 #~ msgid "Opcjonalnie. Zaczyna się po zakończeniu horyzontu."
 #~ msgstr "Opcjonalnie. Zaczyna się po zakończeniu horyzontu."
 
-#: src/features/assumptions/useParamRows.ts:94
+#: src/features/assumptions/useParamRows.ts:113
 msgid "Opłata za wykup przed terminem (zł na 100 zł)"
 msgstr "Opłata za wykup przed terminem (zł na 100 zł)"
 
-#: src/features/assumptions/useParamRows.ts:92
+#: src/features/assumptions/useParamRows.ts:111
 msgid "Oprocentowanie w pierwszym roku"
 msgstr "Oprocentowanie w pierwszym roku"
 
@@ -813,7 +823,7 @@ msgstr "Optymistyczny"
 msgid "Osobny przebieg samego rynku sprawdza, czy symulacja odtwarza założone zwroty, zmienności i korelacje."
 msgstr "Osobny przebieg samego rynku sprawdza, czy symulacja odtwarza założone zwroty, zmienności i korelacje."
 
-#: src/features/assumptions/useParamRows.ts:106
+#: src/features/assumptions/useParamRows.ts:125
 msgid "Ostatni odczyt inflacji r/r"
 msgstr "Ostatni odczyt inflacji r/r"
 
@@ -868,11 +878,11 @@ msgstr "po podatku"
 msgid "Po podatku"
 msgstr "Po podatku"
 
-#: src/features/portfolio/PositionForm.tsx:238
+#: src/features/portfolio/PositionForm.tsx:239
 msgid "Pobieram cenę…"
 msgstr "Pobieram cenę…"
 
-#: src/features/portfolio/PositionForm.tsx:235
+#: src/features/portfolio/PositionForm.tsx:236
 msgid "Pobierz cenę"
 msgstr "Pobierz cenę"
 
@@ -918,7 +928,7 @@ msgid "Policz wymaganą wpłatę"
 msgstr "Policz wymaganą wpłatę"
 
 #. placeholder {0}: f.currency
-#: src/features/assumptions/useParamRows.ts:117
+#: src/features/assumptions/useParamRows.ts:136
 msgid "Półokres powrotu kursu {0} do średniej (lata)"
 msgstr "Półokres powrotu kursu {0} do średniej (lata)"
 
@@ -983,7 +993,7 @@ msgstr "Przedział od 10. do 90. percentyla"
 msgid "Przejdź do treści"
 msgstr "Przejdź do treści"
 
-#: src/features/assumptions/useParamRows.ts:133
+#: src/features/assumptions/useParamRows.ts:152
 msgid "Przesunięcie dryfu w kryzysie (δ)"
 msgstr "Przesunięcie dryfu w kryzysie (δ)"
 
@@ -1037,7 +1047,7 @@ msgstr "Realny wzrost wpłat rocznie"
 msgid "Reguły Guytona–Klingera"
 msgstr "Reguły Guytona–Klingera"
 
-#: src/features/portfolio/PositionForm.tsx:204
+#: src/features/portfolio/PositionForm.tsx:205
 msgid "Roczna zmienność"
 msgstr "Roczna zmienność"
 
@@ -1107,7 +1117,7 @@ msgstr "Ryzyko spadku o ponad 30%"
 msgid "Ryzyko to zmienność wartości portfela w skali roku; udział aktywa uwzględnia jego wagę, zmienność i zależność od pozostałych."
 msgstr "Ryzyko to zmienność wartości portfela w skali roku; udział aktywa uwzględnia jego wagę, zmienność i zależność od pozostałych."
 
-#: src/features/portfolio/tiles.ts:24
+#: src/features/portfolio/tiles.ts:25
 msgid "S&P 500"
 msgstr "S&P 500"
 
@@ -1133,7 +1143,7 @@ msgstr "Słabszy scenariusz (10%)"
 msgid "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
 msgstr "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
 
-#: src/features/assumptions/useParamRows.ts:74
+#: src/features/assumptions/useParamRows.ts:92
 msgid "Spread oprocentowania względem inflacji"
 msgstr "Spread oprocentowania względem inflacji"
 
@@ -1214,7 +1224,7 @@ msgstr "Szansa upadku do roku {year}: {n} na 100"
 msgid "Szansa upadku do roku {year}: mniej niż 1 na 100"
 msgstr "Szansa upadku do roku {year}: mniej niż 1 na 100"
 
-#: src/features/assumptions/useParamRows.ts:130
+#: src/features/assumptions/useParamRows.ts:149
 msgid "Szansa wejścia w kryzys (na miesiąc)"
 msgstr "Szansa wejścia w kryzys (na miesiąc)"
 
@@ -1222,7 +1232,7 @@ msgstr "Szansa wejścia w kryzys (na miesiąc)"
 msgid "Szansa wyczerpania portfela"
 msgstr "Szansa wyczerpania portfela"
 
-#: src/features/assumptions/useParamRows.ts:131
+#: src/features/assumptions/useParamRows.ts:150
 msgid "Szansa wyjścia z kryzysu (na miesiąc)"
 msgstr "Szansa wyjścia z kryzysu (na miesiąc)"
 
@@ -1230,7 +1240,7 @@ msgstr "Szansa wyjścia z kryzysu (na miesiąc)"
 msgid "Szczegóły techniczne"
 msgstr "Szczegóły techniczne"
 
-#: src/features/assumptions/useParamRows.ts:71
+#: src/features/assumptions/useParamRows.ts:89
 msgid "Szybkość dostosowania oprocentowania (na miesiąc)"
 msgstr "Szybkość dostosowania oprocentowania (na miesiąc)"
 
@@ -1250,7 +1260,7 @@ msgstr "Ten rok wypada po końcu horyzontu, więc wypłaty zaczniemy w ostatnim 
 msgid "Teraz: {scaleText}× domyślnej niepewności. Im wyżej, tym szerzej rozrzucone są możliwe przyszłe zwroty; 0 oznacza, że traktujesz zakładane zwroty jako pewne."
 msgstr "Teraz: {scaleText}× domyślnej niepewności. Im wyżej, tym szerzej rozrzucone są możliwe przyszłe zwroty; 0 oznacza, że traktujesz zakładane zwroty jako pewne."
 
-#: src/features/portfolio/PositionForm.tsx:199
+#: src/features/portfolio/PositionForm.tsx:200
 msgid "To założenie, nie prognoza. Zmienisz je później w Założeniach."
 msgstr "To założenie, nie prognoza. Zmienisz je później w Założeniach."
 
@@ -1274,7 +1284,7 @@ msgstr "Twoje dane"
 msgid "Tylko oszczędzasz i patrzysz, ile urośnie portfel."
 msgstr "Tylko oszczędzasz i patrzysz, ile urośnie portfel."
 
-#: src/features/portfolio/PositionForm.tsx:205
+#: src/features/portfolio/PositionForm.tsx:206
 msgid "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
 msgstr "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
 
@@ -1425,7 +1435,7 @@ msgid "wartość portfela niższa niż dziś po uwzględnieniu inflacji (±{loss
 msgstr "wartość portfela niższa niż dziś po uwzględnieniu inflacji (±{lossPp} pp)"
 
 #. placeholder {0}: formatMoney(value, baseCurrency)
-#: src/features/portfolio/PositionForm.tsx:249
+#: src/features/portfolio/PositionForm.tsx:250
 msgid "Wartość pozycji: {0}"
 msgstr "Wartość pozycji: {0}"
 
@@ -1434,7 +1444,11 @@ msgstr "Wartość pozycji: {0}"
 #~ msgid "Wartość pozycji: {0} zł"
 #~ msgstr "Wartość pozycji: {0} zł"
 
-#: src/features/portfolio/PositionForm.tsx:259
+#: src/features/portfolio/PositionForm.tsx:264
+msgid "Wartość rynkowa mieszkania dziś. Czynsz netto (zakładane 3,5% wartości rocznie) trafia co miesiąc do gotówki po ryczałcie; mieszkanie nie bierze udziału w rebalansie ani wypłatach."
+msgstr "Wartość rynkowa mieszkania dziś. Czynsz netto (zakładane 3,5% wartości rocznie) trafia co miesiąc do gotówki po ryczałcie; mieszkanie nie bierze udziału w rebalansie ani wypłatach."
+
+#: src/features/portfolio/PositionForm.tsx:262
 msgid "Wartość Twoich obligacji EDO dziś."
 msgstr "Wartość Twoich obligacji EDO dziś."
 
@@ -1466,11 +1480,11 @@ msgstr "Wiek docelowy musi być większy niż Twój obecny wiek."
 msgid "Wkład aktywów w ryzyko"
 msgstr "Wkład aktywów w ryzyko"
 
-#: src/features/portfolio/tiles.ts:29
+#: src/features/portfolio/tiles.ts:31
 msgid "Własne"
 msgstr "Własne"
 
-#: src/features/portfolio/PositionForm.tsx:225
+#: src/features/portfolio/PositionForm.tsx:226
 msgid "Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen sama i działa bez internetu, więc cenę możesz podać ręcznie."
 msgstr "Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen sama i działa bez internetu, więc cenę możesz podać ręcznie."
 
@@ -1582,6 +1596,10 @@ msgstr "Wypłaty z IKE są bez podatku od 60 lat, z IKZE (10%) od 65 lat."
 #~ msgid "Wypłaty zaczynają się po końcu horyzontu, więc nigdy nie nastąpią."
 #~ msgstr "Wypłaty zaczynają się po końcu horyzontu, więc nigdy nie nastąpią."
 
+#: src/features/assumptions/useParamRows.ts:76
+msgid "Wzrost ceny ponad inflację (rocznie)"
+msgstr "Wzrost ceny ponad inflację (rocznie)"
+
 #. placeholder {0}: yearsText(month)
 #: src/features/results/Dashboard.tsx:198
 msgid "za {0} ({year})"
@@ -1676,7 +1694,7 @@ msgstr "zgodne ✓"
 msgid "Zgodność"
 msgstr "Zgodność"
 
-#: src/features/portfolio/tiles.ts:27
+#: src/features/portfolio/tiles.ts:28
 msgid "Złoto"
 msgstr "Złoto"
 
@@ -1689,11 +1707,12 @@ msgid "Zmienność inflacji r/r"
 msgstr "Zmienność inflacji r/r"
 
 #. placeholder {0}: f.currency
-#: src/features/assumptions/useParamRows.ts:116
+#: src/features/assumptions/useParamRows.ts:135
 msgid "Zmienność realnego kursu {0}"
 msgstr "Zmienność realnego kursu {0}"
 
 #: src/features/assumptions/useParamRows.ts:47
+#: src/features/assumptions/useParamRows.ts:77
 #: src/features/results/ModelCheckPanel.tsx:19
 msgid "Zmienność roczna"
 msgstr "Zmienność roczna"
@@ -1715,11 +1734,12 @@ msgid "Zwykłe"
 msgstr "Zwykłe"
 
 #. placeholder {0}: f.currency
-#: src/features/assumptions/useParamRows.ts:113
+#: src/features/assumptions/useParamRows.ts:132
 msgid "α (ładunek kryzysowy): kurs {0}"
 msgstr "α (ładunek kryzysowy): kurs {0}"
 
 #: src/features/assumptions/useParamRows.ts:42
+#: src/features/assumptions/useParamRows.ts:72
 msgid "α (ładunek kryzysowy){sfx}"
 msgstr "α (ładunek kryzysowy){sfx}"
 

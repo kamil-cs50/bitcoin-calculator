@@ -74,6 +74,17 @@ export function validateScenario(s: Scenario): ValidationResult {
       if (a.onMaturity !== 'roll' && a.onMaturity !== 'cash') err(`${p}.onMaturity`, 'Po wykupie: "roll" lub "cash".');
       return;
     }
+    if (a.kind === 'realEstate') {
+      if (!isNum(a.netRentYield) || a.netRentYield < 0) err(`${p}.netRentYield`, 'Czynsz netto (jako ułamek wartości rocznie) nie może być ujemny.');
+      if (!isNum(a.realGrowth) || a.realGrowth <= -1) err(`${p}.realGrowth`, 'Realny wzrost ceny musi być większy niż -1.');
+      if (!isNum(a.sigma) || a.sigma < 0) err(`${p}.sigma`, 'Zmienność σ nie może być ujemna.');
+      if (!isNum(a.se) || a.se < 0) err(`${p}.se`, 'Błąd standardowy dryfu nie może być ujemny.');
+      if (!isNum(a.alpha)) err(`${p}.alpha`, 'Ładunek kryzysowy α musi być liczbą.');
+      if (!isNum(a.b) || a.b < 0 || a.b > 1) err(`${p}.b`, 'Współczynnik b musi mieścić się w przedziale 0..1.');
+      if (a.purchaseYear !== undefined && !Number.isInteger(a.purchaseYear)) err(`${p}.purchaseYear`, 'Rok nabycia musi być liczbą całkowitą.');
+      if (a.saleYear !== undefined && !Number.isInteger(a.saleYear)) err(`${p}.saleYear`, 'Rok sprzedaży musi być liczbą całkowitą.');
+      return;
+    }
     if (!isNum(a.g) || a.g <= -1) err(`${p}.g`, 'Roczny zwrot g musi być większy niż -1.');
     if (!isNum(a.sigma) || a.sigma < 0) err(`${p}.sigma`, 'Zmienność σ nie może być ujemna.');
     if (!isNum(a.se) || a.se < 0) err(`${p}.se`, 'Błąd standardowy dryfu nie może być ujemny.');
@@ -120,11 +131,15 @@ export function validateScenario(s: Scenario): ValidationResult {
   const ids = new Set(s.assets.map((a) => a.id));
   s.positions.forEach((pos, i) => {
     if (!ids.has(pos.assetId)) err(`positions[${i}].assetId`, `Nieznane aktywo: ${pos.assetId}.`);
+    else if (pos.wrapper !== 'taxable' && s.assets.find((a) => a.id === pos.assetId)?.kind === 'realEstate') {
+      err(`positions[${i}].wrapper`, 'Nieruchomość może być tylko na koncie opodatkowanym (taxable).');
+    }
   });
 
   // Zgodność factorIds z aktywami i kursami: aktywa ryzykowne, potem fx:*, cpi (MarketSimulator inaczej rzuci RangeError)
   const factorSet = new Set<string>();
-  const riskyIds = new Set(s.assets.filter((a) => a.kind === 'risky').map((a) => a.id));
+  // nieruchomość jest czynnikiem rynku jak aktywo ryzykowne (korelacja, dryf, zmienność)
+  const riskyIds = new Set(s.assets.filter((a) => a.kind === 'risky' || a.kind === 'realEstate').map((a) => a.id));
   for (const id of m.factorIds) {
     if (factorSet.has(id)) err('market.factorIds', `Powtórzony czynnik: ${id}.`);
     factorSet.add(id);
@@ -158,10 +173,10 @@ export function validateScenario(s: Scenario): ValidationResult {
     if (!ok) err('market.correlation', 'Macierz korelacji musi być symetryczna z jedynkami na przekątnej.');
   }
 
-  // Płynne: ryzykowne i lokata (EDO jest niepłynne). Pusty portfel: brak wag płynnych.
+  // Płynne: ryzykowne i lokata (EDO i nieruchomość są niepłynne). Pusty portfel: brak wag płynnych.
   const kindOf = new Map(s.assets.map((a) => [a.id, a.kind]));
   const liquidWeight = s.positions
-    .filter((pos) => kindOf.get(pos.assetId) !== 'edo')
+    .filter((pos) => kindOf.get(pos.assetId) !== 'edo' && kindOf.get(pos.assetId) !== 'realEstate')
     .reduce((acc, pos) => acc + (pos.targetWeight > 0 ? pos.targetWeight : 0), 0);
   if (liquidWeight === 0) {
     warnings.push({

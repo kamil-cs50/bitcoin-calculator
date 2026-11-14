@@ -1,11 +1,11 @@
 import { useLingui } from '@lingui/react/macro';
 import { ETF_SUFFIX, presetIdOf } from '../../state/defaults';
 
-export type TileKind = 'btc' | 'world' | 'sp500' | 'edo' | 'deposit' | 'gold' | 'home' | 'custom';
+export type TileKind = 'btc' | 'world' | 'sp500' | 'edo' | 'deposit' | 'gold' | 'home' | 'rental' | 'custom';
 
-export const TILE_ORDER: readonly TileKind[] = ['btc', 'world', 'sp500', 'edo', 'deposit', 'gold', 'home', 'custom'];
+export const TILE_ORDER: readonly TileKind[] = ['btc', 'world', 'sp500', 'edo', 'deposit', 'gold', 'home', 'rental', 'custom'];
 
-/** Id presetu w zbiorze danych (mieszkanie i własne nie mają presetu w formularzu). */
+/** Id presetu w zbiorze danych (mieszkanie „mieszkam” i własne nie mają presetu w formularzu). */
 export const TILE_PRESET: Record<Exclude<TileKind, 'home' | 'custom'>, string> = {
   btc: 'btcBase',
   world: 'globalEquity',
@@ -13,6 +13,7 @@ export const TILE_PRESET: Record<Exclude<TileKind, 'home' | 'custom'>, string> =
   edo: 'edo',
   deposit: 'deposit',
   gold: 'gold',
+  rental: 'realEstate',
 };
 
 /** Nazwy aktywów po polsku (kafelki i lista pozycji). */
@@ -26,6 +27,7 @@ export function useAssetNames(): { tile: (k: TileKind) => string; asset: (assetI
     deposit: t`Lokata`,
     gold: t`Złoto`,
     home: t`Mieszkanie`,
+    rental: t`Mieszkanie na wynajem`,
     custom: t`Własne`,
   };
   const byAsset: Record<string, string> = {
@@ -38,6 +40,7 @@ export function useAssetNames(): { tile: (k: TileKind) => string; asset: (assetI
     edo: names.edo!,
     deposit: names.deposit!,
     gold: names.gold!,
+    realEstate: names.rental!,
     emEquity: t`Akcje rynków wschodzących`,
     wigEquity: t`Akcje polskie`,
     plBonds: t`Obligacje polskie`,

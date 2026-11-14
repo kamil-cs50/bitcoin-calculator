@@ -64,6 +64,24 @@ export function useParamRows() {
       return rows;
     }
 
+    if (a.kind === 'realEstate') {
+      const asset = d.assets[presetIdOf(a.id)];
+      if (!asset) return rows;
+      const upd = (patch: Partial<typeof a>): void => setAsset(a.id, (x) => ({ ...(x as typeof a), ...patch }));
+      if (crisis) {
+        add({ key: `${a.id}.alpha`, label: t`α (ładunek kryzysowy)${sfx}`, param: asset.alpha, value: a.alpha, unit: 'number', set: (v) => upd({ alpha: v }) });
+        add({ key: `${a.id}.b`, label: t`b (udział w zmienności kryzysu)${sfx}`, param: asset.b, value: a.b, unit: 'number', min: 0, max: 1, set: (v) => upd({ b: v }) });
+        return rows;
+      }
+      add({ key: `${a.id}.g`, label: t`Wzrost ceny ponad inflację (rocznie)`, param: asset.g, value: a.realGrowth, unit: 'percent', min: -0.1, max: 0.2, set: (v) => upd({ realGrowth: v }) });
+      add({ key: `${a.id}.sigma`, label: t`Zmienność roczna`, param: asset.sigma, value: a.sigma, unit: 'percent', min: 0, max: 1, set: (v) => upd({ sigma: v }) });
+      add({ key: `${a.id}.se`, label: t`Niepewność oczekiwanego zwrotu (SE)`, param: asset.se, value: a.se, unit: 'percent', min: 0, max: 0.5, set: (v) => upd({ se: v }) });
+      if (asset.netRentYield) {
+        add({ key: `${a.id}.rent`, label: t`Czynsz netto (% wartości rocznie)`, param: asset.netRentYield, value: a.netRentYield, unit: 'percent', min: 0, max: 0.3, set: (v) => upd({ netRentYield: v }) });
+      }
+      return rows;
+    }
+
     if (crisis) return rows;
     if (a.kind === 'deposit') {
       const dep = d.assets[a.id];
@@ -87,6 +105,7 @@ export function useParamRows() {
       return rows;
     }
     // EDO
+    if (a.kind !== 'edo') return rows;
     const e = d.edo;
     const updE = (patch: Partial<typeof a>): void => setAsset(a.id, (x) => ({ ...(x as typeof a), ...patch }));
     add({ key: 'edo.first', label: t`Oprocentowanie w pierwszym roku`, param: e.firstYearRate, value: a.firstYearRate, unit: 'percent', min: 0, max: 0.5, set: (v) => updE({ firstYearRate: v }) });

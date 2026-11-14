@@ -125,7 +125,8 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
     } else {
       const presetId = TILE_PRESET[kind];
       // wariant ETF to osobne aktywo (osobny podatek), więc nie zmienia podatku już dodanej pozycji „giełda”
-      addPosition({ presetId, value, etf: variant === 'etf' && (kind === 'btc' || kind === 'gold') });
+      // nieruchomość jest niepłynna: waga docelowa 0, żeby nie brała udziału w rebalansie ani wpłatach
+      addPosition({ presetId, value, etf: variant === 'etf' && (kind === 'btc' || kind === 'gold'), ...(kind === 'rental' ? { targetWeight: 0 } : {}) });
     }
     onDone();
   }
@@ -256,7 +257,13 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
             suffix="zł"
             value={amount}
             onChange={setAmount}
-            hint={kind === 'edo' ? t`Wartość Twoich obligacji EDO dziś.` : undefined}
+            hint={
+              kind === 'edo'
+                ? t`Wartość Twoich obligacji EDO dziś.`
+                : kind === 'rental'
+                  ? t`Wartość rynkowa mieszkania dziś. Czynsz netto (zakładane 3,5% wartości rocznie) trafia co miesiąc do gotówki po ryczałcie; mieszkanie nie bierze udziału w rebalansie ani wypłatach.`
+                  : undefined
+            }
           />
         )}
 

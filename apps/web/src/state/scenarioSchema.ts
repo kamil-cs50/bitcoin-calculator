@@ -45,6 +45,19 @@ const Edo = z.object({
   onMaturity: z.enum(['roll', 'cash']),
 });
 
+const RealEstate = z.object({
+  kind: z.literal('realEstate'),
+  id: z.string().min(1),
+  netRentYield: num,
+  realGrowth: num,
+  sigma: num,
+  se: num,
+  alpha: num,
+  b: num,
+  purchaseYear: z.number().int().optional(),
+  saleYear: z.number().int().optional(),
+});
+
 const Position = z.object({
   assetId: z.string().min(1),
   wrapper: Wrapper,
@@ -126,7 +139,7 @@ export const ScenarioSchema = z.object({
   startYear: z.number().int(),
   startMonth: z.number().int().min(1).max(12),
   horizonMonths: z.number().int(),
-  assets: z.array(z.discriminatedUnion('kind', [Risky, Deposit, Edo])),
+  assets: z.array(z.discriminatedUnion('kind', [Risky, Deposit, Edo, RealEstate])),
   positions: z.array(Position),
   market: Market,
   contribution: Contribution.optional(),

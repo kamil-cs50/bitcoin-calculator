@@ -6,7 +6,7 @@ import { Xoshiro128ss } from '../rng/xoshiro128ss';
 import { drawDriftShifts } from './paramUncertainty';
 import { FxProcess, fxMonthlySigma } from './fx';
 import { InflationProcess } from './inflation';
-import type { FxParams, InflationParams, RegimeParams, RiskyAssetParams, Scenario, Warning } from '../types';
+import type { AssetParams, FxParams, InflationParams, RealEstateParams, RegimeParams, RiskyAssetParams, Scenario, Warning } from '../types';
 import { clampAlpha, inRegimeCorrelation, regimeConstants, sigmaMonthlyFactor } from './regime';
 import type { RegimeConstants } from './regime';
 
@@ -62,6 +62,15 @@ function isRisky(a: { kind: string }): a is RiskyAssetParams {
   return a.kind === 'risky';
 }
 
+/**
+ * Nieruchomość jako czynnik rynku (spec 4.8): aktywo ryzykowne w walucie bazowej (bez kursu), bez TER i upadku,
+ * o dryfie `ln(1+realGrowth)/12` plus miesięczny przyrost inflacji (dodawany w `step`, flaga `inflDrift`).
+ */
+function realEstateAsRisky(a: RealEstateParams, baseCurrency: RiskyAssetParams['currency']): RiskyAssetParams {
+  return { kind: 'risky', id: a.id, currency: baseCurrency, g: a.realGrowth, sigma: a.sigma, se: a.se, alpha: a.alpha, b: a.b, ter: 0, costBps: 0, taxForm: 'none' };
+}
+const isAnyRisky = (a: AssetParams): a is RiskyAssetParams | RealEstateParams => a.kind === 'risky' || a.kind === 'realEstate';
+
 export class MarketSimulator {
   readonly warnings: Warning[] = [];
   readonly riskyIds: string[] = [];
@@ -87,6 +96,7 @@ export class MarketSimulator {
   private readonly cpiFactor: number;
   private readonly pCollapse: Float64Array;
   private readonly lnSurvive: Float64Array;
+  private readonly inflDrift: Uint8Array; // 1 = dryf nominalny powiększony o inflację (nieruchomość)
 
   private readonly infl: InflationProcessLike;
   private readonly fxp: FxProcessLike[] = [];
@@ -131,17 +141,20 @@ export class MarketSimulator {
     // czynniki: aktywa ryzykowne, fx:*, cpi
     const byId = new Map(scenario.assets.map((a) => [a.id, a]));
     const riskyFactor: number[] = [];
+    const inflDrift: number[] = [];
     this.cpiFactor = ids.indexOf('cpi');
     for (let i = 0; i < n; i++) {
       const id = ids[i]!;
       if (id === 'cpi' || id.startsWith('fx:')) continue;
       const a = byId.get(id);
-      if (!a || !isRisky(a)) throw new RangeError(`MarketSimulator: czynnik "${id}" nie jest aktywem ryzykownym`);
-      this.assets.push(a);
+      if (!a || !isAnyRisky(a)) throw new RangeError(`MarketSimulator: czynnik "${id}" nie jest aktywem ryzykownym`);
+      this.assets.push(isRisky(a) ? a : realEstateAsRisky(a, scenario.baseCurrency));
+      inflDrift.push(a.kind === 'realEstate' ? 1 : 0);
       this.riskyIds.push(id);
       riskyFactor.push(i);
     }
     this.nr = this.assets.length;
+    this.inflDrift = Uint8Array.from(inflDrift);
     this.factorIndex = Int32Array.from(riskyFactor);
     this.nfx = m.fx.length;
     this.fxFactor = new Int32Array(this.nfx);
@@ -335,6 +348,7 @@ export class MarketSimulator {
       const kap = sPrev === 0 ? this.kap0[i]! : this.kap1[i]!;
       let r = this.alpha[i]! * sigma * delta + sigma * this.fMonthly[i]! * kap * this.eps[this.factorIndex[i]!]!;
       if (!dead) r += decayed ? Math.log1p(this.gAt(i, t)) / 12 + this.driftShift[i]! / 12 : this.driftConst[i]!;
+      if (this.inflDrift[i] === 1) r += this.infl.x / 12; // ten sam przyrost, który wchodzi do ln CPI w tym kroku
       // 5. upadek (strumień collapse:<id>)
       const rc = this.rngCollapse[i];
       if (rc && !dead && rc.nextUniform() < this.pCollapse[i]!) {
