@@ -307,6 +307,10 @@ msgstr "Docelowy zwrot roczny (po latach)"
 msgid "Dodaj bieżący scenariusz"
 msgstr "Dodaj bieżący scenariusz"
 
+#: src/features/assumptions/PowerLawCard.tsx:58
+msgid "Dodaj Bitcoina do portfela, aby użyć nakładki."
+msgstr "Dodaj Bitcoina do portfela, aby użyć nakładki."
+
 #: src/features/portfolio/PositionForm.tsx:272
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
@@ -328,8 +332,8 @@ msgid "Dodaj pozycje w portfelu, a pojawią się tu założenia dla każdego akt
 msgstr "Dodaj pozycje w portfelu, a pojawią się tu założenia dla każdego aktywa."
 
 #: src/features/assumptions/ExpertControls.tsx:70
-msgid "Dodatkowy składnik opisujący cenę Bitcoina krzywą potęgową w czasie. Naukowo sporny, więc domyślnie wyłączony. Dostępny w przyszłej wersji aplikacji."
-msgstr "Dodatkowy składnik opisujący cenę Bitcoina krzywą potęgową w czasie. Naukowo sporny, więc domyślnie wyłączony. Dostępny w przyszłej wersji aplikacji."
+#~ msgid "Dodatkowy składnik opisujący cenę Bitcoina krzywą potęgową w czasie. Naukowo sporny, więc domyślnie wyłączony. Dostępny w przyszłej wersji aplikacji."
+#~ msgstr "Dodatkowy składnik opisujący cenę Bitcoina krzywą potęgową w czasie. Naukowo sporny, więc domyślnie wyłączony. Dostępny w przyszłej wersji aplikacji."
 
 #. placeholder {0}: s.accessed
 #: src/features/assumptions/ParamRow.tsx:119
@@ -635,12 +639,12 @@ msgstr "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestyc
 msgid "Mnożnik zmienności w kryzysie (κ₁)"
 msgstr "Mnożnik zmienności w kryzysie (κ₁)"
 
-#: src/features/assumptions/ExpertControls.tsx:67
+#: src/features/assumptions/PowerLawCard.tsx:53
 msgid "model kontrowersyjny"
 msgstr "model kontrowersyjny"
 
-#: src/features/assumptions/ExpertControls.tsx:27
-#: src/features/assumptions/ExpertControls.tsx:31
+#: src/features/assumptions/ExpertControls.tsx:26
+#: src/features/assumptions/ExpertControls.tsx:30
 msgid "Model rynku"
 msgstr "Model rynku"
 
@@ -677,8 +681,8 @@ msgstr "Najgorsze 5% przyszłości: średnio ({basis})"
 msgid "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 msgstr "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 
-#: src/features/assumptions/ExpertControls.tsx:67
-#: src/features/assumptions/ExpertControls.tsx:68
+#: src/features/assumptions/PowerLawCard.tsx:53
+#: src/features/assumptions/PowerLawCard.tsx:57
 msgid "Nakładka potęgowa"
 msgstr "Nakładka potęgowa"
 
@@ -827,6 +831,14 @@ msgstr "Osobny przebieg samego rynku sprawdza, czy symulacja odtwarza założone
 msgid "Ostatni odczyt inflacji r/r"
 msgstr "Ostatni odczyt inflacji r/r"
 
+#: src/features/assumptions/PowerLawCard.tsx:61
+msgid "Parametr a"
+msgstr "Parametr a"
+
+#: src/features/assumptions/PowerLawCard.tsx:62
+msgid "Parametr b"
+msgstr "Parametr b"
+
 #: src/features/assumptions/AssumptionsPanel.tsx:140
 msgid "Parametry tego aktywa wpisałeś sam, więc nie mają źródeł ani wartości domyślnych."
 msgstr "Parametry tego aktywa wpisałeś sam, więc nie mają źródeł ani wartości domyślnych."
@@ -903,7 +915,7 @@ msgstr "Podaj pełną liczbę lat od 1 do 60."
 msgid "Podłoga (zł miesięcznie, opcjonalnie)"
 msgstr "Podłoga (zł miesięcznie, opcjonalnie)"
 
-#: src/features/assumptions/ExpertControls.tsx:42
+#: src/features/assumptions/ExpertControls.tsx:41
 msgid "Podręcznikowy"
 msgstr "Podręcznikowy"
 
@@ -1023,11 +1035,11 @@ msgstr "Puste oznacza: na końcu horyzontu."
 msgid "Razem: {0}"
 msgstr "Razem: {0}"
 
-#: src/features/assumptions/ExpertControls.tsx:41
+#: src/features/assumptions/ExpertControls.tsx:40
 msgid "Realistyczny"
 msgstr "Realistyczny"
 
-#: src/features/assumptions/ExpertControls.tsx:32
+#: src/features/assumptions/ExpertControls.tsx:31
 msgid "Realistyczny: ogony grubsze niż w rozkładzie normalnym i okresy kryzysu. Podręcznikowy: zwroty o rozkładzie log-normalnym, bez kryzysów."
 msgstr "Realistyczny: ogony grubsze niż w rozkładzie normalnym i okresy kryzysu. Podręcznikowy: zwroty o rozkładzie log-normalnym, bez kryzysów."
 
@@ -1496,6 +1508,10 @@ msgstr "Wpisz dzisiejszą cenę 1 BTC (aplikacja nie pobiera cen sama), a pokaż
 msgid "Wpisz kwotę."
 msgstr "Wpisz kwotę."
 
+#: src/features/assumptions/PowerLawCard.tsx:64
+msgid "Wpisz oba parametry. Do czasu ich wpisania nakładka nie działa."
+msgstr "Wpisz oba parametry. Do czasu ich wpisania nakładka nie działa."
+
 #: src/features/plan/PlanEditor.tsx:212
 msgid "Wpłacaj przez (lat)"
 msgstr "Wpłacaj przez (lat)"
@@ -1513,7 +1529,7 @@ msgstr "Wpłaty"
 msgid "Wpłaty trwają najwyżej do końca horyzontu."
 msgstr "Wpłaty trwają najwyżej do końca horyzontu."
 
-#: src/features/assumptions/ExpertControls.tsx:55
+#: src/features/assumptions/ExpertControls.tsx:54
 msgid "Wrażliwość na kryzysy"
 msgstr "Wrażliwość na kryzysy"
 
@@ -1674,6 +1690,10 @@ msgstr "Zapisano go ze zbiorem danych {version}, a aplikacja ma już {CURRENT_DA
 msgid "Zapisz bieżący plan jako migawkę, zmień coś (np. udział bitcoina) i zapisz kolejną. Wszystkie scenariusze liczą się na tych samych losowych przyszłościach, więc różnice nie zależą od szczęścia w losowaniu."
 msgstr "Zapisz bieżący plan jako migawkę, zmień coś (np. udział bitcoina) i zapisz kolejną. Wszystkie scenariusze liczą się na tych samych losowych przyszłościach, więc różnice nie zależą od szczęścia w losowaniu."
 
+#: src/features/assumptions/PowerLawCard.tsx:55
+msgid "Zastępuje oczekiwany zwrot Bitcoina pochodną trendu ln P = a + b·ln(dni od 2009-01-03). Zastrzeżenie: regresja ceny na czasie jest podatna na regresję pozorną i nie ma podstaw ekonomicznych. Parametry a i b są niezweryfikowane. Zmienność i upadek pozostają bez zmian."
+msgstr "Zastępuje oczekiwany zwrot Bitcoina pochodną trendu ln P = a + b·ln(dni od 2009-01-03). Zastrzeżenie: regresja ceny na czasie jest podatna na regresję pozorną i nie ma podstaw ekonomicznych. Parametry a i b są niezweryfikowane. Zmienność i upadek pozostają bez zmian."
+
 #: src/features/settings/Settings.tsx:168
 msgid "Zbiór danych {CURRENT_DATASET_VERSION}. Aplikacja działa offline; nowa wersja pojawia się po Twojej zgodzie."
 msgstr "Zbiór danych {CURRENT_DATASET_VERSION}. Aplikacja działa offline; nowa wersja pojawia się po Twojej zgodzie."
@@ -1743,6 +1763,6 @@ msgstr "α (ładunek kryzysowy): kurs {0}"
 msgid "α (ładunek kryzysowy){sfx}"
 msgstr "α (ładunek kryzysowy){sfx}"
 
-#: src/features/assumptions/ExpertControls.tsx:57
+#: src/features/assumptions/ExpertControls.tsx:56
 msgid "α mówi, jak mocno aktywo odczuwa kryzys rynkowy, a b, jaka część jego zmienności rośnie w kryzysie."
 msgstr "α mówi, jak mocno aktywo odczuwa kryzys rynkowy, a b, jaka część jego zmienności rośnie w kryzysie."

@@ -12,6 +12,7 @@ const Wrapper = z.enum(['taxable', 'IKE', 'IKZE']);
 const TaxForm = z.enum(['security', 'crypto', 'physicalGold', 'none']);
 
 const Decay = z.object({ gInf: num, tauG: num, sigmaInf: num, tauSigma: num });
+const PowerLaw = z.object({ a: num, b: num, genesis: z.literal('2009-01-03') });
 const Collapse = z.object({ hazard: num, loss: num });
 
 const Risky = z.object({
@@ -28,6 +29,7 @@ const Risky = z.object({
   taxForm: TaxForm,
   decay: Decay.optional(),
   collapse: Collapse.optional(),
+  powerLaw: PowerLaw.optional(),
 });
 const Deposit = z.object({
   kind: z.literal('deposit'),

@@ -3,7 +3,12 @@ export type Wrapper = 'taxable' | 'IKE' | 'IKZE';
 export type TaxForm = 'security' | 'crypto' | 'physicalGold' | 'none';
 export interface DecayParams { gInf: number; tauG: number; sigmaInf: number; tauSigma: number }   // tau w latach
 export interface CollapseParams { hazard: number; loss: number }                                     // na rok; 0..1
-export interface RiskyAssetParams { kind: 'risky'; id: string; currency: Currency; g: number; sigma: number; se: number; alpha: number; b: number; ter: number; costBps: number; taxForm: TaxForm; decay?: DecayParams; collapse?: CollapseParams }
+/**
+ * Nakładka potęgowa BTC (spec 4.8, kontrowersyjna, domyślnie wyłączona = brak pola): zastępuje g(t) pochodną trendu
+ * ln P = a + b·ln(dni od genesis). `a`, `b` wpisuje użytkownik (niezweryfikowane); dryf miesięczny = b·ln((d+30,44)/d).
+ */
+export interface PowerLawParams { a: number; b: number; genesis: '2009-01-03' }
+export interface RiskyAssetParams { kind: 'risky'; id: string; currency: Currency; g: number; sigma: number; se: number; alpha: number; b: number; ter: number; costBps: number; taxForm: TaxForm; decay?: DecayParams; collapse?: CollapseParams; powerLaw?: PowerLawParams }
 export interface DepositParams { kind: 'deposit'; id: string; k: number; spread: number; initialRate: number }
 export interface EdoParams { kind: 'edo'; id: string; firstYearRate: number; margin: number; earlyFeePer100: number; onMaturity: 'roll' | 'cash' }
 /**

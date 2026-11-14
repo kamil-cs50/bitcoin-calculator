@@ -96,6 +96,12 @@ export function validateScenario(s: Scenario): ValidationResult {
       if (!isNum(hazard) || hazard < 0) err(`${p}.collapse.hazard`, 'Hazard musi być nieujemny.');
       if (!isNum(loss) || loss < 0 || loss > 1) err(`${p}.collapse.loss`, 'Strata musi mieścić się w przedziale 0..1.');
     }
+    if (a.powerLaw) {
+      const pl = a.powerLaw;
+      if (!isNum(pl.a)) err(`${p}.powerLaw.a`, 'Parametr a nakładki potęgowej musi być liczbą.');
+      if (!isNum(pl.b)) err(`${p}.powerLaw.b`, 'Parametr b nakładki potęgowej musi być liczbą.');
+      if (pl.genesis !== '2009-01-03') err(`${p}.powerLaw.genesis`, 'Data genesis nakładki potęgowej to 2009-01-03.');
+    }
     if (a.decay) {
       const d = a.decay;
       if (!isNum(d.tauG) || d.tauG <= 0) err(`${p}.decay.tauG`, 'Stała zaniku g musi być dodatnia.');

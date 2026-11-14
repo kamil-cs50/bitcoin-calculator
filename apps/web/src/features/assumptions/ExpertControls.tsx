@@ -1,8 +1,7 @@
 import { useLingui } from '@lingui/react/macro';
-import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
 import { Field, inputClass } from '../../components/ui/Field';
-import { Toggle } from '../../components/ui/Toggle';
+import { PowerLawCard } from './PowerLawCard';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useAssetNames } from '../portfolio/tiles';
 import { ParamRow } from './ParamRow';
@@ -64,12 +63,7 @@ export function ExpertControls() {
         </Card>
       )}
 
-      <Card title={t`Nakładka potęgowa`} aside={<Badge tone="warning">{t`model kontrowersyjny`}</Badge>}>
-        <Toggle label={t`Nakładka potęgowa`} checked={false} onCheckedChange={() => undefined} disabled />
-        <p className="mb-0 mt-1 text-sm text-muted">
-          {t`Dodatkowy składnik opisujący cenę Bitcoina krzywą potęgową w czasie. Naukowo sporny, więc domyślnie wyłączony. Dostępny w przyszłej wersji aplikacji.`}
-        </p>
-      </Card>
+      <PowerLawCard />
     </>
   );
 }

@@ -57,6 +57,9 @@ const TABLE_K = 1024;
 const KEY_REGIME = factorKey('$regime');
 const KEY_TAIL = factorKey('$tail');
 const KEY_PARAM = factorKey('$paramUnc');
+const DAYS_PER_MONTH = 30.44;
+const GENESIS_MS = Date.UTC(2009, 0, 3);
+const DAY_MS = 86_400_000;
 
 function isRisky(a: { kind: string }): a is RiskyAssetParams {
   return a.kind === 'risky';
@@ -124,6 +127,9 @@ export class MarketSimulator {
   private readonly driftShift: Float64Array;
   private readonly driftConst: Float64Array;
   private readonly hasDecay: Uint8Array;
+  private readonly hasPowerLaw: Uint8Array;
+  /** Dni od genesis do początku symulacji (nakładka potęgowa). */
+  private readonly daysAtStart: number;
   private readonly sigmaConst: Float64Array;
   private regime: 0 | 1 = 0;
 
@@ -266,6 +272,8 @@ export class MarketSimulator {
     this.driftShift = new Float64Array(this.nr);
     this.driftConst = new Float64Array(this.nr);
     this.hasDecay = Uint8Array.from(this.assets.map((a) => (a.decay ? 1 : 0)));
+    this.hasPowerLaw = Uint8Array.from(this.assets.map((a) => (a.powerLaw ? 1 : 0)));
+    this.daysAtStart = (Date.UTC(scenario.startYear, scenario.startMonth - 1, 1) - GENESIS_MS) / DAY_MS;
     this.sigmaConst = Float64Array.from(this.assets.map((a) => a.sigma));
   }
 
@@ -297,7 +305,7 @@ export class MarketSimulator {
     drawDriftShifts(this.zAssetsUnc, this.seAssets, this.cholAssets, this.nr, this.uncScale, this.driftShift);
     // stały dryf miesięczny aktywów bez zaniku (ta sama kolejność działań co w gAt: log1p(g)/12 + shift/12)
     for (let i = 0; i < this.nr; i++) {
-      if (this.hasDecay[i] === 0) this.driftConst[i] = Math.log1p(this.assets[i]!.g) / 12 + this.driftShift[i]! / 12;
+      if (this.hasDecay[i] === 0 && this.hasPowerLaw[i] === 0) this.driftConst[i] = Math.log1p(this.assets[i]!.g) / 12 + this.driftShift[i]! / 12;
     }
     this.infl.init(this.meanInflation + this.meanInflationSe * this.uncScale * this.zUnc[0]!);
     for (let k = 0; k < this.nfx; k++) {
@@ -347,7 +355,10 @@ export class MarketSimulator {
       const sigma = decayed ? (dead ? this.assets[i]!.decay!.sigmaInf : this.sigmaAt(i, t)) : this.sigmaConst[i]!;
       const kap = sPrev === 0 ? this.kap0[i]! : this.kap1[i]!;
       let r = this.alpha[i]! * sigma * delta + sigma * this.fMonthly[i]! * kap * this.eps[this.factorIndex[i]!]!;
-      if (!dead) r += decayed ? Math.log1p(this.gAt(i, t)) / 12 + this.driftShift[i]! / 12 : this.driftConst[i]!;
+      if (!dead) {
+        if (this.hasPowerLaw[i] === 1) r += this.powerLawMonthly(i, t) + this.driftShift[i]! / 12;
+        else r += decayed ? Math.log1p(this.gAt(i, t)) / 12 + this.driftShift[i]! / 12 : this.driftConst[i]!;
+      }
       if (this.inflDrift[i] === 1) r += this.infl.x / 12; // ten sam przyrost, który wchodzi do ln CPI w tym kroku
       // 5. upadek (strumień collapse:<id>)
       const rc = this.rngCollapse[i];
@@ -378,9 +389,16 @@ export class MarketSimulator {
     return this.infl.yy(lag);
   }
 
-  /** g(t) z zanikiem (t w miesiącach). */
+  /** Miesięczny log-dryf nakładki potęgowej: b·ln((d_t + 30,44)/d_t), d_t = dni od genesis (spec 4.8). */
+  private powerLawMonthly(assetIndex: number, t: number): number {
+    const d = this.daysAtStart + t * DAYS_PER_MONTH;
+    return this.assets[assetIndex]!.powerLaw!.b * Math.log((d + DAYS_PER_MONTH) / d);
+  }
+
+  /** g(t) z zanikiem (t w miesiącach); przy nakładce potęgowej roczny odpowiednik jej miesięcznego dryfu. */
   gAt(assetIndex: number, t: number): number {
     const a = this.assets[assetIndex]!;
+    if (a.powerLaw) return Math.expm1(12 * this.powerLawMonthly(assetIndex, t));
     const d = a.decay;
     if (!d) return a.g;
     return d.gInf + (a.g - d.gInf) * Math.exp(-t / 12 / d.tauG);

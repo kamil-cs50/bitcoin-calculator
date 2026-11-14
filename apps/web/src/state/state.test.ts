@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { loadDataset, type Dataset } from '@sim/data';
 import { validateScenario } from '@sim/engine';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { assetFromPreset, defaultScenario } from './defaults';
+import { assetFromPreset, defaultScenario, etfId } from './defaults';
 import { db } from './db';
 import { migrate } from './migrations';
 import { ScenarioSchema } from './scenarioSchema';
@@ -29,6 +29,26 @@ describe('defaultScenario', () => {
     const v = validateScenario(s);
     expect(v.ok).toBe(true);
     if (v.ok) expect(v.warnings.map((w) => w.code)).toContain('EMPTY_PORTFOLIO');
+  });
+});
+
+describe('nakładka potęgowa: domyślnie wyłączona', () => {
+  it('domyślny scenariusz i wszystkie presety mają powerLaw === undefined', () => {
+    const ids = [...Object.keys(d.assets), ...Object.keys(d.crypto)];
+    expect(ids.length).toBeGreaterThan(5);
+    for (const id of ids) {
+      expect((assetFromPreset(d, id) as { powerLaw?: unknown }).powerLaw).toBeUndefined();
+      if (assetFromPreset(d, id).kind === 'risky') expect((assetFromPreset(d, etfId(id)) as { powerLaw?: unknown }).powerLaw).toBeUndefined();
+    }
+    for (const a of defaultScenario(d).assets) expect((a as { powerLaw?: unknown }).powerLaw).toBeUndefined();
+  });
+
+  it('schemat Zod przyjmuje powerLaw i odrzuca inną datę genesis', () => {
+    const s = defaultScenario(d);
+    const btc = { ...assetFromPreset(d, 'btcBase'), powerLaw: { a: 1, b: 2, genesis: '2009-01-03' } };
+    expect(ScenarioSchema.safeParse({ ...s, assets: [btc] }).success).toBe(true);
+    const bad = { ...btc, powerLaw: { a: 1, b: 2, genesis: '2010-01-01' } };
+    expect(ScenarioSchema.safeParse({ ...s, assets: [bad] }).success).toBe(false);
   });
 });
 

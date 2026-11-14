@@ -193,7 +193,7 @@ describe('AssumptionsPanel: niepewność i tryb eksperta', () => {
     expect(screen.queryByRole('region', { name: 'Wrażliwość na kryzysy' })).toBeNull();
   });
 
-  it('tryb eksperta odsłania model, ν, α i b oraz wyłączoną nakładkę potęgową', async () => {
+  it('tryb eksperta odsłania model, ν, α i b oraz nakładkę potęgową', async () => {
     useUiStore.getState().setExpert(true);
     view();
     const model = screen.getByRole('combobox', { name: 'Model rynku' });
@@ -217,9 +217,30 @@ describe('AssumptionsPanel: niepewność i tryb eksperta', () => {
     expect(sc().assets.find((a) => a.id === 'globalEquity')).toMatchObject({ b: 0.5 });
 
     const overlay = screen.getByRole('switch', { name: /Nakładka potęgowa/ });
-    expect(overlay).toBeDisabled();
     expect(overlay).not.toBeChecked();
     expect(screen.getByText(/model kontrowersyjny/)).toBeInTheDocument();
+  });
+
+  it('nakładka potęgowa: ostrzeżenie przed włączeniem, brak wartości domyślnych, zapis do BTC, wyłączenie', async () => {
+    useUiStore.getState().setExpert(true);
+    view();
+    expect(screen.getByText(/regresja ceny na czasie jest podatna na regresję pozorną/)).toBeInTheDocument();
+    expect(screen.getByText(/nie ma podstaw ekonomicznych/)).toBeInTheDocument();
+    const btcOf = () => sc().assets.find((a) => a.id === 'btcBase');
+    expect(btcOf()).toBeDefined();
+    expect(btcOf()).not.toHaveProperty('powerLaw');
+    await userEvent.click(screen.getByRole('switch', { name: /Nakładka potęgowa/ }));
+    const a = screen.getByRole('textbox', { name: /Parametr a/ });
+    const b = screen.getByRole('textbox', { name: /Parametr b/ });
+    expect(a).toHaveValue('');
+    expect(b).toHaveValue('');
+    expect(btcOf()).not.toHaveProperty('powerLaw');
+    await userEvent.type(a, '-17');
+    expect(btcOf()).not.toHaveProperty('powerLaw');
+    await userEvent.type(b, '5,8');
+    expect(btcOf()).toMatchObject({ powerLaw: { a: -17, b: 5.8, genesis: '2009-01-03' } });
+    await userEvent.click(screen.getByRole('switch', { name: /Nakładka potęgowa/ }));
+    expect(btcOf()).not.toHaveProperty('powerLaw');
   });
 });
 
