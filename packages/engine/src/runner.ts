@@ -182,8 +182,9 @@ export function mergeResults(parts: RunResult[]): RunResult {
   if (parts.length === 0) throw new Error('mergeResults: brak części');
   const first = parts[0]!;
   const G = first.grid.length;
-  const years = first.meanShare.length === 0 ? 0 : first.meanShare.length / (first.collapsed.length / Math.max(first.paths, 1));
-  const A = first.paths > 0 ? first.collapsed.length / first.paths : 0;
+  // liczba lat i aktywów z siatki i długości meanShare (działa też dla części z paths = 0)
+  const { years, pointsPerYear } = yearsOfGrid(first.grid);
+  const A = years > 0 ? first.meanShare.length / years : 0;
   let total = 0;
   for (const p of parts) {
     if (p.grid.length !== G) throw new Error('mergeResults: różne siatki');
@@ -203,7 +204,6 @@ export function mergeResults(parts: RunResult[]): RunResult {
     meanShare: new Float64Array(first.meanShare.length),
     warnings: [],
   };
-  const { pointsPerYear } = yearsOfGrid(first.grid);
   const sums = new Float64Array(first.meanShare.length);
   const seen = new Set<string>();
   let at = 0;
@@ -225,7 +225,7 @@ export function mergeResults(parts: RunResult[]): RunResult {
   }
   for (let y = 0; y < years; y++) {
     const d = shareDivisor(total, pointsPerYear[y]!);
-    for (let i = 0; i < A; i++) out.meanShare[y * A + i] = sums[y * A + i]! / d;
+    for (let i = 0; i < A; i++) out.meanShare[y * A + i] = total > 0 ? sums[y * A + i]! / d : 0;
   }
   return out;
 }

@@ -16,7 +16,7 @@ describe('CryptoTaxPL (koszyk)', () => {
     expect(c.closeYear()).toBeCloseTo(2470, 9);
     expect(c.carry).toBe(0);
   });
-  it('podatek utajony', () => {
+  it('podatek z likwidacji (carry)', () => {
     const c = new CryptoTaxPL();
     c.onBuy(10000);
     c.closeYear();
@@ -24,8 +24,26 @@ describe('CryptoTaxPL (koszyk)', () => {
     c.onBuy(1000);
     c.closeYear();
     expect(c.carry).toBe(7000);
-    expect(c.latentTax(30000)).toBeCloseTo(4370, 9);
-    expect(c.latentTax(1000)).toBe(0);
+    expect(c.liquidationTax(30000)).toBeCloseTo(4370, 9);
+    expect(c.liquidationTax(1000)).toBe(0);
+  });
+  it('likwidacja w roku zakupu: koszty bieżącego roku pomniejszają dochód (Important 1)', () => {
+    const c = new CryptoTaxPL();
+    c.onBuy(10000); // zakup w bieżącym roku, jeszcze bez closeYear
+    expect(c.liquidationTax(10000)).toBeCloseTo(0, 12); // wartość = koszt: brak podatku
+    expect(c.liquidationTax(15000)).toBeCloseTo(0.19 * 5000, 9);
+  });
+  it('likwidacja: przychody roku + wartość − koszty − carry, jedno max(0, ·)', () => {
+    const c = new CryptoTaxPL();
+    c.onBuy(10000);
+    c.closeYear(); // carry 10000
+    c.onSale(3000);
+    c.onBuy(500);
+    // 3000 + 9000 − 500 − 10000 = 1500
+    expect(c.liquidationTax(9000)).toBeCloseTo(0.19 * 1500, 9);
+    // przychód obniża podstawę dwa razy NIE: pending + latent osobno = 0 + 0, a razem 1500 > 0
+    expect(c.pendingTax()).toBe(0);
+    expect(c.liquidationTax(6000)).toBe(0);
   });
   it('reset czyści stan', () => {
     const c = new CryptoTaxPL();
@@ -79,13 +97,13 @@ describe('TaxEngine routing', () => {
     const t = createTaxEngine({ kind: 'none' });
     t.onSale('security', 'taxable', 2000, 1000, 5, 12);
     expect(t.closeYear(2030)).toBe(0);
-    expect(t.latentTax([{ form: 'security', wrapper: 'taxable', value: 10, basis: 1 }], 2030)).toBe(0);
+    expect(t.liquidationTax([{ form: 'security', wrapper: 'taxable', value: 10, basis: 1 }], 2030)).toBe(0);
   });
-  it('latentTax pl: papiery, krypto z koszykiem, IKE pominięte', () => {
+  it('liquidationTax pl: papiery, krypto z koszykiem, IKE pominięte', () => {
     const t = createTaxEngine({ kind: 'pl' });
     t.onBuy('crypto', 'taxable', 7000, 1);
     t.closeYear(2027);
-    const lt = t.latentTax(
+    const lt = t.liquidationTax(
       [
         { form: 'security', wrapper: 'taxable', value: 3000, basis: 1000 },
         { form: 'crypto', wrapper: 'taxable', value: 30000, basis: 7000 },
@@ -94,6 +112,32 @@ describe('TaxEngine routing', () => {
       2028,
     );
     expect(lt).toBeCloseTo(0.19 * 2000 + 0.19 * 23000, 9);
+  });
+  it('liquidationTax pl: krypto kupione w tym roku, wartość = koszt: 0 (Important 1)', () => {
+    const t = createTaxEngine({ kind: 'pl' });
+    t.onBuy('crypto', 'taxable', 10000, 1);
+    const pos = [{ form: 'crypto' as const, wrapper: 'taxable' as const, value: 10000, basis: 10000 }];
+    expect(t.liquidationTax(pos, 2027)).toBeCloseTo(0, 12);
+    pos[0]!.value = 12000;
+    expect(t.liquidationTax(pos, 2027)).toBeCloseTo(0.19 * 2000, 9);
+  });
+  it('liquidationTax pl: sprzedaż krypto w roku + wartość tej samej pozycji liczone razem', () => {
+    const t = createTaxEngine({ kind: 'pl' });
+    t.onBuy('crypto', 'taxable', 10000, 1);
+    t.onSale('crypto', 'taxable', 6000, 0, 2, 1);
+    // 6000 + 8000 − 10000 = 4000
+    const pos = [{ form: 'crypto' as const, wrapper: 'taxable' as const, value: 8000, basis: 5000 }];
+    expect(t.liquidationTax(pos, 2027)).toBeCloseTo(0.19 * 4000, 9);
+  });
+  it('liquidationTax pl: papiery, zrealizowane + niezrealizowane z jednym przebiegiem strat (Important 2)', () => {
+    const t = createTaxEngine({ kind: 'pl' });
+    t.onSale('security', 'taxable', 600, 1600, 1, 12); // strata 1000 w 2027
+    t.closeYear(2027);
+    t.onSale('security', 'taxable', 1500, 500, 2, 12); // zrealizowany zysk 1000 w 2028
+    const pos = [{ form: 'security' as const, wrapper: 'taxable' as const, value: 3000, basis: 1000 }]; // niezrealizowany 2000
+    // dochód 3000, strata 1000 (jednorazowo) -> 2000; stare pending + latent: 0 + 0.19*(2000-1000)... + 0.19*(1000-1000)=190
+    expect(t.pendingTax(2028)).toBeCloseTo(0, 9);
+    expect(t.liquidationTax(pos, 2028)).toBeCloseTo(0.19 * 2000, 9);
   });
   it('reset czyści stan roczny', () => {
     const t = createTaxEngine({ kind: 'pl' });

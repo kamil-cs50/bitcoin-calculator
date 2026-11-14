@@ -77,6 +77,28 @@ describe('buildGrid', () => {
   });
 });
 
+describe('buildGrid: dodatkowe miesiące (rozszerzenie spec 4.14: miesiąc celu)', () => {
+  it('dołącza miesiąc spoza siatki, zachowując porządek i unikalność', () => {
+    const g = Array.from(buildGrid(240, [100]));
+    expect(g).toContain(100);
+    expect(g.filter((x) => x === 100).length).toBe(1);
+    for (let i = 1; i < g.length; i++) expect(g[i]!).toBeGreaterThan(g[i - 1]!);
+    expect(g.length).toBe(buildGrid(240).length + 1);
+  });
+  it('miesiąc już na siatce, 0, horyzont i spoza zakresu nie zmieniają siatki', () => {
+    const base = Array.from(buildGrid(240));
+    expect(Array.from(buildGrid(240, [99]))).toEqual(base);
+    expect(Array.from(buildGrid(240, [0, 240, 241, -3, 1.5]))).toEqual(base);
+  });
+  it('kernel dodaje goal.month do siatki', () => {
+    const k = new Kernel(makeScenario({ horizonMonths: 240, goal: { amountReal: 1, month: 100 } }));
+    expect(Array.from(k.grid)).toEqual(Array.from(buildGrid(240, [100])));
+    const r = new Rec();
+    k.simulate(1, 0, r);
+    expect(r.j.length).toBe(k.grid.length);
+  });
+});
+
 describe('Kernel: konstruktor', () => {
   it('rzuca dla niepoprawnego scenariusza', () => {
     expect(() => new Kernel(makeScenario({ horizonMonths: 0 }))).toThrow();
@@ -504,5 +526,34 @@ describe('Kernel: wykup EDO do gotówki', () => {
     k.simulate(3, 0, r);
     expect(bilans(r, s, k)).toBeLessThan(1e-9);
     expect(k.ledger.taxesPaid).toBeGreaterThan(0);
+  });
+});
+
+describe('Kernel: podatek utajony krypto i papierów (poprawki fazy 3)', () => {
+  const crypto = (value: number, costBasis: number, tax: Scenario['tax'] = { kind: 'pl' }): Scenario =>
+    makeScenario({
+      horizonMonths: 3,
+      assets: singleAsset({ g: 0, taxForm: 'crypto' }),
+      positions: [{ assetId: 'globalEquity', wrapper: 'taxable', value, costBasis, targetWeight: 1 }],
+      tax,
+    });
+
+  it('krypto: pozycja początkowa kupiona po koszcie nie ma podatku utajonego w t = 0', () => {
+    const r = new Rec();
+    new Kernel(crypto(10_000, 10_000)).simulate(1, 0, r);
+    expect(r.wealth[0]).toBe(10_000);
+    expect(r.after[0]!).toBeCloseTo(10_000, 6);
+  });
+
+  it('krypto: podatek utajony od zysku ponad koszt początkowy', () => {
+    const r = new Rec();
+    new Kernel(crypto(10_000, 4_000)).simulate(1, 0, r);
+    expect(r.after[0]!).toBeCloseTo(10_000 - 0.19 * 6_000, 6);
+  });
+
+  it('krypto: koszt wyższy od wartości daje carry, brak podatku', () => {
+    const r = new Rec();
+    new Kernel(crypto(10_000, 15_000)).simulate(1, 0, r);
+    expect(r.after[0]!).toBeCloseTo(10_000, 6);
   });
 });

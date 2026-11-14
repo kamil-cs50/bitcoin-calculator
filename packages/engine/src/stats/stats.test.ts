@@ -259,3 +259,24 @@ describe('modelCheck (R-6)', () => {
     expect(sampleCorrelation([1, 2, 3, 4], [8, 6, 4, 2])).toBeCloseTo(-1, 12);
   });
 });
+
+describe('summarize: P(cel) dokładnie w miesiącu celu (poza siatką kwartalną)', () => {
+  it('probGoal liczone w miesiącu celu', async () => {
+    const { runBatch } = await import('../runner');
+    const s0 = makeScenario({ horizonMonths: 240, tax: { kind: 'none' } });
+    const r0 = runBatch({ ...s0, goal: { amountReal: 1, month: 100 } }, { seed: 5, paths: 300 });
+    const j = Array.from(r0.grid).indexOf(100);
+    expect(j).toBeGreaterThan(0);
+    const G = r0.grid.length;
+    const real: number[] = [];
+    for (let p = 0; p < r0.paths; p++) real.push(r0.wealth[p * G + j]! / r0.cpi[p * G + j]!);
+    real.sort((a, b) => a - b);
+    const amount = real[150]!;
+    const s = { ...s0, goal: { amountReal: amount, month: 100 } };
+    const r = runBatch(s, { seed: 5, paths: 300 });
+    const sm = summarize(r, s, { month: 240, real: true, afterTax: false });
+    let hit = 0;
+    for (let p = 0; p < r.paths; p++) if (r.wealthAfterTax[p * G + j]! / r.cpi[p * G + j]! >= amount) hit++;
+    expect(sm.probGoal!.p).toBeCloseTo(hit / 300, 12);
+  });
+});

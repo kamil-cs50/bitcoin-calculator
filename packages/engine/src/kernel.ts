@@ -35,14 +35,23 @@ export interface PathLedger {
   shortfall: number;
 }
 
-/** Siatka zapisu (spec 4.14, Z-22): miesięczna ≤ 120, kwartalna ≤ 480, półroczna powyżej; zawiera 0 i horyzont. */
-export function buildGrid(horizonMonths: number): Int32Array {
+/**
+ * Siatka zapisu (spec 4.14, Z-22): miesięczna ≤ 120, kwartalna ≤ 480, półroczna powyżej; zawiera 0 i horyzont.
+ * Rozszerzenie spec 4.14: `extraMonths` (np. miesiąc celu) dołączane jako dodatkowe punkty (tylko liczby całkowite
+ * z (0, horyzont)), by P(cel) i solver wpłaty liczyły dokładnie w miesiącu celu.
+ */
+export function buildGrid(horizonMonths: number, extraMonths: readonly number[] = []): Int32Array {
   const step = horizonMonths <= 120 ? 1 : horizonMonths <= 480 ? 3 : 6;
-  const n = Math.floor(horizonMonths / step) + 1 + (horizonMonths % step === 0 ? 0 : 1);
-  const g = new Int32Array(n);
-  for (let i = 0; i < n - 1; i++) g[i] = i * step;
-  g[n - 1] = horizonMonths;
-  return g;
+  const base = Math.floor(horizonMonths / step) + 1 + (horizonMonths % step === 0 ? 0 : 1);
+  const extra: number[] = [];
+  for (const m of extraMonths) {
+    if (Number.isInteger(m) && m > 0 && m < horizonMonths && m % step !== 0 && !extra.includes(m)) extra.push(m);
+  }
+  const g = new Int32Array(base + extra.length);
+  for (let i = 0; i < base - 1; i++) g[i] = i * step;
+  g[base - 1] = horizonMonths;
+  for (let i = 0; i < extra.length; i++) g[base + i] = extra[i]!;
+  return g.sort();
 }
 
 const K_RISKY = 0;
@@ -129,7 +138,7 @@ export class Kernel {
     }
     this.s = scenario;
     this.horizon = scenario.horizonMonths;
-    this.grid = buildGrid(this.horizon);
+    this.grid = buildGrid(this.horizon, scenario.goal ? [scenario.goal.month] : []);
     this.collapsed = new Uint8Array(scenario.assets.length);
     this.market = new MarketSimulator(scenario);
     this.mstate = this.market.newState();
@@ -353,7 +362,12 @@ export class Kernel {
       if (k === K_RISKY) {
         const lq = this.lots[i]!;
         lq.reset();
-        if (value > 0) lq.buy(value, Math.max(pos.costBasis, 0), INITIAL_LOT_MONTH);
+        if (value > 0) {
+          const basis = Math.max(pos.costBasis, 0);
+          lq.buy(value, basis, INITIAL_LOT_MONTH);
+          // koszyk krypto startuje od kosztu pozycji początkowej (carry po styczniowym closeYear)
+          this.tax.onBuy(this.form[i]!, this.wrapper[i]!, basis, 0);
+        }
       } else if (k === K_DEPOSIT) {
         this.deposits[i]!.reset(value);
       } else {
@@ -383,18 +397,18 @@ export class Kernel {
   }
 
   /**
-   * Wartość po podatku przy sprzedaży całości (spec Z-2): aktywa − zobowiązanie z zamkniętych lat − zobowiązanie
-   * bieżącego roku z dotychczasowych sprzedaży − podatek od niezrealizowanych zysków (wartości muszą być odświeżone).
+   * Wartość po podatku przy sprzedaży całości (spec Z-2): aktywa − zobowiązanie z zamkniętych lat − podatek roku
+   * bieżącego przy likwidacji (dotychczasowe sprzedaże i niezrealizowane zyski łącznie; wartości muszą być odświeżone).
    */
   private afterTaxValue(month: number, wealth: number): number {
-    let owed = this.taxDue + this.tax.pendingTax(this.openYear);
+    let owed = this.taxDue;
     for (let r = 0; r < this.riskySlots.length; r++) {
       const i = this.riskySlots[r]!;
       const p = this.latentPos[r]!;
       p.value = this.values[i]!;
       p.basis = this.lots[i]!.basis;
     }
-    owed += this.tax.latentTax(this.latentPos, this.openYear);
+    owed += this.tax.liquidationTax(this.latentPos, this.openYear);
     for (let r = 0; r < this.edoSlots.length; r++) {
       const i = this.edoSlots[r]!;
       const rate = this.slotTaxRate[i]!;

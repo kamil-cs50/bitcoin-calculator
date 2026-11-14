@@ -10,7 +10,12 @@ export interface TaxEngine {
   closeYear(year: number): number;
   /** Podatek za rok `year`, gdyby zamknąć go teraz (zobowiązanie z dotychczasowych sprzedaży); bez zmiany stanu. */
   pendingTax(year: number): number;
-  latentTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[], year: number): number;
+  /**
+   * Podatek roku otwartego `year` przy likwidacji wszystkich pozycji teraz: dotychczasowe sprzedaże roku
+   * (pending) i niezrealizowane zyski (latent) liczone łącznie, bez podwójnego odliczania strat/kosztów.
+   * Nie obejmuje zobowiązań z zamkniętych lat (`taxDue` w kernelu).
+   */
+  liquidationTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[], year: number): number;
   readonly warnings: Warning[];
 }
 
@@ -27,7 +32,7 @@ class NoTaxEngine implements TaxEngine {
   pendingTax(): number {
     return 0;
   }
-  latentTax(): number {
+  liquidationTax(): number {
     return 0;
   }
 }
@@ -54,8 +59,9 @@ class FlatTaxEngine implements TaxEngine {
   pendingTax(): number {
     return this.due;
   }
-  latentTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[]): number {
-    let t = 0;
+  /** Podatek liniowy: zobowiązanie z dotychczasowych sprzedaży + podatek od dodatnich niezrealizowanych zysków. */
+  liquidationTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[]): number {
+    let t = this.due;
     for (let i = 0; i < positions.length; i++) {
       const p = positions[i]!;
       if (p.wrapper !== 'taxable' || p.form === 'none') continue;
@@ -108,7 +114,7 @@ class PlTaxEngine implements TaxEngine {
     return this.securities.pendingTax(year) + this.crypto.pendingTax();
   }
 
-  latentTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[], year: number): number {
+  liquidationTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[], year: number): number {
     let secGain = 0;
     let cryptoValue = 0;
     for (let i = 0; i < positions.length; i++) {
@@ -118,7 +124,7 @@ class PlTaxEngine implements TaxEngine {
       else if (p.form === 'crypto') cryptoValue += p.value;
       // physicalGold: zakładamy zwolnienie po 6 miesiącach, brak podatku utajonego
     }
-    return this.securities.latentTax(secGain, year) + this.crypto.latentTax(cryptoValue);
+    return this.securities.liquidationTax(secGain, year) + this.crypto.liquidationTax(cryptoValue);
   }
 }
 

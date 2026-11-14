@@ -89,7 +89,14 @@ export class SecuritiesTaxPL {
     return this.losses.reduce((s, v) => s + (this.valid(v, year) ? v.remaining : 0), 0);
   }
 
-  latentTax(unrealizedGain: number, year: number): number {
-    return PL_CAPITAL_GAINS_RATE * Math.max(0, unrealizedGain - this.lossesAvailable(year));
+  /**
+   * Podatek roku `year`, gdyby zlikwidować pozycje z niezrealizowanym wynikiem `unrealizedGain` teraz:
+   * jeden dochód (zrealizowany w roku + niezrealizowany) i jeden przebieg odliczeń strat z lat poprzednich
+   * (limity R-3 stosowane do sumy; pending i latent razem). `year` = rok otwarty (przybliżenie roku sprzedaży).
+   */
+  liquidationTax(unrealizedGain: number, year: number): number {
+    const income = this.proceeds - this.cost + unrealizedGain;
+    if (!(income > 0)) return 0;
+    return PL_CAPITAL_GAINS_RATE * Math.max(0, this.applyLosses(income, year, false));
   }
 }

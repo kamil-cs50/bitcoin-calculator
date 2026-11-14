@@ -72,12 +72,40 @@ describe('SecuritiesTaxPL', () => {
     expect(r.warnings.map((w) => w.code)).toContain('LOSS_OVER_5M');
   });
 
-  it('latentTax(1000, 2028) przy stracie 400 = 114', () => {
+  it('liquidationTax(1000, 2028) przy stracie 400 = 114', () => {
     const t = new SecuritiesTaxPL();
     t.onSale(600, 1000);
     t.closeYear(2027);
-    expect(t.latentTax(1000, 2028)).toBeCloseTo(114, 10);
-    expect(t.latentTax(-5, 2028)).toBe(0);
+    expect(t.liquidationTax(1000, 2028)).toBeCloseTo(114, 10);
+    expect(t.liquidationTax(-5, 2028)).toBe(0);
+  });
+
+  it('suma pending + latent: ta sama strata nie schodzi dwa razy (Important 2)', () => {
+    const t = new SecuritiesTaxPL();
+    t.onSale(0, 600); // strata 600 w 2027
+    t.closeYear(2027);
+    t.onSale(1000, 0); // zrealizowany zysk 1000 w 2028
+    // razem: dochód 1000 + 2000 = 3000, odliczenie 600 -> 2400
+    expect(t.liquidationTax(2000, 2028)).toBeCloseTo(0.19 * 2400, 10);
+    // pending sam: 0.19*400; pending + stary latent = 0.19*(400 + 1400) = 342 byłoby zaniżone
+    expect(t.pendingTax(2028)).toBeCloseTo(0.19 * 400, 10);
+  });
+
+  it('strata zrealizowana w bieżącym roku obniża zysk utajony', () => {
+    const t = new SecuritiesTaxPL();
+    t.onSale(300, 1000); // strata 700 w tym roku (jeszcze niezamknięta)
+    expect(t.pendingTax(2027)).toBe(0);
+    expect(t.liquidationTax(1000, 2027)).toBeCloseTo(0.19 * 300, 10);
+    expect(t.liquidationTax(500, 2027)).toBe(0);
+  });
+
+  it('limit jednorazowego odliczenia 5 mln stosowany do sumy', () => {
+    const t = new SecuritiesTaxPL();
+    t.onSale(0, 6_000_000);
+    t.closeYear(2027);
+    t.onSale(1_000_000, 0);
+    // dochód 7 mln, odliczenie min(7 mln, 6 mln, 5 mln) = 5 mln
+    expect(t.liquidationTax(6_000_000, 2028)).toBeCloseTo(0.19 * 2_000_000, 6);
   });
 
   it('reset czyści stan', () => {

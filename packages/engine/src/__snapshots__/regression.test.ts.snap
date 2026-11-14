@@ -2,19 +2,19 @@
 
 exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > accumulation: summarize zgodne z migawką 1`] = `
 {
-  "cvar5": 414969,
+  "cvar5": 415802,
   "maxDrawdown": {
-    "p50": 0.361005,
-    "p90": 0.549754,
+    "p50": 0.361067,
+    "p90": 0.549757,
   },
-  "mean": 1306600,
-  "median": 1118380,
+  "mean": 1309660,
+  "median": 1120390,
   "medianCI": [
-    1088730,
-    1151620,
+    1091040,
+    1157020,
   ],
-  "p10": 599192,
-  "p90": 2237560,
+  "p10": 601726,
+  "p90": 2245430,
   "probCollapse": {
     "btc": 0.2175,
     "deposit": 0,
@@ -23,10 +23,10 @@ exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > accumul
   },
   "probGoal": {
     "ci": [
-      0.264177,
-      0.303653,
+      0.268575,
+      0.308237,
     ],
-    "p": 0.2835,
+    "p": 0.288,
   },
   "probRealLoss": {
     "ci": [
@@ -43,9 +43,9 @@ exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > accumul
     "p": 0,
   },
   "realCagr": {
-    "p10": -0.00257222,
-    "p50": 0.0398174,
-    "p90": 0.082742,
+    "p10": -0.00258678,
+    "p50": 0.0398657,
+    "p90": 0.0827264,
   },
   "worst12m": {
     "p10": -0.418662,
@@ -55,19 +55,19 @@ exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > accumul
 
 exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > btcHeavy: summarize zgodne z migawką 1`] = `
 {
-  "cvar5": 25664.1,
+  "cvar5": 26078.3,
   "maxDrawdown": {
-    "p50": 0.476806,
-    "p90": 0.690242,
+    "p50": 0.476624,
+    "p90": 0.69009,
   },
-  "mean": 292323,
-  "median": 183869,
+  "mean": 298481,
+  "median": 188990,
   "medianCI": [
-    173618,
-    196006,
+    177883,
+    199946,
   ],
-  "p10": 52808.8,
-  "p90": 648607,
+  "p10": 54610.3,
+  "p90": 666837,
   "probCollapse": {
     "btc": 0.1385,
     "deposit": 0,
@@ -76,10 +76,10 @@ exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > btcHeav
   "probGoal": undefined,
   "probRealLoss": {
     "ci": [
-      0.213055,
-      0.249977,
+      0.215966,
+      0.253054,
     ],
-    "p": 0.231,
+    "p": 0.234,
   },
   "probRuin": {
     "ci": [
@@ -89,9 +89,9 @@ exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > btcHeav
     "p": 0,
   },
   "realCagr": {
-    "p10": -0.0347934,
-    "p50": 0.0557446,
-    "p90": 0.153349,
+    "p10": -0.0344944,
+    "p50": 0.0557613,
+    "p90": 0.153088,
   },
   "worst12m": {
     "p10": -0.537574,

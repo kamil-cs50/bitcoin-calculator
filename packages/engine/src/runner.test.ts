@@ -54,6 +54,17 @@ describe('runBatch / mergeResults', () => {
     expectIdentical(whole, mergeResults(parts));
   }, 120_000);
 
+  it('mergeResults: część z paths = 0 nie daje NaN i nie zmienia wyniku', () => {
+    const empty = runBatch(s, { seed, paths: 0 });
+    expect(Array.from(empty.meanShare).every((v) => Number.isFinite(v))).toBe(true);
+    const full = runBatch(s, { seed, paths: 8 });
+    expectIdentical(full, mergeResults([empty, full]));
+    expectIdentical(full, mergeResults([full, runBatch(s, { seed, paths: 0, pathOffset: 8 })]));
+    const only = mergeResults([empty]);
+    expect(only.paths).toBe(0);
+    expect(Array.from(only.meanShare).every((v) => v === 0)).toBe(true);
+  });
+
   it('powtarzalność: to samo ziarno daje identyczne wyniki', () => {
     expectIdentical(runBatch(s, { seed, paths: 50 }), runBatch(s, { seed, paths: 50 }));
   });

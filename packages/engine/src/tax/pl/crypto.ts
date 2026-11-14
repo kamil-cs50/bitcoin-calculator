@@ -46,7 +46,11 @@ export class CryptoTaxPL {
     return PL_CAPITAL_GAINS_RATE * Math.max(0, this.proceeds - this.costs - this._carry);
   }
 
-  latentTax(marketValue: number): number {
-    return PL_CAPITAL_GAINS_RATE * Math.max(0, marketValue - this._carry);
+  /**
+   * Podatek roku bieżącego, gdyby zlikwidować pozycję o wartości rynkowej `marketValue` teraz:
+   * 19% · max(0, przychody roku + wartość − koszty roku − nadwyżka z lat poprzednich) (pending i latent razem).
+   */
+  liquidationTax(marketValue: number): number {
+    return PL_CAPITAL_GAINS_RATE * Math.max(0, this.proceeds + marketValue - this.costs - this._carry);
   }
 }
