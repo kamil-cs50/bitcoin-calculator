@@ -59,7 +59,7 @@ msgstr "{name} is {value}% of value and {risk}% of risk"
 
 #: src/features/results/Dashboard.tsx:226
 msgid "{paths} przyszłości"
-msgstr "{paths} possibilities"
+msgstr "{paths} futures"
 
 #: src/features/assumptions/AssumptionsPanel.tsx:79
 msgid "{scaleText}× domyślnej niepewności"
