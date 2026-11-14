@@ -22,6 +22,10 @@
   --ok: #166534;
   --ok-soft: #dcfce7;
   --focus: #1d4ed8;
+  /* wykresy: paleta Okabe-Ito (bezpieczna dla daltonistów); znaczenie niesie też kształt i podpis */
+  --chart-band: #0072b2;
+  --chart-mark: #d55e00;
+  --chart-grid: #d6d3d1;
   color-scheme: light;
 }
 
@@ -43,6 +47,9 @@
     --ok: #4ade80;
     --ok-soft: #052e16;
     --focus: #93c5fd;
+    --chart-band: #56b4e9;
+    --chart-mark: #e69f00;
+    --chart-grid: #44403c;
     color-scheme: dark;
   }
 }
@@ -64,6 +71,9 @@
   --ok: #4ade80;
   --ok-soft: #052e16;
   --focus: #93c5fd;
+  --chart-band: #56b4e9;
+  --chart-mark: #e69f00;
+  --chart-grid: #44403c;
   color-scheme: dark;
 }
 

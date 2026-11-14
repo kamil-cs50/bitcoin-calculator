@@ -185,3 +185,28 @@ describe('[Z-7] kowariancja i korelacje w symulacji (tryb realistic, α, b ≠ 0
     expect(Math.abs(v - sigmaQ * sigmaQ)).toBeLessThan(4 * se);
   });
 });
+
+describe('ostrzeżenie CORR_PROJECTED niesie macierz po korekcie (dla UI)', () => {
+  it('ρ = −0,9 przy α = 1: data.factorIds i data.matrix (poprawna macierz korelacji)', () => {
+    const base = makeScenario();
+    const sc = makeScenario({
+      assets: [risky({ id: 'A', alpha: 1 }), risky({ id: 'B', alpha: 1 })],
+      market: {
+        ...base.market,
+        mode: 'realistic',
+        nu: 5,
+        regime: { p01: 0.04, p10: 0.2, kappa1: 2.2, delta: 0.175 },
+        factorIds: ['A', 'B', 'cpi'],
+        correlation: [1, -0.9, 0, -0.9, 1, 0, 0, 0, 1],
+        fx: [],
+      },
+    });
+    const w = new MarketSimulator(sc).warnings.find((x) => x.code === 'CORR_PROJECTED');
+    expect(w).toBeDefined();
+    const d = w!.data as { factorIds: string[]; matrix: number[] };
+    expect(d.factorIds).toEqual(['A', 'B', 'cpi']);
+    expect(d.matrix).toHaveLength(9);
+    for (let i = 0; i < 3; i++) expect(d.matrix[i * 3 + i]).toBeCloseTo(1, 6);
+    expect(d.matrix[1]).toBeCloseTo(d.matrix[3]!, 12);
+  });
+});

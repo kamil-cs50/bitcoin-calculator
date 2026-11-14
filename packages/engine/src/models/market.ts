@@ -205,7 +205,10 @@ export class MarketSimulator {
     // R̃ (R-1: korekta tylko dla par zwrot-zwrot) i Cholesky
     const rho = Float64Array.from(m.correlation);
     const rt = inRegimeCorrelation(rho, n, alpha, b, this.regimeP, mask);
-    this.warnings.push(...rt.warnings);
+    // dane ostrzeżenia CORR_PROJECTED: czynniki i macierz po korekcie (do banera w UI)
+    for (const w of rt.warnings) {
+      this.warnings.push(w.code === 'CORR_PROJECTED' ? { ...w, data: { factorIds: ids.slice(), matrix: Array.from(rt.matrix) } } : w);
+    }
     this.chol = robustCholesky(rt.matrix, n);
 
     // upadek

@@ -7,6 +7,36 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pl\n"
 
+#. placeholder {0}: rows.length
+#: src/features/results/ModelCheckPanel.tsx:30
+msgid "{bad} z {0} pozycji odbiega od wejścia"
+msgstr "{bad} z {0} pozycji odbiega od wejścia"
+
+#: src/charts/FanChart.tsx:140
+#: src/charts/Histogram.tsx:57
+msgid "{label}: dane w tabeli"
+msgstr "{label}: dane w tabeli"
+
+#: src/charts/FanChart.tsx:94
+msgid "{label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem."
+msgstr "{label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem."
+
+#: src/charts/Histogram.tsx:34
+msgid "{label}. Słupki pokazują, ile przyszłości kończy w danym przedziale; liczby w tabeli pod wykresem."
+msgstr "{label}. Słupki pokazują, ile przyszłości kończy w danym przedziale; liczby w tabeli pod wykresem."
+
+#: src/features/results/QualityBadge.tsx:32
+msgid "{n} przyszłości · dokładność ±{pp} pp"
+msgstr "{n} przyszłości · dokładność ±{pp} pp"
+
+#: src/features/results/periods.ts:8
+msgid "{n} roku"
+msgstr "{n} roku"
+
+#: src/features/results/periods.ts:6
+msgid "{y, plural, one {# rok} few {# lata} many {# lat} other {# roku}}"
+msgstr "{y, plural, one {# rok} few {# lata} many {# lat} other {# roku}}"
+
 #: src/features/portfolio/tiles.ts:41
 msgid "Akcje polskie"
 msgstr "Akcje polskie"
@@ -35,6 +65,10 @@ msgstr "Bez indeksacji (stała kwota)"
 msgid "Bitcoin"
 msgstr "Bitcoin"
 
+#: src/features/results/BtcCard.tsx:105
+msgid "Bitcoin: rozkład ceny w roku {year}"
+msgstr "Bitcoin: rozkład ceny w roku {year}"
+
 #: src/features/plan/WithdrawalForm.tsx:140
 msgid "Brak wypłat"
 msgstr "Brak wypłat"
@@ -54,6 +88,12 @@ msgstr "Cel musi przypadać w horyzoncie planu."
 #: src/features/plan/PlanEditor.tsx:237
 msgid "Cel za ile lat"
 msgstr "Cel za ile lat"
+
+#. placeholder {0}: money(scenario.goal.amountReal)
+#. placeholder {1}: yearsText(scenario.goal.month)
+#: src/features/results/KpiTiles.tsx:60
+msgid "Cel: {0} w dzisiejszych zł za {1} (±{goalPp} pp)"
+msgstr "Cel: {0} w dzisiejszych zł za {1} (±{goalPp} pp)"
 
 #: src/features/portfolio/PositionForm.tsx:203
 msgid "Cena 1 BTC (zł), wymagana"
@@ -75,9 +115,17 @@ msgstr "Co roku aplikacja rozkłada majątek równo na pozostałe lata, więc do
 msgid "Co roku bierzesz stały ułamek tego, co zostało. Portfel nigdy się nie wyczerpuje, ale wypłata rośnie i maleje razem z rynkiem."
 msgstr "Co roku bierzesz stały ułamek tego, co zostało. Portfel nigdy się nie wyczerpuje, ale wypłata rośnie i maleje razem z rynkiem."
 
+#: src/features/results/ModelCheckPanel.tsx:37
+msgid "Co sprawdzamy"
+msgstr "Co sprawdzamy"
+
 #: src/features/portfolio/PositionForm.tsx:145
 msgid "Co wpisujesz?"
 msgstr "Co wpisujesz?"
+
+#: src/features/results/BtcCard.tsx:112
+msgid "Częstość"
+msgstr "Częstość"
 
 #: src/features/plan/PlanEditor.tsx:188
 msgid "Czy wpłata rośnie z czasem, żeby nadążać za cenami."
@@ -100,9 +148,21 @@ msgstr "Do wieku"
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
 
+#: src/features/results/Dashboard.tsx:171
+msgid "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
+msgstr "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
+
 #: src/features/onboarding/Onboarding.tsx:83
 msgid "Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej."
 msgstr "Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej."
+
+#: src/features/results/BtcCard.tsx:107
+msgid "Dzisiejsza cena 1 BTC (USD)"
+msgstr "Dzisiejsza cena 1 BTC (USD)"
+
+#: src/features/results/BtcCard.tsx:108
+msgid "Dzisiejsza cena 1 BTC (zł)"
+msgstr "Dzisiejsza cena 1 BTC (zł)"
 
 #: src/features/portfolio/tiles.ts:22
 msgid "ETF na świat"
@@ -185,6 +245,18 @@ msgstr "Jakie złoto?"
 msgid "Konto"
 msgstr "Konto"
 
+#: src/features/results/ModelCheckPanel.tsx:29
+msgid "Kontrola modelu"
+msgstr "Kontrola modelu"
+
+#: src/features/results/ModelCheckPanel.tsx:36
+msgid "Kontrola modelu: wejście a symulacja"
+msgstr "Kontrola modelu: wejście a symulacja"
+
+#: src/features/results/ModelCheckPanel.tsx:20
+msgid "Korelacja"
+msgstr "Korelacja"
+
 #: src/features/onboarding/Onboarding.tsx:51
 msgid "Krok {step} z 3"
 msgstr "Krok {step} z 3"
@@ -214,6 +286,10 @@ msgstr "Kwotę w zł"
 msgid "lat"
 msgstr "lat"
 
+#: src/charts/FanChart.tsx:110
+msgid "lata od dziś"
+msgstr "lata od dziś"
+
 #: src/features/portfolio/PositionForm.tsx:201
 msgid "Liczba BTC"
 msgstr "Liczba BTC"
@@ -222,13 +298,45 @@ msgstr "Liczba BTC"
 msgid "Liczba lat"
 msgstr "Liczba lat"
 
+#: src/charts/Histogram.tsx:59
+msgid "Liczba przyszłości"
+msgstr "Liczba przyszłości"
+
 #: src/features/portfolio/PositionForm.tsx:148
 msgid "Liczbę BTC"
 msgstr "Liczbę BTC"
 
+#: src/features/results/QualityBadge.tsx:34
+msgid "liczę dalej, wynik się doprecyzuje"
+msgstr "liczę dalej, wynik się doprecyzuje"
+
+#: src/features/results/Dashboard.tsx:114
+msgid "Liczymy 10 000 możliwych przyszłości…"
+msgstr "Liczymy 10 000 możliwych przyszłości…"
+
 #: src/features/portfolio/tiles.ts:25
 msgid "Lokata"
 msgstr "Lokata"
+
+#: src/features/results/Dashboard.tsx:33
+msgid "Macierz korelacji po korekcie"
+msgstr "Macierz korelacji po korekcie"
+
+#: src/features/results/KpiTiles.tsx:48
+msgid "Mediana, po podatku"
+msgstr "Mediana, po podatku"
+
+#: src/features/results/KpiTiles.tsx:48
+msgid "Mediana, przed podatkiem"
+msgstr "Mediana, przed podatkiem"
+
+#: src/features/results/ModelCheckPanel.tsx:38
+msgid "Miara"
+msgstr "Miara"
+
+#: src/charts/FanChart.tsx:79
+msgid "Miesiąc"
+msgstr "Miesiąc"
 
 #: src/features/portfolio/tiles.ts:27
 msgid "Mieszkanie"
@@ -238,6 +346,11 @@ msgstr "Mieszkanie"
 msgid "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
 msgstr "Mieszkanie, w którym mieszkasz, jest Twoim majątkiem, ale nie inwestycją: zostaje poza symulacją inwestycyjną, więc go nie wpisujemy."
 
+#: src/features/results/ModelCheckPanel.tsx:30
+#: src/features/results/QualityBadge.tsx:35
+msgid "model skalibrowany ✓"
+msgstr "model skalibrowany ✓"
+
 #: src/features/plan/PlanEditor.tsx:148
 msgid "Mój wiek"
 msgstr "Mój wiek"
@@ -246,13 +359,25 @@ msgstr "Mój wiek"
 msgid "Możesz zostawić puste, jeśli nie dopłacasz."
 msgstr "Możesz zostawić puste, jeśli nie dopłacasz."
 
+#: src/features/results/KpiTiles.tsx:68
+msgid "Najgorsze 5% przyszłości: średnio"
+msgstr "Najgorsze 5% przyszłości: średnio"
+
+#: src/features/results/Dashboard.tsx:155
+msgid "Najwyższe 1% przyszłości połączono w ostatnim słupku."
+msgstr "Najwyższe 1% przyszłości połączono w ostatnim słupku."
+
 #: src/features/portfolio/PositionForm.tsx:173
 msgid "Nazwa"
 msgstr "Nazwa"
 
-#: src/app/pages.tsx:54
+#: src/app/pages.tsx:57
 msgid "Nie ma takiej strony"
 msgstr "Nie ma takiej strony"
+
+#: src/features/results/Dashboard.tsx:102
+msgid "Nie możemy policzyć tego scenariusza"
+msgstr "Nie możemy policzyć tego scenariusza"
 
 #: src/features/plan/WithdrawalForm.tsx:187
 msgid "Nie udało się oszacować zwrotu portfela."
@@ -261,6 +386,10 @@ msgstr "Nie udało się oszacować zwrotu portfela."
 #: src/features/portfolio/PositionForm.tsx:226
 msgid "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie powyżej."
 msgstr "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie powyżej."
+
+#: src/features/results/KpiTiles.tsx:38
+msgid "nominalnie"
+msgstr "nominalnie"
 
 #: src/features/portfolio/tiles.ts:24
 msgid "Obligacje EDO"
@@ -282,6 +411,14 @@ msgstr "Oczekiwany roczny wzrost"
 msgid "Od 1 miesiąca do 80 lat."
 msgstr "Od 1 miesiąca do 80 lat."
 
+#: src/features/results/ModelCheckPanel.tsx:41
+msgid "odbiega ✗"
+msgstr "odbiega ✗"
+
+#: src/charts/FanChart.tsx:141
+msgid "Okres"
+msgstr "Okres"
+
 #: src/features/onboarding/Onboarding.tsx:119
 msgid "Opcjonalnie: kwota, którą chcesz mieć na końcu horyzontu."
 msgstr "Opcjonalnie: kwota, którą chcesz mieć na końcu horyzontu."
@@ -290,8 +427,20 @@ msgstr "Opcjonalnie: kwota, którą chcesz mieć na końcu horyzontu."
 msgid "Opcjonalnie. Zaczyna się po zakończeniu horyzontu."
 msgstr "Opcjonalnie. Zaczyna się po zakończeniu horyzontu."
 
+#: src/features/results/ModelCheckPanel.tsx:33
+msgid "Osobny przebieg samego rynku sprawdza, czy symulacja odtwarza założone zwroty, zmienności i korelacje."
+msgstr "Osobny przebieg samego rynku sprawdza, czy symulacja odtwarza założone zwroty, zmienności i korelacje."
+
+#: src/features/results/BtcCard.tsx:112
+msgid "Percentyle ceny bitcoina w roku {year}"
+msgstr "Percentyle ceny bitcoina w roku {year}"
+
+#: src/features/results/KpiTiles.tsx:79
+msgid "pieniądze kończą się przed wybranym rokiem"
+msgstr "pieniądze kończą się przed wybranym rokiem"
+
 #: src/app/Layout.tsx:9
-#: src/app/pages.tsx:39
+#: src/app/pages.tsx:40
 #: src/features/onboarding/Onboarding.tsx:91
 msgid "Plan"
 msgstr "Plan"
@@ -300,6 +449,10 @@ msgstr "Plan"
 #: src/features/plan/PlanEditor.tsx:170
 msgid "Plan obejmuje {0} lat."
 msgstr "Plan obejmuje {0} lat."
+
+#: src/features/results/Dashboard.tsx:128
+msgid "Po podatku"
+msgstr "Po podatku"
 
 #: src/features/portfolio/PositionForm.tsx:224
 msgid "Pobieram cenę…"
@@ -317,6 +470,14 @@ msgstr "Podaj pełną liczbę lat od 1 do 60."
 msgid "Podłoga (zł miesięcznie, opcjonalnie)"
 msgstr "Podłoga (zł miesięcznie, opcjonalnie)"
 
+#: src/charts/Histogram.tsx:55
+msgid "Pokaż dane rozkładu w tabeli"
+msgstr "Pokaż dane rozkładu w tabeli"
+
+#: src/charts/FanChart.tsx:138
+msgid "Pokaż dane wachlarza w tabeli"
+msgstr "Pokaż dane wachlarza w tabeli"
+
 #: src/features/onboarding/Onboarding.tsx:146
 msgid "Pokaż wynik"
 msgstr "Pokaż wynik"
@@ -326,13 +487,17 @@ msgid "Ponad inflację, np. gdy zarobki rosną szybciej niż ceny."
 msgstr "Ponad inflację, np. gdy zarobki rosną szybciej niż ceny."
 
 #: src/app/Layout.tsx:8
-#: src/app/pages.tsx:33
+#: src/app/pages.tsx:34
 msgid "Portfel"
 msgstr "Portfel"
 
 #: src/features/portfolio/PortfolioEditor.tsx:64
 msgid "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
 msgstr "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
+
+#: src/features/results/KpiTiles.tsx:66
+msgid "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
+msgstr "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
 
 #. placeholder {0}: scenario.positions.length
 #. placeholder {1}: formatMoney(total, scenario.baseCurrency)
@@ -344,6 +509,14 @@ msgstr "Portfel: {0} poz., razem {1}. Horyzont: {2} lat."
 #: src/features/plan/WithdrawalForm.tsx:177
 msgid "Procent rocznie"
 msgstr "Procent rocznie"
+
+#: src/charts/Histogram.tsx:58
+msgid "Przedział"
+msgstr "Przedział"
+
+#: src/features/results/KpiTiles.tsx:54
+msgid "Przedział od 10. do 90. percentyla"
+msgstr "Przedział od 10. do 90. percentyla"
 
 #: src/app/Layout.tsx:20
 msgid "Przejdź do treści"
@@ -362,6 +535,10 @@ msgstr "Puste oznacza: na końcu horyzontu."
 msgid "Razem: {0}"
 msgstr "Razem: {0}"
 
+#: src/features/results/Dashboard.tsx:127
+msgid "Realnie (w dzisiejszych zł)"
+msgstr "Realnie (w dzisiejszych zł)"
+
 #: src/features/plan/PlanEditor.tsx:205
 msgid "Realny wzrost wpłat rocznie"
 msgstr "Realny wzrost wpłat rocznie"
@@ -370,17 +547,59 @@ msgstr "Realny wzrost wpłat rocznie"
 msgid "Roczna zmienność"
 msgstr "Roczna zmienność"
 
+#: src/charts/FanChart.tsx:78
+msgid "Rok"
+msgstr "Rok"
+
+#: src/features/results/Dashboard.tsx:142
+msgid "Rok na wykresie"
+msgstr "Rok na wykresie"
+
+#. placeholder {0}: yearsText(month)
+#: src/features/results/Dashboard.tsx:139
+msgid "Rok na wykresie: za {0} ({year})"
+msgstr "Rok na wykresie: za {0} ({year})"
+
+#: src/features/results/Dashboard.tsx:156
+msgid "Rozkład wartości portfela"
+msgstr "Rozkład wartości portfela"
+
+#. placeholder {0}: yearsText(month)
+#: src/features/results/Dashboard.tsx:154
+msgid "Rozkład wartości za {0}"
+msgstr "Rozkład wartości za {0}"
+
 #: src/features/portfolio/PortfolioEditor.tsx:21
 msgid "Rozumiem"
 msgstr "Rozumiem"
+
+#: src/features/results/KpiTiles.tsx:64
+msgid "Ryzyko spadku o ponad 30%"
+msgstr "Ryzyko spadku o ponad 30%"
 
 #: src/features/portfolio/tiles.ts:23
 msgid "S&P 500"
 msgstr "S&P 500"
 
-#: src/app/pages.tsx:24
+#: src/app/pages.tsx:25
 msgid "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
 msgstr "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
+
+#: src/features/results/ModelCheckPanel.tsx:18
+msgid "Średni zwrot roczny (log)"
+msgstr "Średni zwrot roczny (log)"
+
+#: src/features/results/KpiTiles.tsx:83
+msgid "Średnia (tryb eksperta)"
+msgstr "Średnia (tryb eksperta)"
+
+#: src/features/results/KpiTiles.tsx:86
+msgid "Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę."
+msgstr "Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę."
+
+#: src/features/results/KpiTiles.tsx:70
+msgid "Średnia wartość w najgorszych 5 na 100 przyszłości"
+msgstr "Średnia wartość w najgorszych 5 na 100 przyszłości"
 
 #: src/features/plan/WithdrawalForm.tsx:147
 msgid "Stała kwota"
@@ -394,6 +613,10 @@ msgstr "Stały procent portfela"
 msgid "Sufit (zł miesięcznie, opcjonalnie)"
 msgstr "Sufit (zł miesięcznie, opcjonalnie)"
 
+#: src/features/results/ModelCheckPanel.tsx:38
+msgid "Symulacja"
+msgstr "Symulacja"
+
 #: src/app/Layout.tsx:49
 msgid "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
@@ -402,9 +625,33 @@ msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgid "Szacuję typowy zwrot portfela…"
 msgstr "Szacuję typowy zwrot portfela…"
 
+#: src/features/results/KpiTiles.tsx:57
+msgid "Szansa na cel"
+msgstr "Szansa na cel"
+
+#: src/features/results/KpiTiles.tsx:72
+msgid "Szansa straty realnej"
+msgstr "Szansa straty realnej"
+
+#: src/features/results/BtcCard.tsx:101
+msgid "Szansa upadku do roku {year}: {n} na 100"
+msgstr "Szansa upadku do roku {year}: {n} na 100"
+
+#: src/features/results/BtcCard.tsx:101
+msgid "Szansa upadku do roku {year}: mniej niż 1 na 100"
+msgstr "Szansa upadku do roku {year}: mniej niż 1 na 100"
+
+#: src/features/results/KpiTiles.tsx:77
+msgid "Szansa wyczerpania portfela"
+msgstr "Szansa wyczerpania portfela"
+
 #: src/features/portfolio/PositionForm.tsx:186
 msgid "To założenie, nie prognoza. Zmienisz je później w Założeniach."
 msgstr "To założenie, nie prognoza. Zmienisz je później w Założeniach."
+
+#: src/features/results/Dashboard.tsx:129
+msgid "Tryb eksperta"
+msgstr "Tryb eksperta"
 
 #: src/features/onboarding/Onboarding.tsx:66
 msgid "Twój portfel"
@@ -418,12 +665,20 @@ msgstr "Tylko oszczędzasz i patrzysz, ile urośnie portfel."
 msgid "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
 msgstr "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
 
+#: src/features/results/KpiTiles.tsx:46
+msgid "Typowy wynik za {years} ({basis})"
+msgstr "Typowy wynik za {years} ({basis})"
+
+#: src/features/results/ModelCheckPanel.tsx:22
+msgid "Udział miesięcy kryzysowych"
+msgstr "Udział miesięcy kryzysowych"
+
 #: src/features/plan/WithdrawalForm.tsx:180
 msgid "Ustalany w styczniu od wartości portfela, wypłacany w 12 ratach."
 msgstr "Ustalany w styczniu od wartości portfela, wypłacany w 12 ratach."
 
 #: src/app/Layout.tsx:12
-#: src/app/pages.tsx:50
+#: src/app/pages.tsx:53
 msgid "Ustawienia"
 msgstr "Ustawienia"
 
@@ -439,9 +694,23 @@ msgstr "Usuń {name}"
 msgid "w {k} na 10 przyszłości"
 msgstr "w {k} na 10 przyszłości"
 
+#: src/features/results/BtcCard.tsx:94
+msgid "w {k} na 10 przyszłości więcej niż"
+msgstr "w {k} na 10 przyszłości więcej niż"
+
+#: src/charts/FanChart.tsx:134
+msgid "w {k} na 10 przyszłości więcej niż {v}"
+msgstr "w {k} na 10 przyszłości więcej niż {v}"
+
 #: src/lib/format.ts:69
 msgid "w {k} na 100 przyszłości"
 msgstr "w {k} na 100 przyszłości"
+
+#. placeholder {0}: money(s.p10)
+#. placeholder {1}: money(s.p90)
+#: src/features/results/KpiTiles.tsx:52
+msgid "W 8 na 10 przyszłości między {0} a {1}"
+msgstr "W 8 na 10 przyszłości między {0} a {1}"
 
 #: src/features/plan/PlanEditor.tsx:233
 msgid "W dzisiejszych pieniądzach, np. 1 000 000 zł. Puste oznacza brak celu."
@@ -450,6 +719,10 @@ msgstr "W dzisiejszych pieniądzach, np. 1 000 000 zł. Puste oznacza brak celu.
 #: src/features/plan/WithdrawalForm.tsx:172
 msgid "W dzisiejszych pieniądzach."
 msgstr "W dzisiejszych pieniądzach."
+
+#: src/features/results/KpiTiles.tsx:38
+msgid "w dzisiejszych zł"
+msgstr "w dzisiejszych zł"
 
 #: src/lib/format.ts:64
 msgid "w każdej przyszłości"
@@ -467,9 +740,21 @@ msgstr "w ponad 99 na 100 przyszłości"
 msgid "w żadnej przyszłości"
 msgstr "w żadnej przyszłości"
 
+#: src/features/results/Dashboard.tsx:137
+msgid "Wachlarz możliwych przyszłości"
+msgstr "Wachlarz możliwych przyszłości"
+
+#: src/features/results/Dashboard.tsx:121
+msgid "Wachlarz możliwych wartości portfela"
+msgstr "Wachlarz możliwych wartości portfela"
+
 #: src/features/portfolio/AssetTile.tsx:29
 msgid "Wartość"
 msgstr "Wartość"
+
+#: src/features/results/KpiTiles.tsx:74
+msgid "wartość portfela niższa niż dziś po uwzględnieniu inflacji (±{lossPp} pp)"
+msgstr "wartość portfela niższa niż dziś po uwzględnieniu inflacji (±{lossPp} pp)"
 
 #. placeholder {0}: value.toLocaleString('pl-PL')
 #: src/features/portfolio/PositionForm.tsx:235
@@ -479,6 +764,10 @@ msgstr "Wartość pozycji: {0} zł"
 #: src/features/portfolio/PositionForm.tsx:245
 msgid "Wartość Twoich obligacji EDO dziś."
 msgstr "Wartość Twoich obligacji EDO dziś."
+
+#: src/features/results/ModelCheckPanel.tsx:38
+msgid "Wejście"
+msgstr "Wejście"
 
 #: src/features/plan/PlanEditor.tsx:157
 msgid "Wiek docelowy"
@@ -495,6 +784,10 @@ msgstr "Własne"
 #: src/features/portfolio/PositionForm.tsx:211
 msgid "Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen sama i działa bez internetu, więc cenę możesz podać ręcznie."
 msgstr "Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen sama i działa bez internetu, więc cenę możesz podać ręcznie."
+
+#: src/features/results/BtcCard.tsx:115
+msgid "Wpisz dzisiejszą cenę 1 BTC (aplikacja nie pobiera cen sama), a pokażemy możliwe ceny w przyszłości."
+msgstr "Wpisz dzisiejszą cenę 1 BTC (aplikacja nie pobiera cen sama), a pokażemy możliwe ceny w przyszłości."
 
 #: src/features/portfolio/AssetTile.tsx:32
 msgid "Wpisz kwotę."
@@ -526,12 +819,12 @@ msgstr "Wstecz"
 msgid "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
 msgstr "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
 
-#: src/app/pages.tsx:56
+#: src/app/pages.tsx:59
 msgid "Wybierz coś z menu na górze."
 msgstr "Wybierz coś z menu na górze."
 
 #: src/app/Layout.tsx:10
-#: src/app/pages.tsx:44
+#: src/app/pages.tsx:45
 msgid "Wynik"
 msgstr "Wynik"
 
@@ -563,6 +856,11 @@ msgstr "Wypłaty"
 msgid "Wypłaty zaczynają się po końcu horyzontu, więc nigdy nie nastąpią."
 msgstr "Wypłaty zaczynają się po końcu horyzontu, więc nigdy nie nastąpią."
 
+#. placeholder {0}: yearsText(month)
+#: src/features/results/Dashboard.tsx:143
+msgid "za {0} ({year})"
+msgstr "za {0} ({year})"
+
 #: src/features/plan/WithdrawalForm.tsx:216
 msgid "Za ile lat zaczynasz wypłaty. Puste albo 0 oznacza: od razu."
 msgstr "Za ile lat zaczynasz wypłaty. Puste albo 0 oznacza: od razu."
@@ -572,11 +870,15 @@ msgstr "Za ile lat zaczynasz wypłaty. Puste albo 0 oznacza: od razu."
 msgid "Zakładany typowy zwrot realny portfela: {0}% rocznie (mediana z symulacji, po kosztach)."
 msgstr "Zakładany typowy zwrot realny portfela: {0}% rocznie (mediana z symulacji, po kosztach)."
 
+#: src/features/results/KpiTiles.tsx:50
+msgid "Zakres wyników"
+msgstr "Zakres wyników"
+
 #: src/app/Layout.tsx:11
 msgid "Założenia"
 msgstr "Założenia"
 
-#: src/app/pages.tsx:47
+#: src/app/pages.tsx:50
 msgid "Założenia i źródła"
 msgstr "Założenia i źródła"
 
@@ -584,9 +886,25 @@ msgstr "Założenia i źródła"
 msgid "Zamknij"
 msgstr "Zamknij"
 
+#: src/features/results/ModelCheckPanel.tsx:41
+msgid "zgodne ✓"
+msgstr "zgodne ✓"
+
+#: src/features/results/ModelCheckPanel.tsx:38
+msgid "Zgodność"
+msgstr "Zgodność"
+
 #: src/features/portfolio/tiles.ts:26
 msgid "Złoto"
 msgstr "Złoto"
+
+#: src/features/results/ModelCheckPanel.tsx:21
+msgid "Zmienność inflacji r/r"
+msgstr "Zmienność inflacji r/r"
+
+#: src/features/results/ModelCheckPanel.tsx:19
+msgid "Zmienność roczna"
+msgstr "Zmienność roczna"
 
 #: src/features/portfolio/AssetTile.tsx:46
 msgid "Zwykłe"
