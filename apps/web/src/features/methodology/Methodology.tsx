@@ -424,8 +424,17 @@ export function Methodology() {
             <Cite id="waring2015" />. Reguły Guytona i Klingera <Cite id="guyton2006" /> to zestaw
             sprzężonych zasad: coroczna indeksacja wypłaty (pomijana po ujemnym roku, jeśli stopa
             wypłaty jest ponad startową), ochrona kapitału (obcięcie wypłaty, gdy stopa wzrośnie za
-            bardzo) i reguła dobrobytu (podwyżka, gdy stopa spadnie). W aplikacji ich parametry są
-            stałe, a Ty wpisujesz tylko stopę startową.
+            bardzo, ale nie w ostatnich 15 latach planu) i reguła dobrobytu (podwyżka, gdy stopa
+            spadnie). W aplikacji ich parametry są stałe, a Ty wpisujesz tylko stopę startową.
+          </Trans>
+        </p>
+        <p>
+          <Trans>
+            Procent portfela, Guyton–Klinger i amortyzacja liczą się od majątku płynnego po
+            podatku, bez niepłynnej nieruchomości, bo mieszkania nie da się wypłacać po kawałku.
+            Gdyby doliczyć mieszkanie, stopa wypłat byłaby liczona od majątku, którego nie ma
+            czym wypłacić, a reguły G-K ochrony i dobrobytu oceniałyby ją względem niewłaściwego
+            portfela.
           </Trans>
         </p>
         <p>
@@ -438,8 +447,8 @@ export function Methodology() {
       <Section spec="4.12" title={<Trans>Śmiertelność</Trans>}>
         <p>
           <Trans>
-            Jeśli podasz wiek i płeć, aplikacja policzy prawdopodobieństwo wyczerpania środków za
-            Twojego życia. Bierze pod uwagę, że ruina w odległym roku liczy się tylko wtedy, gdy
+            Jeśli podasz wiek i płeć (w Planie, oba pola są opcjonalne), aplikacja policzy w
+            Wynikach prawdopodobieństwo wyczerpania środków za Twojego życia. Bierze pod uwagę, że ruina w odległym roku liczy się tylko wtedy, gdy
             dożyjesz tego roku. Używamy tablic trwania życia GUS (rok 2025); śmiertelność całkujemy
             analitycznie, bez dodatkowego szumu.
           </Trans>
@@ -447,7 +456,7 @@ export function Methodology() {
         <p>
           <Trans>
             Tablice okresowe zaniżają długość życia kolejnych roczników, bo medycyna się poprawia.
-            Dlatego jest opcja „+2 lata” (założenie). Przedział ufności tego wyniku uwzględnia tylko
+            Dlatego jest opcja „+2 lata” (założenie, w Planie, domyślnie wyłączona). Przedział ufności tego wyniku uwzględnia tylko
             błąd losowania symulacji rynku, a nie niepewność tablic.
           </Trans>
         </p>
@@ -621,9 +630,12 @@ export function Methodology() {
               źródeł wtórnych i rosną w symulacji o inflację plus 1 pp (założenie). Wypłata z IKE po
               60. roku życia jest wolna od podatku, a wcześniej opodatkowana 19% od zysku. Z IKZE po
               65. roku życia pobieramy 10% od całej kwoty, a wcześniej 19% od zysku, bez zwrotu
-              wcześniej odliczonych kwot. Pomijamy warunek 5 lat wpłat do IKE przed 60. rokiem
-              życia. Wpłaty początkowe nie zużywają limitu. Wiek startowy jest zakładany, dopóki go
-              nie wpiszesz.
+              wcześniej odliczonych kwot (w rzeczywistości wypłata z IKZE przed 65. rokiem życia to
+              zwrot odliczeń, czego nie modelujemy). Pomijamy warunek 5 lat wpłat do IKE przed 60.
+              rokiem życia i do IKZE przed 65. oraz wyższy limit IKZE dla prowadzących działalność
+              gospodarczą. Wpłaty początkowe nie zużywają limitu. Wiek jest wymagany przy wyborze
+              IKE lub IKZE i nie jest zakładany po cichu. Te zasady są cytowane z pamięci i
+              niezweryfikowane w ISAP, o czym przypominamy też przy polu wieku i w Założeniach.
             </Trans>
           </li>
           <li>
@@ -632,9 +644,12 @@ export function Methodology() {
               automatycznej sprzedaży przy niedoborze środków (przy ruinie jej wartość też jest
               zerowana w modelu, żeby bilans się zgadzał). Podatek od sprzedaży to 19% od zysku bez
               kosztów zbycia i nakładów; ryczałt od czynszu to 8,5% i 12,5% (progi
-              niezweryfikowane). W obecnym interfejsie nie ma jeszcze pól na rok zakupu, cenę zakupu
-              i rok sprzedaży: domyślnie koszt równa się wartości, a sprzedaży nie ma. Zmienność i
-              błąd standardowy ceny to założenia.
+              niezweryfikowane). Rok zakupu, cenę zakupu i rok sprzedaży wpisujesz przy dodawaniu
+              mieszkania albo w kafelku pozycji. Bez roku zakupu nie zakładamy zwolnienia po 5
+              latach (podatek liczymy konserwatywnie), bez ceny zakupu koszt równa się wartości
+              dziś, a bez roku sprzedaży mieszkania nie sprzedajemy w trakcie planu. Wartość „po
+              podatku” odejmuje podatek od sprzedaży mieszkania. Zmienność i błąd standardowy ceny
+              to założenia.
             </Trans>
           </li>
           <li>

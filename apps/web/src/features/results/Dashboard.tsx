@@ -20,6 +20,7 @@ import { ModelCheckPanel } from './ModelCheckPanel';
 import { yearsText } from './periods';
 import { Solvers } from './Solvers';
 import { RiskCard } from './RiskCard';
+import { RuinAliveCard } from './RuinAliveCard';
 import { QualityBadge } from './QualityBadge';
 import { SIM_SEED, useSimulation, type SimOptions } from './useSimulation';
 import { calendarYear, gridIndex, valuesAt, winsorize } from './values';
@@ -184,12 +185,18 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
           <Toggle label={t`Po podatku`} checked={afterTax} onCheckedChange={setAfterTax} />
           <Toggle label={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
         </div>
+        {afterTax && scenario.tax.kind === 'pl' && scenario.positions.some((p) => scenario.assets.find((a) => a.id === p.assetId)?.kind === 'realEstate') && (
+          <p className="m-0 mt-1 text-sm text-muted">
+            {t`Wartość po podatku uwzględnia podatek od sprzedaży mieszkania (19% od zysku, o ile sprzedaż nie jest zwolniona po 5 latach od zakupu; bez podanego roku zakupu zwolnienia nie zakładamy).`}
+          </p>
+        )}
         <div className="mt-2">
           <QualityBadge result={result} scenario={scenario} running={state.running} calibrated={calibrated} />
         </div>
       </Card>
       <WarningBanners warnings={state.warnings} />
       <KpiTiles result={result} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
+      <RuinAliveCard result={result} scenario={scenario} dataset={dataset} createWorker={createWorker} />
       <Card title={t`Wachlarz możliwych przyszłości (${basis.full})`}>
         <label className="mb-3 flex flex-col gap-1 text-sm font-medium">
           <span>{t`Rok na wykresie: za ${yearsText(month)} (${year})`}</span>

@@ -26,6 +26,7 @@ export interface SimWorker {
   riskShares(s: Scenario, o: { seed: number; paths: number }): Promise<AssetRiskShare[]>;
   summary(s: Scenario, o: RunOptions, v: { month: number; real: boolean; afterTax: boolean }): Promise<Summary>;
   estimate(s: Scenario): Promise<number>;
+  ruinAlive(ruinMonth: Int32Array, qx: number[], age: number, months: number, extraYears: number): Promise<{ p: number; ci: [number, number] }>;
   pairedDiff(va: Float64Array, vb: Float64Array, reps?: number): Promise<Omit<PairedDifference, 'month'>>;
   terminate(): void;
 }
@@ -53,6 +54,7 @@ function createRealWorker(): SimWorker {
     riskShares: (s, o) => remote.riskShares(s, o),
     summary: (s, o, v) => remote.summary(s, o, v),
     estimate: (s) => remote.estimate(s),
+    ruinAlive: (m, q, a, n, x) => remote.ruinAlive(m, q, a, n, x),
     pairedDiff: (a, b, r) => remote.pairedDiff(a, b, r),
     terminate: () => worker.terminate(),
   };

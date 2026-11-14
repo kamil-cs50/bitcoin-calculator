@@ -17,9 +17,9 @@ export interface RiskCardProps {
 const PATHS = 2000;
 const pct = (v: number): number => Math.round(v * 100);
 
-/** Aktywa ryzykowne, które mają w portfelu dodatnią wartość. */
+/** Aktywa ryzykowne (z nieruchomością, która też jest w tabeli) z dodatnią wartością w portfelu. */
 function heldRiskyIds(s: Scenario): string[] {
-  return s.assets.filter((a) => a.kind === 'risky' && s.positions.some((p) => p.assetId === a.id && p.value > 0)).map((a) => a.id);
+  return s.assets.filter((a) => (a.kind === 'risky' || a.kind === 'realEstate') && s.positions.some((p) => p.assetId === a.id && p.value > 0)).map((a) => a.id);
 }
 
 /**
@@ -47,9 +47,14 @@ export function RiskCard({ scenario, createWorker }: RiskCardProps) {
     };
   }, [eligible, scenario, createWorker]);
 
+  // Zdanie dotyczy BTC (wszystkie warianty: giełda i ETF/ETP, sumowane) albo aktywa o największym wkładzie w ryzyko.
   const focus = useMemo(() => {
     if (!rows || rows.length === 0) return null;
-    return rows.find((r) => /^btc/.test(r.assetId)) ?? rows.reduce((a, b) => (b.riskShare > a.riskShare ? b : a));
+    const btc = rows.filter((r) => /^btc/.test(r.assetId));
+    if (btc.length > 0) {
+      return { assetId: btc[0]!.assetId, valueShare: btc.reduce((a, r) => a + r.valueShare, 0), riskShare: btc.reduce((a, r) => a + r.riskShare, 0) };
+    }
+    return rows.reduce((a, b) => (b.riskShare > a.riskShare ? b : a));
   }, [rows]);
 
   if (!eligible || !rows || !focus) return null;
@@ -61,7 +66,7 @@ export function RiskCard({ scenario, createWorker }: RiskCardProps) {
   return (
     <Card title={t`Wkład aktywów w ryzyko`}>
       <p className="m-0 font-medium">{t`${name} to ${value}% wartości i ${risk}% ryzyka`}</p>
-      <p className="mb-3 mt-1 text-sm text-muted">{t`Ryzyko to zmienność wartości portfela w skali roku; udział aktywa uwzględnia jego wagę, zmienność i zależność od pozostałych.`}</p>
+      <p className="mb-3 mt-1 text-sm text-muted">{t`Ryzyko to zmienność wartości portfela w skali roku; udział aktywa uwzględnia jego wagę, zmienność i zależność od pozostałych. Liczone z kowariancji zwykłych rocznych zwrotów, która pomija ryzyko upadku kryptowalut, więc udział BTC w ryzyku jest niższy niż w pełnej symulacji.`}</p>
       <DataTable
         caption={t`Udział aktywów w wartości i ryzyku portfela`}
         cornerLabel={t`Aktywo`}

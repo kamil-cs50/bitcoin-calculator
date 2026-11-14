@@ -271,3 +271,99 @@ describe('migrate', () => {
     expect(migrate({ ...good, datasetVersion: '2025.01' }).ok).toBe(true);
   });
 });
+
+describe('store: wiek i opakowania IKE/IKZE (bez cichego wieku domyślnego)', () => {
+  it('wybór IKE/IKZE bez znanego wieku nie włącza opakowania ani limitów', () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 50_000 });
+    st.updatePosition(0, { wrapper: 'IKE' });
+    const s = useScenarioStore.getState().scenario;
+    expect(s.positions[0]!.wrapper).toBe('taxable');
+    expect(s.wrappers).toBeUndefined();
+    st.addPosition({ presetId: 'btcBase', value: 1_000, wrapper: 'IKZE' });
+    expect(useScenarioStore.getState().scenario.positions[1]!.wrapper).toBe('taxable');
+    expect(useScenarioStore.getState().scenario.wrappers).toBeUndefined();
+  });
+
+  it('setAge zapisuje wiek; po podaniu wieku IKE/IKZE działa z tym wiekiem (nie z domyślnym)', () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 50_000 });
+    st.setAge(62);
+    expect(useScenarioStore.getState().scenario.person).toEqual({ age: 62 });
+    st.updatePosition(0, { wrapper: 'IKE' });
+    const s = useScenarioStore.getState().scenario;
+    expect(s.positions[0]!.wrapper).toBe('IKE');
+    expect(s.wrappers).toMatchObject({ age: 62, ikeLimit: 28_260 });
+    st.setAge(40);
+    expect(useScenarioStore.getState().scenario.wrappers!.age).toBe(40);
+    expect(useScenarioStore.getState().scenario.person!.age).toBe(40);
+    expect(ScenarioSchema.safeParse(useScenarioStore.getState().scenario).success).toBe(true);
+    expect(validateScenario(useScenarioStore.getState().scenario).ok).toBe(true);
+  });
+
+  it('setAge(null) czyści wiek, o ile żadna pozycja nie jest w IKE/IKZE; setSex i setCohortBonus uzupełniają osobę', () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 50_000 });
+    st.setAge(50);
+    st.setSex('K');
+    st.setCohortBonus(true);
+    expect(useScenarioStore.getState().scenario.person).toEqual({ age: 50, sex: 'K', cohortBonus: true });
+    st.setAge(null);
+    expect(useScenarioStore.getState().scenario.person).toBeUndefined();
+    st.setAge(60);
+    st.updatePosition(0, { wrapper: 'IKZE' });
+    st.setAge(null); // wiek wymagany przy IKE/IKZE
+    expect(useScenarioStore.getState().scenario.person?.age).toBe(60);
+  });
+
+  it('wiek z wcześniejszego zapisu (wrappers.age bez person) liczy się jako znany', () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 50_000 });
+    st.setAge(66);
+    st.updatePosition(0, { wrapper: 'IKE' });
+    const { person: _p, ...rest } = useScenarioStore.getState().scenario;
+    void _p;
+    st.setScenario(rest);
+    st.addPosition({ presetId: 'btcBase', value: 1_000, wrapper: 'IKZE' });
+    expect(useScenarioStore.getState().scenario.positions[1]!.wrapper).toBe('IKZE');
+  });
+});
+
+describe('store: mieszkanie (rok zakupu, cena zakupu, rok sprzedaży)', () => {
+  it('addPosition zapisuje purchaseYear/saleYear w aktywie i cenę zakupu jako podstawę kosztu', () => {
+    useScenarioStore.getState().addPosition({ presetId: 'realEstate', value: 600_000, costBasis: 400_000, targetWeight: 0, purchaseYear: 2023, saleYear: 2040 });
+    const s = useScenarioStore.getState().scenario;
+    expect(s.assets[0]).toMatchObject({ kind: 'realEstate', purchaseYear: 2023, saleYear: 2040 });
+    expect(s.positions[0]).toMatchObject({ value: 600_000, costBasis: 400_000 });
+    expect(ScenarioSchema.safeParse(s).success).toBe(true);
+    expect(validateScenario(s).ok).toBe(true);
+  });
+
+  it('setRealEstate zmienia lata i usuwa je po wpisaniu null', () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'realEstate', value: 600_000, targetWeight: 0 });
+    expect(useScenarioStore.getState().scenario.assets[0]).not.toHaveProperty('purchaseYear');
+    st.setRealEstateYears('realEstate', { purchaseYear: 2020, saleYear: 2035 });
+    expect(useScenarioStore.getState().scenario.assets[0]).toMatchObject({ purchaseYear: 2020, saleYear: 2035 });
+    st.setRealEstateYears('realEstate', { purchaseYear: null });
+    expect(useScenarioStore.getState().scenario.assets[0]).not.toHaveProperty('purchaseYear');
+    expect(useScenarioStore.getState().scenario.assets[0]).toMatchObject({ saleYear: 2035 });
+  });
+});
+
+describe('store: updateDataset zachowuje ustawienia użytkownika', () => {
+  it('nie kasuje nakładki potęgowej BTC ani lat mieszkania', () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'btcBase', value: 1_000 });
+    st.addPosition({ presetId: 'realEstate', value: 600_000, targetWeight: 0, purchaseYear: 2021, saleYear: 2041 });
+    const sc = useScenarioStore.getState().scenario;
+    st.setScenario({
+      ...sc,
+      assets: sc.assets.map((a) => (a.id === 'btcBase' && a.kind === 'risky' ? { ...a, powerLaw: { a: -17, b: 5.8, genesis: '2009-01-03' as const } } : a)),
+    });
+    st.updateDataset();
+    const s = useScenarioStore.getState().scenario;
+    expect(s.assets.find((a) => a.id === 'btcBase')).toMatchObject({ powerLaw: { a: -17, b: 5.8 } });
+    expect(s.assets.find((a) => a.id === 'realEstate')).toMatchObject({ purchaseYear: 2021, saleYear: 2041 });
+  });
+});

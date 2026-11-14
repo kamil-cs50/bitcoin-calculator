@@ -152,5 +152,6 @@ export const ScenarioSchema = z.object({
   wrappers: z
     .object({ ikeLimit: num, ikzeLimit: num, ikzeTaxRate: num, age: num, limitGrowth: num.optional() })
     .optional(),
+  person: z.object({ age: num, sex: z.enum(['M', 'K']).optional(), cohortBonus: z.boolean().optional() }).optional(),
   goal: z.object({ amountReal: num, month: num }).optional(),
 }) satisfies z.ZodType<Scenario>;

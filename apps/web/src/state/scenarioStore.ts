@@ -1,5 +1,5 @@
 import { loadDataset, type Dataset } from '@sim/data';
-import { defaultWrapperSettings, type Position, type Scenario, type Wrapper } from '@sim/engine';
+import { defaultWrapperSettings, type AssetParams, type Person, type Position, type RealEstateParams, type Scenario, type Wrapper } from '@sim/engine';
 import { create } from 'zustand';
 import { COMPARE_ID, CURRENT_ID, db } from './db';
 import {
@@ -11,13 +11,38 @@ import {
 } from './defaults';
 import { migrate } from './migrations';
 
-/** Wiek zakładany do czasu, aż użytkownik wpisze własny (reguły IKE od 60 lat, IKZE od 65). */
-const DEFAULT_AGE = 35;
+/** Znany wiek użytkownika (pole „wiek” albo wiek zapisany w ustawieniach IKE/IKZE); brak = nie zgadujemy. */
+export function knownAge(sc: Scenario): number | undefined {
+  return sc.person?.age ?? sc.wrappers?.age;
+}
 
-/** Pierwsze opakowanie IKE/IKZE w scenariuszu włącza limity wpłat i reguły wypłat z ustawieniami domyślnymi. */
+const isAgeOk = (age: number): boolean => Number.isInteger(age) && age >= 0 && age <= 120;
+
+/**
+ * Pierwsze opakowanie IKE/IKZE w scenariuszu włącza limity wpłat i reguły wypłat z wiekiem użytkownika.
+ * Wiek jest wymagany (reguły IKE od 60 lat, IKZE od 65): bez niego opakowania nie włączamy, więc wywołujący
+ * najpierw odrzuca wybór (`wrapperAllowed`).
+ */
 function withWrappers(sc: Scenario, wrapper: Wrapper | undefined): Scenario {
   if (!wrapper || wrapper === 'taxable' || sc.wrappers) return sc;
-  return { ...sc, wrappers: defaultWrapperSettings(sc.startYear, DEFAULT_AGE, sc.market.inflation.mean + 0.01) };
+  const age = knownAge(sc);
+  if (age === undefined) return sc;
+  return { ...sc, wrappers: defaultWrapperSettings(sc.startYear, age, sc.market.inflation.mean + 0.01) };
+}
+
+/** Czy można wybrać konto `wrapper`: zwykłe zawsze, IKE/IKZE tylko przy znanym wieku. */
+export function wrapperAllowed(sc: Scenario, wrapper: Wrapper | undefined): boolean {
+  return !wrapper || wrapper === 'taxable' || knownAge(sc) !== undefined;
+}
+
+const patchRealEstate = (assets: AssetParams[], id: string, patch: Partial<RealEstateParams>): AssetParams[] =>
+  assets.map((a) => (a.kind === 'realEstate' && a.id === id ? { ...a, ...patch } : a));
+
+function dropUndefined(a: RealEstateParams): RealEstateParams {
+  const r = { ...a };
+  if (r.purchaseYear === undefined) delete r.purchaseYear;
+  if (r.saleYear === undefined) delete r.saleYear;
+  return r;
 }
 
 /** Najwyżej tyle scenariuszy naraz w porównaniu (spec 4.15). */
@@ -40,6 +65,9 @@ export interface NewPosition {
   /** Wariant ETF/ETP tego samego instrumentu (osobne aktywo z podatkiem papieru wartościowego). */
   etf?: boolean;
   wrapper?: Wrapper;
+  /** Mieszkanie: rok nabycia (brak = bez zwolnienia z podatku od sprzedaży) i rok sprzedaży (brak = bez sprzedaży). */
+  purchaseYear?: number;
+  saleYear?: number;
   /** Wagi są względne (rebalans je normalizuje); domyślnie wartość pozycji. */
   targetWeight?: number;
 }
@@ -60,6 +88,17 @@ export interface ScenarioState {
   addToCompare: (name: string) => boolean;
   removeFromCompare: (id: string) => void;
   setScenario: (s: Scenario) => void;
+  /**
+   * Wiek (pełne lata 0..120) użytkownika: do IKE/IKZE i prawdopodobieństwa ruiny za życia. `null` czyści wiek,
+   * ale nie wtedy, gdy któraś pozycja jest w IKE/IKZE (wiek jest wtedy wymagany). Niepoprawny wiek jest ignorowany.
+   */
+  setAge: (age: number | null) => void;
+  /** Płeć do tablic trwania życia (wymaga podanego wieku). */
+  setSex: (sex: Person['sex'] | null) => void;
+  /** Opcja „+2 lata” (założenie o dłuższym życiu kolejnych roczników; wymaga podanego wieku). */
+  setCohortBonus: (on: boolean) => void;
+  /** Rok nabycia i sprzedaży mieszkania (`null` usuwa wartość). */
+  setRealEstateYears: (assetId: string, p: { purchaseYear?: number | null; saleYear?: number | null }) => void;
   addPosition: (p: NewPosition) => void;
   updatePosition: (index: number, patch: Partial<Position>) => void;
   removePosition: (index: number) => void;
@@ -127,19 +166,78 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
 
   setScenario: (scenario) => set({ scenario }),
 
+  setAge: (age) =>
+    set((st) => {
+      const sc = st.scenario;
+      if (age === null) {
+        if (sc.positions.some((p) => p.wrapper !== 'taxable')) return st;
+        const { person: _p, ...rest } = sc;
+        void _p;
+        return { scenario: rest };
+      }
+      if (!isAgeOk(age)) return st;
+      return {
+        scenario: {
+          ...sc,
+          person: { ...sc.person, age },
+          ...(sc.wrappers ? { wrappers: { ...sc.wrappers, age } } : {}),
+        },
+      };
+    }),
+
+  setSex: (sex) =>
+    set((st) => {
+      const person = st.scenario.person;
+      if (!person) return st;
+      const { sex: _s, ...rest } = person;
+      void _s;
+      return { scenario: { ...st.scenario, person: sex ? { ...rest, sex } : rest } };
+    }),
+
+  setCohortBonus: (on) =>
+    set((st) => {
+      const person = st.scenario.person;
+      if (!person) return st;
+      const { cohortBonus: _c, ...rest } = person;
+      void _c;
+      return { scenario: { ...st.scenario, person: on ? { ...rest, cohortBonus: true } : rest } };
+    }),
+
+  setRealEstateYears: (assetId, p) =>
+    set((st) => {
+      const assets = st.scenario.assets.map((a) => {
+        if (a.kind !== 'realEstate' || a.id !== assetId) return a;
+        const next: RealEstateParams = { ...a };
+        if (p.purchaseYear !== undefined) next.purchaseYear = p.purchaseYear ?? undefined;
+        if (p.saleYear !== undefined) next.saleYear = p.saleYear ?? undefined;
+        return dropUndefined(next);
+      });
+      return { scenario: { ...st.scenario, assets } };
+    }),
+
   addPosition: (p) =>
     set((st) => {
       const id = p.etf ? etfId(p.presetId) : p.presetId;
-      const asset = st.scenario.assets.find((a) => a.id === id) ?? assetFromPreset(st.dataset, id);
+      let asset = st.scenario.assets.find((a) => a.id === id) ?? assetFromPreset(st.dataset, id);
+      if (asset.kind === 'realEstate' && (p.purchaseYear !== undefined || p.saleYear !== undefined)) {
+        asset = dropUndefined({
+          ...asset,
+          ...(p.purchaseYear !== undefined ? { purchaseYear: p.purchaseYear } : {}),
+          ...(p.saleYear !== undefined ? { saleYear: p.saleYear } : {}),
+        });
+      }
       const position: Position = {
         assetId: asset.id,
-        wrapper: p.wrapper ?? 'taxable',
+        // IKE/IKZE tylko przy znanym wieku (bez zgadywania); inaczej konto zwykłe
+        wrapper: wrapperAllowed(st.scenario, p.wrapper) ? (p.wrapper ?? 'taxable') : 'taxable',
         value: p.value,
         costBasis: p.costBasis ?? p.value,
         targetWeight: p.targetWeight ?? p.value,
       };
       const assets = st.scenario.assets.some((a) => a.id === asset.id)
-        ? st.scenario.assets
+        ? asset.kind === 'realEstate'
+          ? patchRealEstate(st.scenario.assets, asset.id, asset)
+          : st.scenario.assets
         : [...st.scenario.assets, asset];
       return {
         scenario: withWrappers(
@@ -153,8 +251,12 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
     set((st) => {
       const cur = st.scenario.positions[index];
       if (!cur) return st;
-      const positions = st.scenario.positions.map((x, i) => (i === index ? { ...x, ...patch } : x));
-      return { scenario: withWrappers({ ...st.scenario, positions }, patch.wrapper) };
+      const { wrapper, ...rest } = patch;
+      // IKE/IKZE tylko przy znanym wieku; inaczej zmiana konta jest odrzucana (UI prosi o wiek)
+      const ok = wrapperAllowed(st.scenario, wrapper);
+      const applied: Partial<Position> = ok && wrapper !== undefined ? { ...rest, wrapper } : rest;
+      const positions = st.scenario.positions.map((x, i) => (i === index ? { ...x, ...applied } : x));
+      return { scenario: withWrappers({ ...st.scenario, positions }, applied.wrapper) };
     }),
 
   removePosition: (index) =>
@@ -179,7 +281,13 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
       const assets = st.scenario.assets.map((a) => {
         if (a.id.startsWith('custom:')) return a;
         try {
-          return assetFromPreset(st.dataset, a.id);
+          const fresh = assetFromPreset(st.dataset, a.id);
+          // ustawienia użytkownika, których nie ma w zbiorze danych, zostają (nakładka potęgowa, lata mieszkania)
+          if (fresh.kind === 'risky' && a.kind === 'risky' && a.powerLaw) return { ...fresh, powerLaw: a.powerLaw };
+          if (fresh.kind === 'realEstate' && a.kind === 'realEstate') {
+            return dropUndefined({ ...fresh, purchaseYear: a.purchaseYear, saleYear: a.saleYear });
+          }
+          return fresh;
         } catch {
           return a; // nieznany preset: zostawiamy parametry zapisu
         }

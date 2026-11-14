@@ -1,6 +1,6 @@
 import { I18nProvider } from '@lingui/react';
 import { validateScenario } from '@sim/engine';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -241,6 +241,55 @@ describe('AssumptionsPanel: niepewność i tryb eksperta', () => {
     expect(btcOf()).toMatchObject({ powerLaw: { a: -17, b: 5.8, genesis: '2009-01-03' } });
     await userEvent.click(screen.getByRole('switch', { name: /Nakładka potęgowa/ }));
     expect(btcOf()).not.toHaveProperty('powerLaw');
+  });
+});
+
+describe('PowerLawCard: spójność z silnikiem', () => {
+  it('gdy nakładka zniknie ze scenariusza (np. import, zmiana aktywów), karta nie pokazuje jej jako włączonej', async () => {
+    useUiStore.getState().setExpert(true);
+    view();
+    await userEvent.click(screen.getByRole('switch', { name: /Nakładka potęgowa/ }));
+    await userEvent.type(screen.getByRole('textbox', { name: /Parametr a/ }), '-17');
+    await userEvent.type(screen.getByRole('textbox', { name: /Parametr b/ }), '5,8');
+    expect(screen.getByRole('switch', { name: /Nakładka potęgowa/ })).toBeChecked();
+    act(() => {
+      const s = sc();
+      st().setScenario({ ...s, assets: s.assets.map((x) => (x.kind === 'risky' ? { ...x, powerLaw: undefined } : x)) });
+    });
+    expect(screen.getByRole('switch', { name: /Nakładka potęgowa/ })).not.toBeChecked();
+    expect(screen.queryByRole('textbox', { name: /Parametr a/ })).toBeNull();
+  });
+
+  it('czyszczenie jednego pola w trakcie pisania nie wyłącza karty ani nie kasuje drugiego pola', async () => {
+    useUiStore.getState().setExpert(true);
+    view();
+    await userEvent.click(screen.getByRole('switch', { name: /Nakładka potęgowa/ }));
+    await userEvent.type(screen.getByRole('textbox', { name: /Parametr a/ }), '-17');
+    await userEvent.type(screen.getByRole('textbox', { name: /Parametr b/ }), '5,8');
+    await userEvent.clear(screen.getByRole('textbox', { name: /Parametr a/ }));
+    expect(screen.getByRole('switch', { name: /Nakładka potęgowa/ })).toBeChecked();
+    expect(screen.getByRole('textbox', { name: /Parametr b/ })).toHaveValue('5,8');
+  });
+
+  it('opis mówi, że parametr a nie wpływa na dryf', () => {
+    useUiStore.getState().setExpert(true);
+    view();
+    expect(screen.getByText(/parametr a nie wpływa na dryf/i)).toBeInTheDocument();
+  });
+});
+
+describe('AssumptionsPanel: przepisy podatkowe i limity ze statusem', () => {
+  it('karta „Podatki i limity (Polska)”: limity IKE/IKZE ◐, stawki i ryczałt ❌, zasady wypłat z IKE/IKZE ❌', () => {
+    view();
+    const reg = region('Podatki i limity (Polska)');
+    const li = (label: RegExp) => within(reg).getByText(label).closest('li') as HTMLElement;
+    expect(within(li(/Limit wpłat na IKE w 2026/)).getByText(/^◐ źródło wtórne$/)).toBeInTheDocument();
+    expect(within(li(/Limit wpłat na IKZE w 2027/)).getByText(/^◐ źródło wtórne$/)).toBeInTheDocument();
+    expect(within(li(/Podatek od zysków kapitałowych/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(li(/Ryczałt od najmu do progu/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(li(/Zwolnienie sprzedaży mieszkania/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(li(/Zasady wypłat z IKE i IKZE/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(reg).getByText(/Traktuj wyniki po podatku jako orientacyjne/)).toBeInTheDocument();
   });
 });
 

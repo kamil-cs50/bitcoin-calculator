@@ -10,6 +10,7 @@ import { assetFromPreset } from '../../state/defaults';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { rebuildMarket } from '../../state/defaults';
 import { fetchCryptoQuote } from './prices';
+import { hasRealEstateError, RealEstateFields, realEstateErrors, type RealEstateDraft } from './RealEstateFields';
 import { TILE_PRESET, useAssetNames, type TileKind } from './tiles';
 import { numberLocale } from '../../i18n';
 import { currencyWord } from '../results/basis';
@@ -99,6 +100,8 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
   const [customName, setCustomName] = useState('');
   const [g, setG] = useState<number | null>(null);
   const [sigma, setSigma] = useState<number | null>(null);
+  const startYear = useScenarioStore((s) => s.scenario.startYear);
+  const [re, setRe] = useState<RealEstateDraft>({ purchaseYear: null, saleYear: null, costBasis: null });
 
   const byUnits = kind === 'btc' && mode === 'units';
   const priceOk = price !== null && price > 0;
@@ -106,7 +109,8 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
   const customOk =
     kind !== 'custom' ||
     (cleanName(customName) !== '' && g !== null && g > -0.5 && g < 0.5 && sigma !== null && sigma > 0 && sigma <= 1.5);
-  const valid = value !== null && value > 0 && customOk;
+  const reOk = kind !== 'rental' || !hasRealEstateError(realEstateErrors(re, startYear));
+  const valid = value !== null && value > 0 && customOk && reOk;
 
   async function loadPrice() {
     setFetchState('loading');
@@ -128,7 +132,19 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
       const presetId = TILE_PRESET[kind];
       // wariant ETF to osobne aktywo (osobny podatek), więc nie zmienia podatku już dodanej pozycji „giełda”
       // nieruchomość jest niepłynna: waga docelowa 0, żeby nie brała udziału w rebalansie ani wpłatach
-      addPosition({ presetId, value, etf: variant === 'etf' && (kind === 'btc' || kind === 'gold'), ...(kind === 'rental' ? { targetWeight: 0 } : {}) });
+      addPosition({
+        presetId,
+        value,
+        etf: variant === 'etf' && (kind === 'btc' || kind === 'gold'),
+        ...(kind === 'rental'
+          ? {
+              targetWeight: 0,
+              ...(re.costBasis !== null ? { costBasis: re.costBasis } : {}),
+              ...(re.purchaseYear !== null ? { purchaseYear: re.purchaseYear } : {}),
+              ...(re.saleYear !== null ? { saleYear: re.saleYear } : {}),
+            }
+          : {}),
+      });
     }
     onDone();
   }
@@ -263,10 +279,14 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
               kind === 'edo'
                 ? t`Wartość Twoich obligacji EDO dziś.`
                 : kind === 'rental'
-                  ? t`Wartość rynkowa mieszkania dziś. Czynsz netto (zakładane 3,5% wartości rocznie) trafia co miesiąc do gotówki po ryczałcie; mieszkanie nie bierze udziału w rebalansie ani wypłatach.`
+                  ? t`Wartość rynkowa mieszkania dziś. Czynsz netto (zakładane 3,5% wartości rocznie) trafia co miesiąc do gotówki po ryczałcie; mieszkanie nie bierze udziału w rebalansie ani wypłatach, a stopa wypłat liczy się od majątku płynnego, bez mieszkania.`
                   : undefined
             }
           />
+        )}
+
+        {kind === 'rental' && (
+          <RealEstateFields draft={re} startYear={startYear} onChange={(p) => setRe((d) => ({ ...d, ...p }))} />
         )}
 
         <div className="flex flex-wrap gap-2">

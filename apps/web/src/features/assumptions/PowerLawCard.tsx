@@ -25,8 +25,19 @@ export function PowerLawCard() {
   const [a, setA] = useState<number | null>(stored?.a ?? null);
   const [b, setB] = useState<number | null>(stored?.b ?? null);
   const enabled = enabledDraft || stored !== undefined;
+  // Zmiana nakładki spoza karty (import, zmiana aktywów) nadpisuje szkic, więc karta nie pokazuje nakładki,
+  // której silnik nie używa; własny zapis z karty ustawia `seen` razem ze scenariuszem i niczego nie nadpisuje.
+  const keyOf = (p: { a: number; b: number } | undefined): string => (p ? `${p.a}|${p.b}` : '');
+  const [seen, setSeen] = useState(keyOf(stored));
+  if (keyOf(stored) !== seen) {
+    setSeen(keyOf(stored));
+    setA(stored?.a ?? null);
+    setB(stored?.b ?? null);
+    setEnabledDraft(stored !== undefined);
+  }
 
   const apply = (next: { a: number; b: number } | null): void => {
+    setSeen(keyOf(next ?? undefined));
     const assets = scenario.assets.map((x): AssetParams => {
       if (!isBtc(x)) return x;
       const rest: Risky = { ...x };
@@ -54,6 +65,9 @@ export function PowerLawCard() {
     <Card title={t`Nakładka potęgowa`} aside={<Badge tone="warning">{t`model kontrowersyjny`}</Badge>}>
       <p className="mt-0 text-sm text-muted">
         {t`Zastępuje oczekiwany zwrot Bitcoina pochodną trendu ln P = a + b·ln(dni od 2009-01-03). Zastrzeżenie: regresja ceny na czasie jest podatna na regresję pozorną i nie ma podstaw ekonomicznych. Parametry a i b są niezweryfikowane. Zmienność i upadek pozostają bez zmian.`}
+      </p>
+      <p className="mt-0 text-sm text-muted">
+        {t`Parametr a nie wpływa na dryf (liczy się tylko nachylenie b), ale wymagamy obu, bo razem opisują wpisany trend. Włączona nakładka przesłania zwrot z zestawu założeń Bitcoina, także „Docelowy zwrot roczny”.`}
       </p>
       <Toggle label={t`Nakładka potęgowa`} checked={enabled} onCheckedChange={toggle} disabled={btc.length === 0} />
       {btc.length === 0 && <p className="mb-0 mt-1 text-sm text-muted">{t`Dodaj Bitcoina do portfela, aby użyć nakładki.`}</p>}

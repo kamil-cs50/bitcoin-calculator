@@ -40,6 +40,63 @@ const fmt = (v: number, unit: ParamUnit): string =>
   new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 4 }).format(unit === 'percent' ? v * 100 : v) +
   (unit === 'percent' ? '%' : '');
 
+/** Etykiety rodzaju i statusu weryfikacji parametru (✅/◐/❌ tekstem, nie tylko kolorem). */
+function useParamLabels(): { kind: Record<Param['kind'], string>; verified: Record<Param['verified'], { text: string; tone: BadgeTone }> } {
+  const { t } = useLingui();
+  return {
+    kind: { data: t`dane`, forecast: t`prognoza instytucji`, assumption: t`założenie` },
+    verified: {
+      yes: { text: t`✅ zweryfikowane`, tone: 'ok' },
+      secondary: { text: t`◐ źródło wtórne`, tone: 'warning' },
+      no: { text: t`❌ niezweryfikowane`, tone: 'danger' },
+    },
+  };
+}
+
+/** Źródła parametru (linki z datą dostępu) albo informacja o ich braku. */
+function Sources({ param }: { param: Param }) {
+  const { t } = useLingui();
+  return param.sources.length > 0 ? (
+    <ul aria-label={t`Źródła`} className="m-0 flex list-none flex-col gap-1 p-0 text-sm">
+      {param.sources.map((s) => (
+        <li key={s.url + s.title}>
+          {/^https?:\/\//.test(s.url) ? (
+            <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline">
+              {s.title}
+            </a>
+          ) : (
+            <span>{s.title}</span>
+          )}{' '}
+          <span className="text-muted">
+            {s.publisher}, {s.year} · {t`dostęp: ${s.accessed}`}
+          </span>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p className="m-0 text-sm text-muted">{t`brak źródła: wartość jest założeniem lub oczekuje na kalibrację`}</p>
+  );
+}
+
+/** Wiersz tylko do odczytu (np. przepisy podatkowe i limity zaszyte w silniku): wartość, status, źródła. */
+export function ReadOnlyParamRow({ label, valueText, param }: { label: string; valueText: string; param: Param }) {
+  const labels = useParamLabels();
+  const v = labels.verified[param.verified];
+  return (
+    <li className="flex flex-col gap-2 border-t border-border pt-3 first:border-t-0 first:pt-0">
+      <p className="m-0 font-medium">
+        {label}: <span className="tabular-nums">{valueText}</span>
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone="neutral">{labels.kind[param.kind]}</Badge>
+        <Badge tone={v.tone}>{v.text}</Badge>
+      </div>
+      {param.note && <p className="m-0 text-sm text-muted">{noteText(param.note)}</p>}
+      <Sources param={param} />
+    </li>
+  );
+}
+
 /** Wiersz parametru: wartość do edycji, rodzaj, status weryfikacji (tekstem), źródła, „przywróć domyślne”. */
 export function ParamRow({ spec }: { spec: RowSpec }) {
   const { t } = useLingui();
@@ -64,17 +121,9 @@ export function ParamRow({ spec }: { spec: RowSpec }) {
           : null;
   const error = outOfRange ? rangeText : null;
 
-  const kind: Record<Param['kind'], string> = {
-    data: t`dane`,
-    forecast: t`prognoza instytucji`,
-    assumption: t`założenie`,
-  };
-  const verified: Record<Param['verified'], { text: string; tone: BadgeTone }> = {
-    yes: { text: t`✅ zweryfikowane`, tone: 'ok' },
-    secondary: { text: t`◐ źródło wtórne`, tone: 'warning' },
-    no: { text: t`❌ niezweryfikowane`, tone: 'danger' },
-  };
-  const v = verified[param.verified];
+  const labels = useParamLabels();
+  const kind = labels.kind;
+  const v = labels.verified[param.verified];
 
   const onChange = (next: number | null): void => {
     setDraft(next);
@@ -114,26 +163,7 @@ export function ParamRow({ spec }: { spec: RowSpec }) {
         </p>
       )}
       {param.note && <p className="m-0 text-sm text-muted">{noteText(param.note)}</p>}
-      {param.sources.length > 0 ? (
-        <ul aria-label={t`Źródła`} className="m-0 flex list-none flex-col gap-1 p-0 text-sm">
-          {param.sources.map((s) => (
-            <li key={s.url + s.title}>
-              {/^https?:\/\//.test(s.url) ? (
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline">
-                  {s.title}
-                </a>
-              ) : (
-                <span>{s.title}</span>
-              )}{' '}
-              <span className="text-muted">
-                {s.publisher}, {s.year} · {t`dostęp: ${s.accessed}`}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="m-0 text-sm text-muted">{t`brak źródła: wartość jest założeniem lub oczekuje na kalibrację`}</p>
-      )}
+      <Sources param={param} />
     </li>
   );
 }

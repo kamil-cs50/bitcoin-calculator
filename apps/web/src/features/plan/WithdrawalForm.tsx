@@ -95,6 +95,7 @@ export function WithdrawalForm() {
   const horizonMonths = useScenarioStore((s) => s.scenario.horizonMonths);
   const positions = useScenarioStore((s) => s.scenario.positions);
   const assets = useScenarioStore((s) => s.scenario.assets);
+  const hasHome = assets.some((a) => a.kind === 'realEstate') && positions.some((p) => assets.find((a) => a.id === p.assetId)?.kind === 'realEstate');
   const market = useScenarioStore((s) => s.scenario.market);
   const baseCurrency = useScenarioStore((s) => s.scenario.baseCurrency);
 
@@ -184,10 +185,17 @@ export function WithdrawalForm() {
             checked={kind === 'guytonKlinger'}
             onChange={() => setKind('guytonKlinger')}
             label={t`Reguły Guytona–Klingera`}
-            description={t`Zaczynasz od stałego procentu portfela, a potem co roku podnosisz wypłatę o inflację. Gdy rynek mocno spada i wypłata staje się zbyt duża w stosunku do portfela, tniesz ją o 10%; gdy portfel mocno rośnie, podnosisz ją o 10%. Po roku ze stratą nie podwyższasz wypłaty o inflację.`}
+            description={t`Zaczynasz od stałego procentu portfela, a potem co roku podnosisz wypłatę o inflację. Gdy rynek mocno spada i wypłata staje się zbyt duża w stosunku do portfela, tniesz ją o 10%; gdy portfel mocno rośnie, podnosisz ją o 10%. Indeksacji o inflację nie robisz po roku ze stratą, ale tylko gdy stopa wypłat jest wyższa niż startowa. Cięcie o 10% (ochrona kapitału) nie działa w ostatnich 15 latach planu.`}
           />
         </fieldset>
 
+        {hasHome && (kind === 'percent' || kind === 'guytonKlinger' || kind === 'abw') && (
+          <p role="note" className="m-0 text-sm text-muted">
+            <Trans>
+              Masz w portfelu mieszkanie, którego nie da się wypłacać po kawałku, więc procent, reguły Guytona–Klingera i amortyzację liczymy od majątku płynnego po podatku, bez mieszkania.
+            </Trans>
+          </p>
+        )}
         {kind === 'fixedReal' && (
           <MoneyInput
             label={t`Kwota miesięczna`}

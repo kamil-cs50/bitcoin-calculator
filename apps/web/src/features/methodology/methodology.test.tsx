@@ -92,6 +92,10 @@ describe('strona metodologii: treść', () => {
     expect(text).toMatch(/IKE/);
     expect(text).toMatch(/IKZE/);
     expect(text).toMatch(/nieruchomo/i);
+    // wiek wymagany przy IKE/IKZE, rok zakupu mieszkania w interfejsie, baza wypłat płynna
+    expect(text).toMatch(/Wiek jest wymagany przy wyborze\s+IKE lub IKZE/);
+    expect(text).toMatch(/Rok zakupu, cenę zakupu i rok sprzedaży wpisujesz/);
+    expect(text).not.toMatch(/nie ma jeszcze pól/);
     // reklama i porada: model nie jest prognozą
     expect(text).toMatch(/nie jest prognoz/);
   });

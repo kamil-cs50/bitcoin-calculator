@@ -120,22 +120,120 @@ describe('PortfolioEditor', () => {
   });
 
   describe('opakowania IKE/IKZE', () => {
-    it('wybór IKE włącza limity z domyślnymi ustawieniami i pokazuje pole wieku', async () => {
-      useScenarioStore.getState().addPosition({ presetId: 'globalEquity', value: 50_000 });
+    const addEtf = () => useScenarioStore.getState().addPosition({ presetId: 'globalEquity', value: 50_000 });
+    const pickWrapper = async (w: 'IKE' | 'IKZE') => {
+      const tile = screen.getByRole('group', { name: /ETF na świat/ });
+      await userEvent.selectOptions(within(tile).getByRole('combobox', { name: /Konto/ }), w);
+    };
+
+    it('wybór IKE bez znanego wieku NIE zgaduje wieku: prosi o wiek i dopiero po jego podaniu włącza limity', async () => {
+      addEtf();
       expect(useScenarioStore.getState().scenario.wrappers).toBeUndefined();
       view();
       expect(screen.queryByRole('textbox', { name: /Twój wiek/ })).toBeNull();
-      const tile = screen.getByRole('group', { name: /ETF na świat/ });
-      await userEvent.selectOptions(within(tile).getByRole('combobox', { name: /Konto/ }), 'IKE');
-      const sc = useScenarioStore.getState().scenario;
+      await pickWrapper('IKE');
+      let sc = useScenarioStore.getState().scenario;
+      expect(sc.positions[0]!.wrapper).toBe('taxable');
+      expect(sc.wrappers).toBeUndefined();
+      expect(screen.getByText(/nie zakładamy go za Ciebie/)).toBeInTheDocument();
+      const confirm = screen.getByRole('button', { name: 'Wybierz IKE' });
+      expect(confirm).toBeDisabled();
+      await userEvent.type(screen.getByRole('textbox', { name: /Twój wiek/ }), '62');
+      await userEvent.click(confirm);
+      sc = useScenarioStore.getState().scenario;
       expect(sc.positions[0]!.wrapper).toBe('IKE');
-      expect(sc.wrappers).toMatchObject({ ikeLimit: 28_260, ikzeLimit: 11_304, ikzeTaxRate: 0.12 });
-      const age = screen.getByRole('textbox', { name: /Twój wiek/ });
-      await userEvent.clear(age);
-      await userEvent.type(age, '62');
-      expect(useScenarioStore.getState().scenario.wrappers!.age).toBe(62);
-      expect(ScenarioSchema.safeParse(useScenarioStore.getState().scenario).success).toBe(true);
-      expect(validateScenario(useScenarioStore.getState().scenario).ok).toBe(true);
+      expect(sc.wrappers).toMatchObject({ ikeLimit: 28_260, ikzeLimit: 11_304, ikzeTaxRate: 0.12, age: 62 });
+      expect(sc.person).toEqual({ age: 62 });
+      expect(screen.queryByText(/nie zakładamy go za Ciebie/)).toBeNull();
+      expect(screen.getByRole('textbox', { name: /Twój wiek/ })).toHaveValue('62');
+      expect(ScenarioSchema.safeParse(sc).success).toBe(true);
+      expect(validateScenario(sc).ok).toBe(true);
+    });
+
+    it('z wiekiem już podanym (np. w planie) wybór IKZE działa od razu, z tym wiekiem', async () => {
+      addEtf();
+      useScenarioStore.getState().setAge(41);
+      view();
+      await pickWrapper('IKZE');
+      const sc = useScenarioStore.getState().scenario;
+      expect(sc.positions[0]!.wrapper).toBe('IKZE');
+      expect(sc.wrappers!.age).toBe(41);
+    });
+
+    it('anulowanie prośby o wiek zostawia konto zwykłe', async () => {
+      addEtf();
+      view();
+      await pickWrapper('IKZE');
+      await userEvent.click(screen.getByRole('button', { name: 'Anuluj' }));
+      expect(screen.queryByRole('button', { name: 'Wybierz IKZE' })).toBeNull();
+      expect(useScenarioStore.getState().scenario.positions[0]!.wrapper).toBe('taxable');
+    });
+
+    it('ostrzega w miejscu użycia: przepisy niezweryfikowane (pole wieku i kafelek pozycji)', async () => {
+      addEtf();
+      useScenarioStore.getState().setAge(41);
+      view();
+      await pickWrapper('IKE');
+      const tile = screen.getByRole('group', { name: /ETF na świat/ });
+      expect(within(tile).getByText(/niezweryfikowane w ISAP/)).toBeInTheDocument();
+      expect(screen.getAllByText(/wymóg 5 lat wpłat pominięty/).length).toBeGreaterThanOrEqual(2); // pole wieku i kafelek
+      expect(screen.getAllByText(/niezweryfikowane w ISAP/).length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  describe('mieszkanie na wynajem: rok zakupu, cena zakupu, rok sprzedaży', () => {
+    const openRental = async () => {
+      view();
+      await userEvent.click(screen.getByRole('button', { name: 'Mieszkanie na wynajem' }));
+    };
+
+    it('formularz zapisuje rok zakupu, cenę zakupu (podstawa zysku) i rok sprzedaży', async () => {
+      await openRental();
+      await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '600000');
+      await userEvent.type(screen.getByRole('textbox', { name: /Rok zakupu/ }), '2021');
+      await userEvent.type(screen.getByRole('textbox', { name: /Cena zakupu/ }), '400000');
+      await userEvent.type(screen.getByRole('textbox', { name: /Rok sprzedaży/ }), '2040');
+      await userEvent.click(screen.getByRole('button', { name: 'Dodaj do portfela' }));
+      const s = useScenarioStore.getState().scenario;
+      expect(s.assets[0]).toMatchObject({ kind: 'realEstate', purchaseYear: 2021, saleYear: 2040 });
+      expect(s.positions[0]).toMatchObject({ value: 600_000, costBasis: 400_000, targetWeight: 0 });
+      expect(ScenarioSchema.safeParse(s).success).toBe(true);
+      expect(validateScenario(s).ok).toBe(true);
+    });
+
+    it('bez roku zakupu: jawny komunikat, że nie zakładamy zwolnienia z podatku; pozycja i tak się dodaje', async () => {
+      await openRental();
+      expect(screen.getByText(/Bez roku zakupu nie zakładamy zwolnienia/)).toBeInTheDocument();
+      expect(screen.getByText(/Przepisy cytowane z pamięci, niezweryfikowane w ISAP/)).toBeInTheDocument();
+      await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '600000');
+      await userEvent.click(screen.getByRole('button', { name: 'Dodaj do portfela' }));
+      const s = useScenarioStore.getState().scenario;
+      expect(s.assets[0]).not.toHaveProperty('purchaseYear');
+      expect(s.positions[0]).toMatchObject({ costBasis: 600_000 });
+    });
+
+    it('niepoprawne lata blokują dodanie z komunikatem (zakup w przyszłości, sprzedaż przed zakupem)', async () => {
+      await openRental();
+      const start = useScenarioStore.getState().scenario.startYear;
+      await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '600000');
+      await userEvent.type(screen.getByRole('textbox', { name: /Rok zakupu/ }), String(start + 3));
+      expect(screen.getByText(new RegExp(`Rok zakupu: od 1900 do ${start}`))).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Dodaj do portfela' })).toBeDisabled();
+    });
+
+    it('kafelek pozycji pozwala poprawić lata i cenę zakupu po dodaniu', async () => {
+      useScenarioStore.getState().addPosition({ presetId: 'realEstate', value: 600_000, targetWeight: 0 });
+      view();
+      const tile = screen.getByRole('group', { name: /Mieszkanie na wynajem/ });
+      await userEvent.type(within(tile).getByRole('textbox', { name: /Rok zakupu/ }), '2019');
+      await userEvent.type(within(tile).getByRole('textbox', { name: /Rok sprzedaży/ }), '2038');
+      const price = within(tile).getByRole('textbox', { name: /Cena zakupu/ });
+      await userEvent.clear(price);
+      await userEvent.type(price, '350000');
+      const s = useScenarioStore.getState().scenario;
+      expect(s.assets[0]).toMatchObject({ purchaseYear: 2019, saleYear: 2038 });
+      expect(s.positions[0]!.costBasis).toBe(350_000);
+      expect(within(tile).getByText(/niezweryfikowane w ISAP/)).toBeInTheDocument();
     });
   });
 

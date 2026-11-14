@@ -1,4 +1,4 @@
-import { assetRiskShares, modelCheck, runBatch, solveRequiredContribution, solveSafeWithdrawal, summarize } from '@sim/engine';
+import { assetRiskShares, modelCheck, probRuinWhileAlive, runBatch, solveRequiredContribution, solveSafeWithdrawal, summarize, survivalCurve } from '@sim/engine';
 import type { AssetRiskShare, ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
 import { pairedFromValues, type PairedDifference } from '../features/compare/diff';
 import { estimateRealReturnSync } from '../features/plan/estimateCore';
@@ -23,6 +23,12 @@ export const tasks = {
     summarize(runBatch(s, o), s, v),
   /** Realny zwrot portfela dla amortyzacji (ABW). */
   estimate: (s: Scenario): number => estimateRealReturnSync(s),
+  /**
+   * Szansa wyczerpania środków za życia (spec 4.12): miesiące ruiny ścieżek ważone krzywą przeżycia z tablicy `qx`
+   * dla wieku `age` (+ `extraYears` kohortowo). Śmiertelność całkowana analitycznie, bez losowania.
+   */
+  ruinAlive: (ruinMonth: Int32Array, qx: number[], age: number, months: number, extraYears: number): { p: number; ci: [number, number] } =>
+    probRuinWhileAlive(ruinMonth, survivalCurve(qx, age, months, extraYears)),
   /** Bootstrap różnicy kwantyli na parach ścieżek (porównanie scenariuszy). */
   pairedDiff: (va: Float64Array, vb: Float64Array, reps?: number): Omit<PairedDifference, 'month'> => pairedFromValues(va, vb, reps),
 };

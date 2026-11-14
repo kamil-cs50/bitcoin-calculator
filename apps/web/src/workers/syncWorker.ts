@@ -10,6 +10,7 @@ export function syncWorker(over: Partial<SimWorker> = {}): SimWorker {
     riskShares: async (s, o) => tasks.riskShares(s, o),
     summary: async (s, o, v) => tasks.summary(s, o, v),
     estimate: async (s) => tasks.estimate(s),
+    ruinAlive: async (m, q, a, n, x) => tasks.ruinAlive(m, q, a, n, x),
     pairedDiff: async (a, b, r) => tasks.pairedDiff(a, b, r),
     terminate: () => undefined,
     ...over,

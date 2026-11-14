@@ -51,6 +51,46 @@ describe('RiskCard', () => {
     expect(text.textContent).toMatch(/^Akcje rynków wschodzących to 50% wartości i 9\d% ryzyka$/);
   });
 
+  it('oba warianty BTC (giełda i ETF) są sumowane w jednym zdaniu', async () => {
+    const other: RiskyAssetParams = { ...eq, id: 'btcBase', sigma: 0.5, g: 0.1 };
+    const etf: RiskyAssetParams = { ...other, id: 'btcBase#etf' };
+    const s = makeScenario({
+      assets: [eq, other, etf],
+      positions: [
+        { assetId: 'globalEquity', wrapper: 'taxable', value: 80_000, costBasis: 80_000, targetWeight: 0.8 },
+        { assetId: 'btcBase', wrapper: 'taxable', value: 10_000, costBasis: 10_000, targetWeight: 0.1 },
+        { assetId: 'btcBase#etf', wrapper: 'taxable', value: 10_000, costBasis: 10_000, targetWeight: 0.1 },
+      ],
+      market: { ...makeScenario().market, factorIds: ['globalEquity', 'btcBase', 'btcBase#etf', 'cpi'], correlation: [1, 0, 0, 0.1, 0, 1, 0.9, 0.1, 0, 0.9, 1, 0.1, 0.1, 0.1, 0.1, 1] },
+    });
+    const rows = assetRiskShares(s, { seed: SIM_SEED, paths: 2000 }).filter((r) => r.assetId.startsWith('btc'));
+    expect(rows).toHaveLength(2);
+    const value = Math.round(rows.reduce((a, r) => a + r.valueShare, 0) * 100);
+    const risk = Math.round(rows.reduce((a, r) => a + r.riskShare, 0) * 100);
+    wrap(s);
+    expect(await screen.findByText(`BTC to ${value}% wartości i ${risk}% ryzyka`)).toBeInTheDocument();
+    expect(value).toBe(20);
+  });
+
+  it('opisuje ograniczenie: kowariancja pomija upadek kryptowalut, więc udział BTC w ryzyku jest zaniżony', async () => {
+    wrap(two());
+    expect(await screen.findByText(/pomija ryzyko upadku kryptowalut/)).toBeInTheDocument();
+  });
+
+  it('mieszkanie liczy się jako aktywo ryzykowne (jest w tabeli)', async () => {
+    const re = { kind: 'realEstate', id: 'flat', netRentYield: 0.035, realGrowth: 0.01, sigma: 0.1, se: 0.01, alpha: 0, b: 1 } as const;
+    const s = makeScenario({
+      assets: [eq, re],
+      positions: [
+        { assetId: 'globalEquity', wrapper: 'taxable', value: 100_000, costBasis: 100_000, targetWeight: 1 },
+        { assetId: 'flat', wrapper: 'taxable', value: 500_000, costBasis: 500_000, targetWeight: 0 },
+      ],
+      market: { ...makeScenario().market, factorIds: ['globalEquity', 'flat', 'cpi'], correlation: [1, 0.2, 0.1, 0.2, 1, 0.1, 0.1, 0.1, 1] },
+    });
+    wrap(s);
+    expect(await screen.findByRole('table')).toBeInTheDocument();
+  });
+
   it('niewidoczna przy jednym aktywie ryzykownym', async () => {
     const { container } = wrap(makeScenario());
     await waitFor(() => expect(container).toBeEmptyDOMElement());

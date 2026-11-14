@@ -1,5 +1,5 @@
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Position, Wrapper } from '@sim/engine';
 import { Button } from '../../components/ui/Button';
 import { MoneyInput } from '../../components/ui/MoneyInput';
@@ -12,10 +12,12 @@ export interface AssetTileProps {
   onValue: (v: number) => void;
   onWrapper: (w: Wrapper) => void;
   onRemove: () => void;
+  /** Dodatkowe pola pozycji (np. lata mieszkania) pod polem konta. */
+  children?: ReactNode;
 }
 
 /** Kafel jednej pozycji: nazwa, wartość do edycji, konto (zwykłe / IKE / IKZE), usunięcie. */
-export function AssetTile({ name, position, onValue, onWrapper, onRemove }: AssetTileProps) {
+export function AssetTile({ name, position, onValue, onWrapper, onRemove, children }: AssetTileProps) {
   const { t } = useLingui();
   // Wersja robocza pola: puste pole nie może cofnąć się do poprzedniej wartości ze store.
   const [draft, setDraft] = useState<number | null>(position.value);
@@ -50,6 +52,14 @@ export function AssetTile({ name, position, onValue, onWrapper, onRemove }: Asse
           </select>
         )}
       </Field>
+      {position.wrapper !== 'taxable' && (
+        <p className="m-0 text-sm text-muted">
+          {position.wrapper === 'IKE'
+            ? t`Reguły IKE (limit wpłat, wypłata bez podatku od 60 lat, wcześniej 19% od zysku) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty.`
+            : t`Reguły IKZE (limit wpłat, zwrot podatku, 10% od wypłaty od 65 lat, wcześniej uproszczone 19% od zysku zamiast zwrotu odliczeń) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty.`}
+        </p>
+      )}
+      {children}
       <Button variant="danger" onClick={onRemove} aria-label={t`Usuń ${name}`}>
         <Trans>Usuń</Trans>
       </Button>

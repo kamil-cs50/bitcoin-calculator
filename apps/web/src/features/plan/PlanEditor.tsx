@@ -7,6 +7,7 @@ import { Field, inputClass } from '../../components/ui/Field';
 import { MoneyInput } from '../../components/ui/MoneyInput';
 import { PercentInput } from '../../components/ui/PercentInput';
 import { useScenarioStore } from '../../state/scenarioStore';
+import { PersonCard } from './PersonCard';
 import { RadioOption, WithdrawalForm } from './WithdrawalForm';
 import { currencyWord } from '../results/basis';
 
@@ -172,6 +173,8 @@ export function PlanEditor() {
           </p>
         </div>
       </Card>
+
+      <PersonCard />
 
       <Card title={t`Wpłaty`}>
         <div className="flex flex-col gap-3">

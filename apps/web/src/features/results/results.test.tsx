@@ -181,6 +181,20 @@ describe('liczenie poza głównym wątkiem', () => {
   });
 });
 
+describe('Dashboard: ruina za życia i wskazówki o bazie wypłat', () => {
+  const wd = { kind: 'fixedReal', startMonth: 0, monthly: 1_500 } as const;
+  it('z wypłatami, wiekiem i płcią pokazuje kafelek „gdy jeszcze żyjesz”; bez płci go nie ma', async () => {
+    useScenarioStore.getState().setScenario(makeScenario({ horizonMonths: 120, withdrawal: wd, person: { age: 65, sex: 'K' } }));
+    const { unmount } = wrap(<Dashboard sim={SIM} />);
+    expect(await screen.findByTestId('kpi-ruin-alive')).toBeInTheDocument();
+    unmount();
+    useScenarioStore.getState().setScenario(makeScenario({ horizonMonths: 120, withdrawal: wd, person: { age: 65 } }));
+    wrap(<Dashboard sim={SIM} />);
+    await screen.findByTestId('kpi-median');
+    expect(screen.queryByTestId('kpi-ruin-alive')).toBeNull();
+  });
+});
+
 describe('WarningBanners', () => {
   it('CORR_PROJECTED: baner z macierzą po korekcie', () => {
     const w: Warning = { code: 'CORR_PROJECTED', message: 'Użyto najbliższej macierzy', data: { factorIds: ['a', 'b'], matrix: [1, 0.55, 0.55, 1] } };
@@ -371,5 +385,20 @@ describe('trasa /wynik', () => {
     );
     expect(await screen.findByRole('heading', { name: 'Wynik' })).toBeInTheDocument();
     expect(screen.getByText(/Dodaj do portfela/)).toBeInTheDocument();
+  });
+});
+
+describe('Dashboard: po podatku a mieszkanie', () => {
+  it('przy mieszkaniu pod przełącznikami jest zdanie o podatku od sprzedaży mieszkania; bez mieszkania go nie ma', async () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 100_000 });
+    const { unmount } = wrap(<Dashboard sim={SIM} />);
+    await screen.findByTestId('kpi-median');
+    expect(screen.queryByText(/podatek od sprzedaży mieszkania/)).toBeNull();
+    unmount();
+    st.addPosition({ presetId: 'realEstate', value: 600_000, costBasis: 400_000, targetWeight: 0 });
+    wrap(<Dashboard sim={SIM} />);
+    await screen.findByTestId('kpi-median');
+    expect(screen.getByText(/podatek od sprzedaży mieszkania/)).toBeInTheDocument();
   });
 });

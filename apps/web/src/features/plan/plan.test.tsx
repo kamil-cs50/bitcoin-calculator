@@ -198,3 +198,72 @@ describe('estimateRealReturn (prawdziwy silnik, przez worker)', () => {
     expect(await actual.estimateRealReturn(sc(), syncWorker)).toBe(r); // stałe ziarno
   });
 });
+
+describe('PlanEditor: wiek i płeć (opcjonalne)', () => {
+  it('puste pola = brak osoby w scenariuszu; wiek i płeć zapisują się, +2 lata wymaga obu', async () => {
+    view();
+    expect(sc().person).toBeUndefined();
+    const sex = screen.getByRole('combobox', { name: /Płeć/ });
+    const bonus = screen.getByRole('switch', { name: /\+2 lata/ });
+    expect(sex).toBeDisabled();
+    expect(bonus).toBeDisabled();
+    await userEvent.type(screen.getByRole('textbox', { name: /Twój wiek \(opcjonalnie\)/ }), '64');
+    expect(sc().person).toEqual({ age: 64 });
+    expect(sex).toBeEnabled();
+    expect(bonus).toBeDisabled();
+    await userEvent.selectOptions(sex, 'K');
+    expect(sc().person).toEqual({ age: 64, sex: 'K' });
+    expect(bonus).toBeEnabled();
+    await userEvent.click(bonus);
+    expect(sc().person).toEqual({ age: 64, sex: 'K', cohortBonus: true });
+    expect(ScenarioSchema.safeParse(sc()).success).toBe(true);
+    expect(validateScenario(sc()).ok).toBe(true);
+  });
+
+  it('wyczyszczenie wieku usuwa osobę (bez IKE/IKZE); niepoprawny wiek pokazuje błąd i nie zapisuje się', async () => {
+    view();
+    const age = screen.getByRole('textbox', { name: /Twój wiek \(opcjonalnie\)/ });
+    await userEvent.type(age, '150');
+    expect(sc().person).toBeUndefined();
+    expect(screen.getByText(/pełne lata od 0 do 120/)).toBeInTheDocument();
+    await userEvent.clear(age);
+    await userEvent.type(age, '50');
+    expect(sc().person?.age).toBe(50);
+    await userEvent.clear(age);
+    expect(sc().person).toBeUndefined();
+  });
+
+  it('przy pozycji w IKE/IKZE wiek jest wymagany: wyczyszczenie pola go nie kasuje i pokazuje komunikat', async () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 10_000 });
+    st.setAge(60);
+    st.updatePosition(0, { wrapper: 'IKE' });
+    view();
+    const age = screen.getByRole('textbox', { name: /Twój wiek/ });
+    await userEvent.clear(age);
+    expect(sc().person?.age).toBe(60);
+    expect(screen.getByText(/Wiek jest wymagany przy IKE i IKZE/)).toBeInTheDocument();
+  });
+});
+
+describe('WithdrawalForm: baza wypłat a mieszkanie, opis Guytona–Klingera', () => {
+  it('przy mieszkaniu w portfelu wypłaty procentowe, G-K i ABW mówią, że liczą od majątku płynnego', async () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 100_000 });
+    view();
+    await userEvent.click(screen.getByRole('radio', { name: /Stały procent portfela/ }));
+    expect(screen.queryByText(/bez mieszkania/)).toBeNull();
+    st.addPosition({ presetId: 'realEstate', value: 600_000, targetWeight: 0 });
+    expect(await screen.findByText(/liczymy od majątku płynnego po podatku, bez mieszkania/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: /Reguły Guytona/ }));
+    expect(screen.getByText(/liczymy od majątku płynnego po podatku, bez mieszkania/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: /Stała kwota/ }));
+    expect(screen.queryByText(/bez mieszkania/)).toBeNull();
+  });
+
+  it('opis Guytona–Klingera podaje warunki pominięcia indeksacji i ochrony kapitału zgodnie z silnikiem', () => {
+    view();
+    expect(screen.getByText(/gdy stopa wypłat jest wyższa niż startowa/)).toBeInTheDocument();
+    expect(screen.getByText(/nie działa w ostatnich 15 latach/)).toBeInTheDocument();
+  });
+});

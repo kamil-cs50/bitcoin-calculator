@@ -9,6 +9,7 @@ import { useUiStore } from '../../state/uiStore';
 import { useAssetNames } from '../portfolio/tiles';
 import { ExpertControls } from './ExpertControls';
 import { ParamRow } from './ParamRow';
+import { TaxRulesCard } from './TaxRulesCard';
 import { useParamRows } from './useParamRows';
 import { numberLocale } from '../../i18n';
 
@@ -151,6 +152,8 @@ export function AssumptionsPanel() {
           ))}
         </ul>
       </Card>
+
+      <TaxRulesCard />
 
       {expert && <ExpertControls />}
     </div>
