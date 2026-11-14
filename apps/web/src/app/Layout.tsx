@@ -1,5 +1,6 @@
 import { Trans, useLingui } from '@lingui/react/macro';
 import { NavLink, Outlet, useLocation } from 'react-router';
+import { DatasetNotice } from '../features/settings/DatasetNotice';
 import { StorageNotice } from '../features/settings/StorageNotice';
 import { UpdateBanner } from '../features/settings/UpdateBanner';
 import { APP_NAME } from './appConfig';
@@ -48,6 +49,7 @@ export function Layout() {
         </nav>
       </header>
       <StorageNotice />
+      <DatasetNotice />
       {pathname !== '/ustawienia' && <UpdateBanner />}
       <main id="tresc" tabIndex={-1} className="flex-1 pb-8 pt-2 outline-none">
         <ErrorBoundary resetKey={pathname}>

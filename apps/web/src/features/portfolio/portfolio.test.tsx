@@ -7,7 +7,7 @@ import { useScenarioStore } from '../../state/scenarioStore';
 import { PortfolioEditor } from './PortfolioEditor';
 import { validateScenario } from '@sim/engine';
 import { ScenarioSchema } from '../../state/scenarioSchema';
-import { fetchCryptoPrice, fetchNbpRate, ALLOWED_HOSTS } from './prices';
+import { fetchCryptoPrice, fetchCryptoQuote, fetchNbpRate, ALLOWED_HOSTS } from './prices';
 
 const json = (body: unknown) => new Response(JSON.stringify(body), { status: 200 });
 
@@ -42,6 +42,22 @@ describe('prices.ts', () => {
       vi.setSystemTime(new Date('2026-11-15T10:00:01Z'));
       await fetchCryptoPrice('bitcoin', 'pln');
       expect(f).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('fetchCryptoQuote: zwraca też czas pobrania (z cache: oryginalny, nie „teraz”)', async () => {
+    const f = vi.fn().mockImplementation(() => Promise.resolve(json({ bitcoin: { pln: 300000 } })));
+    vi.stubGlobal('fetch', f);
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      const t0 = new Date('2026-11-14T10:00:00Z').getTime();
+      vi.setSystemTime(t0);
+      expect(await fetchCryptoQuote('bitcoin', 'pln')).toEqual({ price: 300000, fetchedAt: t0 });
+      vi.setSystemTime(t0 + 5 * 3600_000);
+      expect(await fetchCryptoQuote('bitcoin', 'pln')).toEqual({ price: 300000, fetchedAt: t0 });
+      expect(f).toHaveBeenCalledOnce();
     } finally {
       vi.useRealTimers();
     }
@@ -100,6 +116,29 @@ describe('PortfolioEditor', () => {
     expect(useScenarioStore.getState().scenario.positions[0]).toMatchObject({
       assetId: 'globalEquity',
       value: 50_000,
+    });
+  });
+
+  describe('wiek pobranej ceny', () => {
+    const openBtc = async () => {
+      view();
+      await userEvent.click(screen.getByRole('button', { name: 'Bitcoin' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Pobierz cenę' }));
+    };
+
+    it('świeżo pobrana cena: „przed chwilą”, bez twierdzenia o „ostatniej minucie”', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockImplementation(() => Promise.resolve(json({ bitcoin: { pln: 300000 } }))));
+      await openBtc();
+      const status = await screen.findByText(/Powered by CoinGecko/);
+      expect(status).toHaveTextContent('Cena z CoinGecko, pobrana przed chwilą');
+      expect(status).not.toHaveTextContent('ostatniej minuty');
+    });
+
+    it('cena z cache sprzed 5 godzin pokazuje swój wiek', async () => {
+      localStorage.setItem('price-cache:cg:bitcoin:pln', JSON.stringify({ v: 280000, t: Date.now() - 5 * 3600_000 - 60_000 }));
+      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('nie powinno być sieci')));
+      await openBtc();
+      expect(await screen.findByText(/Powered by CoinGecko/)).toHaveTextContent('pobrana 5 godz. temu');
     });
   });
 

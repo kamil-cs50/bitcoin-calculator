@@ -11,7 +11,13 @@ const CACHE_MS = 24 * 60 * 60 * 1000;
 const TIMEOUT_MS = 8000;
 const KEY_PREFIX = 'price-cache:';
 
-function readCache(key: string): number | null {
+/** Cena z czasem pobrania (ms od epoki); przy trafieniu w cache to czas oryginalnego pobrania. */
+export interface Quote {
+  price: number;
+  fetchedAt: number;
+}
+
+function readCache(key: string): Quote | null {
   try {
     const raw = localStorage.getItem(KEY_PREFIX + key);
     if (!raw) return null;
@@ -20,15 +26,15 @@ function readCache(key: string): number | null {
     const { v, t } = c as { v?: unknown; t?: unknown };
     if (typeof v !== 'number' || typeof t !== 'number' || !Number.isFinite(v) || v <= 0) return null;
     const age = Date.now() - t;
-    return age >= 0 && age < CACHE_MS ? v : null;
+    return age >= 0 && age < CACHE_MS ? { price: v, fetchedAt: t } : null;
   } catch {
     return null;
   }
 }
 
-function writeCache(key: string, v: number): void {
+function writeCache(key: string, v: number, t: number): void {
   try {
-    localStorage.setItem(KEY_PREFIX + key, JSON.stringify({ v, t: Date.now() }));
+    localStorage.setItem(KEY_PREFIX + key, JSON.stringify({ v, t }));
   } catch {
     // Brak dostępu do localStorage: działamy bez cache.
   }
@@ -57,24 +63,33 @@ function positive(x: unknown): number {
 export async function fetchNbpRate(c: 'USD' | 'EUR'): Promise<number> {
   const key = `nbp:${c}`;
   const hit = readCache(key);
-  if (hit !== null) return hit;
+  if (hit !== null) return hit.price;
   const body = (await getJson(`https://api.nbp.pl/api/exchangerates/rates/a/${c.toLowerCase()}/?format=json`)) as {
     rates?: { mid?: unknown }[];
   };
   const v = positive(body?.rates?.[0]?.mid);
-  writeCache(key, v);
+  writeCache(key, v, Date.now());
   return v;
 }
 
-/** Cena bieżąca kryptowaluty (CoinGecko, wymagana atrybucja „Powered by CoinGecko”). */
-export async function fetchCryptoPrice(id: 'bitcoin' | 'ethereum', vs: 'usd' | 'pln'): Promise<number> {
+/**
+ * Cena kryptowaluty (CoinGecko, wymagana atrybucja „Powered by CoinGecko”) wraz z czasem pobrania.
+ * Cache trwa do 24 h, więc cena może być starsza niż chwila: UI pokazuje jej wiek.
+ */
+export async function fetchCryptoQuote(id: 'bitcoin' | 'ethereum', vs: 'usd' | 'pln'): Promise<Quote> {
   const key = `cg:${id}:${vs}`;
   const hit = readCache(key);
   if (hit !== null) return hit;
   const body = (await getJson(
     `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=${vs}`,
   )) as Record<string, Record<string, unknown> | undefined>;
-  const v = positive(body?.[id]?.[vs]);
-  writeCache(key, v);
-  return v;
+  const price = positive(body?.[id]?.[vs]);
+  const fetchedAt = Date.now();
+  writeCache(key, price, fetchedAt);
+  return { price, fetchedAt };
+}
+
+/** Cena bieżąca kryptowaluty (bez czasu pobrania). */
+export async function fetchCryptoPrice(id: 'bitcoin' | 'ethereum', vs: 'usd' | 'pln'): Promise<number> {
+  return (await fetchCryptoQuote(id, vs)).price;
 }

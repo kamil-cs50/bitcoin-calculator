@@ -170,3 +170,57 @@ describe('Onboarding trzy kroki', () => {
     expect(s.contribution).toMatchObject({ monthly: 1000 });
   });
 });
+
+describe('Onboarding krok 2: plan', () => {
+  const sc = () => useScenarioStore.getState().scenario;
+  const toStep2 = async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Dalej' }));
+  };
+  beforeEach(() => {
+    useScenarioStore.getState().addPosition({ presetId: 'globalEquity', value: 100_000 });
+  });
+
+  it('wypłata bez roku startu zaczyna się od początku, a nie na końcu horyzontu (wtedy nic by nie robiła)', async () => {
+    view();
+    await toStep2();
+    await userEvent.type(screen.getByRole('textbox', { name: /Wypłata miesięczna/ }), '2000');
+    await userEvent.click(screen.getByRole('button', { name: 'Dalej' }));
+    expect(sc().withdrawal).toEqual({ kind: 'fixedReal', startMonth: 0, monthly: 2000 });
+  });
+
+  it('„Wypłacaj od roku” wyznacza start; start poza horyzontem pokazuje błąd i blokuje Dalej', async () => {
+    view();
+    await toStep2();
+    await userEvent.type(screen.getByRole('textbox', { name: /Wypłata miesięczna/ }), '2000');
+    const from = screen.getByRole('textbox', { name: /Wypłacaj od roku/ });
+    await userEvent.type(from, '10');
+    await userEvent.click(screen.getByRole('button', { name: 'Dalej' }));
+    expect(sc().withdrawal).toMatchObject({ startMonth: 120 });
+    await userEvent.click(screen.getByRole('button', { name: 'Wstecz' }));
+    const from2 = screen.getByRole('textbox', { name: /Wypłacaj od roku/ });
+    await userEvent.clear(from2);
+    await userEvent.type(from2, '20');
+    expect(screen.getByText(/przed końcem horyzontu/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Dalej' })).toBeDisabled();
+  });
+
+  it('powrót na stronę główną nie kasuje wpłat, wypłat i celu ustawionych w edytorze planu', async () => {
+    useScenarioStore.setState({
+      scenario: {
+        ...sc(),
+        horizonMonths: 300,
+        contribution: { monthly: 1500, endMonth: 120, indexation: 'cpi', realGrowth: 0 },
+        withdrawal: { kind: 'percent', startMonth: 240, rate: 0.04 },
+        goal: { amountReal: 900_000, month: 200 },
+      },
+    });
+    view();
+    await toStep2();
+    expect(screen.getByRole('textbox', { name: /Wpłata miesięczna/ })).toHaveValue('1500');
+    expect(screen.getByRole('textbox', { name: /Cel/ })).toHaveValue('900000');
+    await userEvent.click(screen.getByRole('button', { name: 'Dalej' }));
+    expect(sc().contribution).toEqual({ monthly: 1500, endMonth: 120, indexation: 'cpi', realGrowth: 0 });
+    expect(sc().withdrawal).toEqual({ kind: 'percent', startMonth: 240, rate: 0.04 });
+    expect(sc().goal).toEqual({ amountReal: 900_000, month: 200 });
+  });
+});

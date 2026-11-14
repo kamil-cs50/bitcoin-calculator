@@ -53,6 +53,11 @@ export interface ScenarioState {
   removePosition: (index: number) => void;
   /** „Zacznij od nowa”: domyślny scenariusz; kolejny zapis nadpisze uszkodzony wpis. */
   resetScenario: () => void;
+  /**
+   * „Zaktualizuj parametry”: aktywa z presetów i rynek odbudowane z bieżącego zbioru danych; pozycje, plan
+   * i aktywa własne zostają, tryb rynku i mnożnik niepewności też. Gasi flagę `datasetOutdated`.
+   */
+  updateDataset: () => void;
   loadSaved: () => Promise<void>;
   saveNow: () => Promise<void>;
   /** „Pobierz kopię danych”: surowy, niezmieniony zapis jako tekst JSON. */
@@ -152,6 +157,29 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
       datasetOutdated: false,
     }));
   },
+
+  updateDataset: () =>
+    set((st) => {
+      const assets = st.scenario.assets.map((a) => {
+        if (a.id.startsWith('custom:')) return a;
+        try {
+          return assetFromPreset(st.dataset, a.id);
+        } catch {
+          return a; // nieznany preset: zostawiamy parametry zapisu
+        }
+      });
+      const fresh = rebuildMarket(st.dataset, defaultScenario(st.dataset).market, assets, st.scenario.baseCurrency);
+      const { mode, uncertaintyScale } = st.scenario.market;
+      return {
+        scenario: {
+          ...st.scenario,
+          datasetVersion: st.dataset.version,
+          assets,
+          market: { ...fresh, mode, uncertaintyScale },
+        },
+        datasetOutdated: false,
+      };
+    }),
 
   loadSaved: async () => {
     try {

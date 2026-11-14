@@ -48,12 +48,23 @@ export function RadioOption({
   );
 }
 
+/**
+ * Start wypłat wpisany przez użytkownika, ale nie na końcu horyzontu ani po nim (wypłata nic by wtedy nie
+ * robiła): taki start przesuwamy na ostatni rok planu. Wpisana wartość zostaje w formularzu, więc wydłużenie
+ * horyzontu (także w trakcie pisania) przywraca zamierzony start.
+ */
+export function effectiveStart(startYears: number | null, horizonMonths: number): number {
+  const raw = Math.round((startYears ?? 0) * MONTHS_PER_YEAR);
+  return raw >= horizonMonths ? Math.max(0, horizonMonths - MONTHS_PER_YEAR) : raw;
+}
+
 function buildWithdrawal(
   kind: Kind,
   f: { monthly: number | null; rate: number | null; startYears: number | null; floor: number | null; cap: number | null },
   est: number | null,
+  horizonMonths: number,
 ): Withdrawal | undefined {
-  const startMonth = Math.round((f.startYears ?? 0) * MONTHS_PER_YEAR);
+  const startMonth = effectiveStart(f.startYears, horizonMonths);
   if (kind === 'fixedReal') {
     return f.monthly && f.monthly > 0 ? { kind, startMonth, monthly: f.monthly } : undefined;
   }
@@ -115,13 +126,13 @@ export function WithdrawalForm() {
 
   // Formularz -> scenariusz (tylko gdy wypłata jest kompletna i coś się zmieniło).
   useEffect(() => {
-    const next = buildWithdrawal(kind, { monthly, rate, startYears, floor, cap }, est);
+    const next = buildWithdrawal(kind, { monthly, rate, startYears, floor, cap }, est, horizonMonths);
     const st = useScenarioStore.getState();
     if (JSON.stringify(next) === JSON.stringify(st.scenario.withdrawal)) return;
     const { withdrawal: _old, ...rest } = st.scenario;
     void _old;
     st.setScenario(next ? { ...rest, withdrawal: next } : rest);
-  }, [kind, monthly, rate, startYears, floor, cap, est]);
+  }, [kind, monthly, rate, startYears, floor, cap, est, horizonMonths]);
 
   const startMonth = Math.round((startYears ?? 0) * MONTHS_PER_YEAR);
   const afterHorizon = kind !== 'none' && startMonth > horizonMonths;
@@ -214,7 +225,7 @@ export function WithdrawalForm() {
             value={startYears}
             onChange={setStartYears}
             hint={t`Za ile lat zaczynasz wypłaty. Puste albo 0 oznacza: od razu.`}
-            error={afterHorizon ? t`Wypłaty zaczynają się po końcu horyzontu, więc nigdy nie nastąpią.` : null}
+            error={afterHorizon ? t`Ten rok wypada po końcu horyzontu, więc wypłaty zaczniemy w ostatnim roku planu.` : null}
           />
         )}
       </div>

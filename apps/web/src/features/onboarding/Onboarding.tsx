@@ -22,24 +22,48 @@ export function Onboarding() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [formOpen, setFormOpen] = useState(false);
   const [years, setYears] = useState<number | null>(scenario.horizonMonths / MONTHS_PER_YEAR);
-  const [monthly, setMonthly] = useState<number | null>(null);
-  const [withdraw, setWithdraw] = useState<number | null>(null);
-  const [goal, setGoal] = useState<number | null>(null);
+  // Pola startują od tego, co już jest w planie (np. z edytora planu), żeby powrót tu niczego nie kasował.
+  const [monthly, setMonthly] = useState<number | null>(scenario.contribution?.monthly ?? null);
+  const fixed = scenario.withdrawal?.kind === 'fixedReal' ? scenario.withdrawal : undefined;
+  const [withdraw, setWithdraw] = useState<number | null>(fixed?.monthly ?? null);
+  const [startYears, setStartYears] = useState<number | null>(fixed ? fixed.startMonth / MONTHS_PER_YEAR : null);
+  const [goal, setGoal] = useState<number | null>(scenario.goal?.amountReal ?? null);
 
   const total = scenario.positions.reduce((a, p) => a + p.value, 0);
   const yearsOk = years !== null && Number.isInteger(years) && years >= 1 && years <= 60;
 
+  const horizonNow = yearsOk && years !== null ? years * MONTHS_PER_YEAR : scenario.horizonMonths;
+  const startMonth = Math.round((startYears ?? 0) * MONTHS_PER_YEAR);
+  const withdrawOn = withdraw !== null && withdraw > 0;
+  const startBad = withdrawOn && (startYears !== null && startYears < 0 ? true : startMonth >= horizonNow);
+  /** Miesiąc „do końca horyzontu” podąża za nowym horyzontem; wcześniejszy zostaje (ucięty do horyzontu). */
+  const follow = (month: number, oldHorizon: number, horizon: number): number =>
+    month >= oldHorizon ? horizon : Math.min(month, horizon);
+
   function savePlan() {
-    if (!yearsOk || years === null) return;
+    if (!yearsOk || years === null || startBad) return;
     const horizonMonths = years * MONTHS_PER_YEAR;
+    const old = scenario.horizonMonths;
     const next = { ...scenario, horizonMonths };
+    const c = scenario.contribution;
     if (monthly && monthly > 0) {
-      next.contribution = { monthly, endMonth: horizonMonths, indexation: 'none', realGrowth: 0 };
+      next.contribution = {
+        indexation: 'none',
+        realGrowth: 0,
+        ...c,
+        monthly,
+        endMonth: c ? follow(c.endMonth, old, horizonMonths) : horizonMonths,
+      };
     } else delete next.contribution;
-    if (withdraw && withdraw > 0) {
-      next.withdrawal = { kind: 'fixedReal', startMonth: horizonMonths, monthly: withdraw };
+    if (withdrawOn) {
+      next.withdrawal = { kind: 'fixedReal', startMonth, monthly: withdraw };
+    } else if (scenario.withdrawal && scenario.withdrawal.kind !== 'fixedReal') {
+      // procent / amortyzacja z edytora planu zostają; ich start nie może wypaść poza nowy horyzont
+      const w = scenario.withdrawal;
+      next.withdrawal = w.startMonth >= horizonMonths ? { ...w, startMonth: Math.max(0, horizonMonths - MONTHS_PER_YEAR) } : w;
     } else delete next.withdrawal;
-    if (goal && goal > 0) next.goal = { amountReal: goal, month: horizonMonths };
+    const g = scenario.goal;
+    if (goal && goal > 0) next.goal = { amountReal: goal, month: g ? follow(g.month, old, horizonMonths) : horizonMonths };
     else delete next.goal;
     setScenario(next);
     setStep(3);
@@ -105,12 +129,22 @@ export function Onboarding() {
               hint={t`Możesz zostawić puste, jeśli nie dopłacasz.`}
             />
             <MoneyInput
-              label={t`Wypłata miesięczna po horyzoncie (w dzisiejszych zł)`}
+              label={t`Wypłata miesięczna (w dzisiejszych zł)`}
               suffix="zł"
               value={withdraw}
               onChange={setWithdraw}
-              hint={t`Opcjonalnie. Zaczyna się po zakończeniu horyzontu.`}
+              hint={t`Opcjonalnie. Domyślnie zaczyna się od razu; rok startu podasz poniżej.`}
             />
+            {withdrawOn && (
+              <MoneyInput
+                label={t`Wypłacaj od roku`}
+                suffix={t`lat`}
+                value={startYears}
+                onChange={setStartYears}
+                hint={t`Za ile lat zaczynasz wypłaty. Puste albo 0 oznacza: od razu.`}
+                error={startBad ? t`Wypłaty muszą zacząć się przed końcem horyzontu.` : null}
+              />
+            )}
             <MoneyInput
               label={t`Cel (w dzisiejszych zł)`}
               suffix="zł"
@@ -122,7 +156,7 @@ export function Onboarding() {
               <Button variant="ghost" onClick={() => setStep(1)}>
                 <Trans>Wstecz</Trans>
               </Button>
-              <Button disabled={!yearsOk} onClick={savePlan}>
+              <Button disabled={!yearsOk || startBad} onClick={savePlan}>
                 <Trans>Dalej</Trans>
               </Button>
             </div>

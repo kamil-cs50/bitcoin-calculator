@@ -8,10 +8,12 @@ import { PercentInput } from '../../components/ui/PercentInput';
 import { assetFromPreset } from '../../state/defaults';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { rebuildMarket } from '../../state/defaults';
-import { fetchCryptoPrice } from './prices';
+import { fetchCryptoQuote } from './prices';
 import { TILE_PRESET, useAssetNames, type TileKind } from './tiles';
 
 type FetchState = 'idle' | 'loading' | 'error' | 'ok';
+
+const MINUTE = 60_000;
 
 const round2 = (x: number) => Math.round(x * 100) / 100;
 
@@ -76,6 +78,14 @@ export interface PositionFormProps {
 export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
   const { t } = useLingui();
   const names = useAssetNames();
+  /** Wiek ceny z cache (do 24 h): uczciwie zamiast twierdzenia, że jest świeża. */
+  const ageText = (at: number): string => {
+    const min = Math.max(0, Math.floor((Date.now() - at) / MINUTE));
+    if (min < 1) return t`przed chwilą`;
+    if (min < 60) return t`${min} min temu`;
+    const h = Math.floor(min / 60);
+    return t`${h} godz. temu`;
+  };
   const addPosition = useScenarioStore((s) => s.addPosition);
 
   const [amount, setAmount] = useState<number | null>(null);
@@ -84,6 +94,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
   const [mode, setMode] = useState<'units' | 'amount'>(kind === 'btc' ? 'units' : 'amount');
   const [variant, setVariant] = useState<'direct' | 'etf'>('direct');
   const [fetchState, setFetchState] = useState<FetchState>('idle');
+  const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [customName, setCustomName] = useState('');
   const [g, setG] = useState<number | null>(null);
   const [sigma, setSigma] = useState<number | null>(null);
@@ -99,7 +110,9 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
   async function loadPrice() {
     setFetchState('loading');
     try {
-      setPrice(await fetchCryptoPrice('bitcoin', 'pln'));
+      const q = await fetchCryptoQuote('bitcoin', 'pln');
+      setPrice(q.price);
+      setFetchedAt(q.fetchedAt);
       setFetchState('ok');
     } catch {
       setFetchState('error');
@@ -206,6 +219,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
               value={price}
               onChange={(v) => {
                 setPrice(v);
+                setFetchedAt(null);
                 setFetchState('idle');
               }}
               hint={t`Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen sama i działa bez internetu, więc cenę możesz podać ręcznie.`}
@@ -225,8 +239,8 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
                 {fetchState === 'error' && (
                   <Trans>Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie powyżej.</Trans>
                 )}
-                {fetchState === 'ok' && (
-                  <Trans>Cena z ostatniej minuty, możesz ją poprawić. Powered by CoinGecko</Trans>
+                {fetchState === 'ok' && fetchedAt !== null && (
+                  <Trans>Cena z CoinGecko, pobrana {ageText(fetchedAt)}. Możesz ją poprawić. Powered by CoinGecko</Trans>
                 )}
               </div>
             </div>

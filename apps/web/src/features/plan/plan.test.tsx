@@ -96,14 +96,33 @@ describe('PlanEditor: wypłaty', () => {
     expect(screen.getByText(/rozkłada majątek równo na pozostałe lata/)).toBeInTheDocument();
   });
 
-  it('stała kwota: 4 000 zł od 20. roku; po wyborze „brak” wypłata znika', async () => {
+  it('stała kwota: 4 000 zł od 15. roku; po wyborze „brak” wypłata znika', async () => {
     view();
     await userEvent.click(screen.getByRole('radio', { name: /Stała kwota/ }));
     await userEvent.type(screen.getByRole('textbox', { name: /Kwota miesięczna/ }), '4000');
-    await userEvent.type(screen.getByRole('textbox', { name: /Wypłacaj od roku/ }), '20');
-    expect(sc().withdrawal).toEqual({ kind: 'fixedReal', startMonth: 240, monthly: 4000 });
+    await userEvent.type(screen.getByRole('textbox', { name: /Wypłacaj od roku/ }), '15');
+    expect(sc().withdrawal).toEqual({ kind: 'fixedReal', startMonth: 180, monthly: 4000 });
     await userEvent.click(screen.getByRole('radio', { name: /Brak wypłat/ }));
     expect(sc().withdrawal).toBeUndefined();
+  });
+
+  it('start wypłat poza horyzontem jest przesuwany na ostatni rok, a wpisany rok zostaje (wydłużenie przywraca start)', async () => {
+    view();
+    await userEvent.click(screen.getByRole('radio', { name: /Stała kwota/ }));
+    await userEvent.type(screen.getByRole('textbox', { name: /Kwota miesięczna/ }), '4000');
+    await userEvent.type(screen.getByRole('textbox', { name: /Wypłacaj od roku/ }), '15'); // horyzont 20 lat
+    expect(sc().withdrawal).toMatchObject({ startMonth: 180 });
+    const years = screen.getByRole('textbox', { name: /Horyzont/ });
+    await userEvent.clear(years);
+    await userEvent.type(years, '10');
+    expect(sc().horizonMonths).toBe(120);
+    expect(sc().withdrawal).toMatchObject({ startMonth: 108 }); // ostatni pełny rok horyzontu
+    expect(screen.getByRole('textbox', { name: /Wypłacaj od roku/ })).toHaveValue('15');
+    expect(screen.getByText(/zaczniemy w ostatnim roku planu/)).toBeInTheDocument();
+    await userEvent.clear(years);
+    await userEvent.type(years, '20');
+    expect(sc().withdrawal).toMatchObject({ startMonth: 180 }); // zamierzony start wrócił
+    expect(screen.queryByText(/po końcu horyzontu/)).toBeNull();
   });
 
   it('stały procent: 4% rocznie', async () => {
