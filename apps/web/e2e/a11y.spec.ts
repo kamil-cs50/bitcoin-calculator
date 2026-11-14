@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { addPlan, addPortfolio, goTo, showResult, waitForSaved } from './helpers';
 
-const ROUTES = ['/', '/portfel', '/plan', '/wynik', '/porownanie', '/zalozenia', '/ustawienia', '/nie-ma-takiej-trasy'] as const;
+const ROUTES = ['/', '/portfel', '/plan', '/wynik', '/porownanie', '/zalozenia', '/ustawienia', '/metodologia', '/nie-ma-takiej-trasy'] as const;
 
 async function violations(page: Page): Promise<string[]> {
   const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();

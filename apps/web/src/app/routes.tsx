@@ -23,6 +23,11 @@ export const routes: RouteObject[] = [
       { path: 'porownanie', element: <ComparePage /> },
       { path: 'zalozenia', element: <AssumptionsPage /> },
       { path: 'ustawienia', element: <SettingsPage /> },
+      {
+        // Strona z długim tekstem i KaTeX: osobny chunk, ładowany dopiero po wejściu na trasę.
+        path: 'metodologia',
+        lazy: async () => ({ Component: (await import('../features/methodology/Methodology')).Methodology }),
+      },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

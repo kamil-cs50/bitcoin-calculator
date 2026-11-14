@@ -56,8 +56,18 @@ export function Layout() {
           <Outlet />
         </ErrorBoundary>
       </main>
-      <footer className="border-t border-border py-4 text-sm text-muted">
-        <Trans>Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej</Trans>
+      <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-t border-border py-4 text-sm text-muted">
+        <span>
+          <Trans>Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej</Trans>
+        </span>
+        <NavLink
+          to="/metodologia"
+          className={({ isActive }) =>
+            `inline-flex min-h-11 items-center underline ${isActive ? 'font-semibold text-fg' : ''}`
+          }
+        >
+          <Trans>Metodologia</Trans>
+        </NavLink>
       </footer>
     </div>
   );
