@@ -290,7 +290,6 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
           onMonthChange={setPickedMonth}
           formatValue={money}
           label={label}
-          tipTitle={t`Za ${yearsText(month)} · ${year}`}
           windowMonths={win * 12}
           startYear={scenario.startYear}
           startMonth={scenario.startMonth}

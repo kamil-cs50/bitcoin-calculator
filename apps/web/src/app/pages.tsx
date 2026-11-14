@@ -64,30 +64,8 @@ export function HomePage() {
             </Link>
           </div>
         </div>
-        <figure aria-hidden="true" className="glass m-0 flex flex-col gap-3 rounded-card p-[clamp(18px,2vw,26px)]">
-          <div className="flex items-center justify-between gap-4">
-            <span className="eyebrow">{t`Możliwe przyszłości`}</span>
-            <span className="eyebrow-sm rounded-full border border-hairline px-2.5 py-1">{t`ilustracja`}</span>
-          </div>
+        <figure aria-hidden="true" className="glass m-0 rounded-[32px] px-[clamp(20px,2.2vw,30px)] pb-6 pt-[clamp(22px,2.2vw,30px)]">
           <HeroFan />
-          <div className="eyebrow flex flex-wrap gap-x-5 gap-y-2 border-t border-hairline pt-3.5">
-            <span className="flex items-center gap-2">
-              <span className="h-0.5 w-[18px] rounded-sm bg-white shadow-[0_0_8px_#4d7dff]" />
-              {t`Mediana`}
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="h-2.5 w-3.5 rounded-[3px] bg-[rgba(127,168,255,0.55)]" />
-              25–75%
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="h-2.5 w-3.5 rounded-[3px] bg-[rgba(127,168,255,0.3)]" />
-              10–90%
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="h-2.5 w-3.5 rounded-[3px] bg-[rgba(127,168,255,0.14)]" />
-              5–95%
-            </span>
-          </div>
         </figure>
       </section>
       {guide ? (

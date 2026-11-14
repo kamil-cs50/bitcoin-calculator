@@ -26,6 +26,21 @@ msgstr "(roczna)"
 msgid "{0} · do {endYear}"
 msgstr "{0} · do {endYear}"
 
+#. placeholder {0}: v / 1e6
+#: src/features/onboarding/HeroFan.tsx:66
+msgid "{0} mln"
+msgstr "{0} mln"
+
+#. placeholder {0}: nf.format(Math.round(v / 1e5) / 10)
+#: src/features/onboarding/HeroFan.tsx:33
+msgid "{0} mln zł"
+msgstr "{0} mln zł"
+
+#. placeholder {0}: nf.format(Math.round(v / 1e3))
+#: src/features/onboarding/HeroFan.tsx:33
+msgid "{0} tys. zł"
+msgstr "{0} tys. zł"
+
 #. placeholder {0}: rows.length
 #: src/features/results/ModelCheckPanel.tsx:33
 msgid "{bad} z {0} pozycji odbiega od wejścia"
@@ -35,16 +50,23 @@ msgstr "{bad} z {0} pozycji odbiega od wejścia"
 msgid "{h} godz. temu"
 msgstr "{h} godz. temu"
 
-#: src/charts/FanChart.tsx:311
-msgid "{k} na 10 więcej niż"
-msgstr "{k} na 10 więcej niż"
+#. placeholder {0}: year0 + tr
+#. placeholder {0}: yearAt(fan.months[j]!)
+#: src/charts/FanChart.tsx:198
+#: src/features/onboarding/HeroFan.tsx:99
+msgid "{k} na 10 · {0}"
+msgstr "{k} na 10 · {0}"
 
-#: src/charts/FanChart.tsx:347
+#: src/charts/FanChart.tsx:311
+#~ msgid "{k} na 10 więcej niż"
+#~ msgstr "{k} na 10 więcej niż"
+
+#: src/charts/FanChart.tsx:218
 #: src/charts/Histogram.tsx:188
 msgid "{label}: dane w tabeli"
 msgstr "{label}: dane w tabeli"
 
-#: src/charts/FanChart.tsx:201
+#: src/charts/FanChart.tsx:152
 msgid "{label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem."
 msgstr "{label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem."
 
@@ -570,7 +592,7 @@ msgstr "Dodaj Bitcoina do portfela, aby użyć nakładki."
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
 
-#: src/features/results/Dashboard.tsx:337
+#: src/features/results/Dashboard.tsx:336
 msgid "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 msgstr "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 
@@ -651,7 +673,7 @@ msgstr "Dryf miesięczny z mediany CAGR i krok wartości portfela z kosztem fund
 msgid "Działa bez sieci"
 msgstr "Działa bez sieci"
 
-#: src/charts/FanChart.tsx:147
+#: src/charts/FanChart.tsx:134
 msgid "Dziś"
 msgstr "Dziś"
 
@@ -756,7 +778,7 @@ msgstr "Ile muszę wpłacać?"
 msgid "Ile odkładasz co miesiąc. Puste albo 0 oznacza brak wpłat."
 msgstr "Ile odkładasz co miesiąc. Puste albo 0 oznacza brak wpłat."
 
-#: src/app/pages.tsx:70
+#: src/features/onboarding/HeroFan.tsx:47
 msgid "ilustracja"
 msgstr "ilustracja"
 
@@ -1028,7 +1050,7 @@ msgstr "lat"
 #~ msgid "lata od dziś"
 #~ msgstr "lata od dziś"
 
-#: src/charts/FanChart.tsx:336
+#: src/charts/FanChart.tsx:207
 msgid "Lata od dziś — przesuń po wykresie"
 msgstr "Lata od dziś — przesuń po wykresie"
 
@@ -1164,9 +1186,8 @@ msgstr "Marża ponad inflację"
 msgid "Masz w portfelu mieszkanie, którego nie da się wypłacać po kawałku, więc procent, reguły Guytona–Klingera i amortyzację liczymy od majątku płynnego po podatku, bez mieszkania."
 msgstr "Masz w portfelu mieszkanie, którego nie da się wypłacać po kawałku, więc procent, reguły Guytona–Klingera i amortyzację liczymy od majątku płynnego po podatku, bez mieszkania."
 
-#: src/app/pages.tsx:76
-#: src/charts/FanChart.tsx:311
-#: src/charts/FanChart.tsx:323
+#: src/charts/FanChart.tsx:206
+#: src/features/onboarding/HeroFan.tsx:105
 msgid "Mediana"
 msgstr "Mediana"
 
@@ -1211,7 +1232,7 @@ msgstr "Miara"
 msgid "Między celem NBP a średnią historyczną (❌ średnia historyczna)."
 msgstr "Między celem NBP a średnią historyczną (❌ średnia historyczna)."
 
-#: src/charts/FanChart.tsx:142
+#: src/charts/FanChart.tsx:129
 msgid "Miesiąc"
 msgstr "Miesiąc"
 
@@ -1277,7 +1298,7 @@ msgstr "Motyw"
 msgid "Możesz zostawić puste, jeśli nie dopłacasz."
 msgstr "Możesz zostawić puste, jeśli nie dopłacasz."
 
-#: src/app/pages.tsx:69
+#: src/features/onboarding/HeroFan.tsx:46
 #: src/features/results/Dashboard.tsx:281
 msgid "Możliwe przyszłości"
 msgstr "Możliwe przyszłości"
@@ -1302,7 +1323,7 @@ msgstr "Najgorsze 5% przyszłości: średnio ({basis})"
 msgid "Najważniejsze zdanie: model nie jest prognozą. Pokazuje, jak mogą potoczyć się losy portfela przy założeniach, które możesz zobaczyć i zmienić, a nie jak się potoczą. Wynik jest edukacyjny i nie stanowi rekomendacji inwestycyjnej."
 msgstr "Najważniejsze zdanie: model nie jest prognozą. Pokazuje, jak mogą potoczyć się losy portfela przy założeniach, które możesz zobaczyć i zmienić, a nie jak się potoczą. Wynik jest edukacyjny i nie stanowi rekomendacji inwestycyjnej."
 
-#: src/features/results/Dashboard.tsx:314
+#: src/features/results/Dashboard.tsx:313
 msgid "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 msgstr "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 
@@ -1319,7 +1340,7 @@ msgstr "Nazwa"
 msgid "Nie ma osobnych macierzy korelacji dla kryzysu. Wzrost współruchu w kryzysie dają już wspólne przesunięcie średniej, wspólny mnożnik zmienności i wspólna skala ogonów. Duża część obserwowanego „wzrostu korelacji” to po prostu skutek wyższej zmienności <0/>."
 msgstr "Nie ma osobnych macierzy korelacji dla kryzysu. Wzrost współruchu w kryzysie dają już wspólne przesunięcie średniej, wspólny mnożnik zmienności i wspólna skala ogonów. Duża część obserwowanego „wzrostu korelacji” to po prostu skutek wyższej zmienności <0/>."
 
-#: src/app/pages.tsx:139
+#: src/app/pages.tsx:117
 msgid "Nie ma takiej strony"
 msgstr "Nie ma takiej strony"
 
@@ -1474,7 +1495,7 @@ msgstr "Około {0} miesięcznie: cel osiągniesz {1}."
 msgid "Około {0} miesięcznie: pieniądze starczą {1}."
 msgstr "Około {0} miesięcznie: pieniądze starczą {1}."
 
-#: src/charts/FanChart.tsx:348
+#: src/charts/FanChart.tsx:219
 msgid "Okres"
 msgstr "Okres"
 
@@ -1608,7 +1629,7 @@ msgid "Pierwsza wypłata to ten ułamek portfela w roku startu. Potem co stycze�
 msgstr "Pierwsza wypłata to ten ułamek portfela w roku startu. Potem co styczeń sprawdzamy, czy wypłata nie wyszła poza pasmo ±20% tej stopy."
 
 #: src/app/Layout.tsx:71
-#: src/app/pages.tsx:133
+#: src/app/pages.tsx:111
 #: src/features/onboarding/Onboarding.tsx:168
 #: src/features/onboarding/Onboarding.tsx:224
 msgid "Plan"
@@ -1705,11 +1726,11 @@ msgstr "Pokaż ceny w tabeli (USD i zł)"
 msgid "Pokaż dane rozkładu w tabeli"
 msgstr "Pokaż dane rozkładu w tabeli"
 
-#: src/charts/FanChart.tsx:345
+#: src/charts/FanChart.tsx:216
 msgid "Pokaż dane wachlarza w tabeli"
 msgstr "Pokaż dane wachlarza w tabeli"
 
-#: src/app/pages.tsx:117
+#: src/app/pages.tsx:95
 msgid "Pokaż przewodnik od nowa"
 msgstr "Pokaż przewodnik od nowa"
 
@@ -1756,8 +1777,8 @@ msgid "Porównując dwa scenariusze, używamy tych samych liczb losowych („wsp
 msgstr "Porównując dwa scenariusze, używamy tych samych liczb losowych („wspólne liczby losowe”), więc różnica między nimi pochodzi ze zmiany założeń, a nie z przypadku. Świadomie nie stosujemy zmiennych antytetycznych ani quasi-Monte Carlo, bo psułyby niezależność ścieżek, na której opierają się przedziały ufności."
 
 #: src/app/Layout.tsx:70
-#: src/app/pages.tsx:107
-#: src/app/pages.tsx:127
+#: src/app/pages.tsx:85
+#: src/app/pages.tsx:105
 msgid "Portfel"
 msgstr "Portfel"
 
@@ -2014,7 +2035,7 @@ msgstr "Rocznie (symulacja)"
 msgid "Rocznie, zwrot typowy"
 msgstr "Rocznie, zwrot typowy"
 
-#: src/charts/FanChart.tsx:141
+#: src/charts/FanChart.tsx:128
 msgid "Rok"
 msgstr "Rok"
 
@@ -2056,7 +2077,7 @@ msgstr "Rozkład stacjonarny łańcucha dwóch stanów i jego trwałość."
 #~ msgstr "Rozkład wartości portfela"
 
 #. placeholder {0}: basis.full
-#: src/features/results/Dashboard.tsx:313
+#: src/features/results/Dashboard.tsx:312
 msgid "Rozkład wartości portfela ({0})"
 msgstr "Rozkład wartości portfela ({0})"
 
@@ -2067,7 +2088,7 @@ msgstr "Rozkład wartości portfela ({0})"
 
 #. placeholder {0}: yearsText(month)
 #. placeholder {1}: basis.full
-#: src/features/results/Dashboard.tsx:301
+#: src/features/results/Dashboard.tsx:300
 msgid "Rozkład wartości za {0} ({1})"
 msgstr "Rozkład wartości za {0} ({1})"
 
@@ -2479,7 +2500,7 @@ msgstr "Tryb eksperta"
 msgid "Twój portfel"
 msgstr "Twój portfel"
 
-#: src/app/pages.tsx:100
+#: src/app/pages.tsx:78
 msgid "Twój portfel i plan są zapisane na tym urządzeniu."
 msgstr "Twój portfel i plan są zapisane na tym urządzeniu."
 
@@ -2606,7 +2627,7 @@ msgstr "w {k} na 10 przyszłości"
 msgid "w {k} na 10 przyszłości więcej niż"
 msgstr "w {k} na 10 przyszłości więcej niż"
 
-#: src/charts/FanChart.tsx:341
+#: src/charts/FanChart.tsx:212
 msgid "w {k} na 10 przyszłości więcej niż {v}"
 msgstr "w {k} na 10 przyszłości więcej niż {v}"
 
@@ -2770,7 +2791,7 @@ msgid "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Praw
 msgstr "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Prawdziwe poziomy GUS ❌ do pobrania w zadaniu 14. Zbiór zawiera 13 poziomów CPI do poprawnego r/r i indeksacji EDO (Z-13)."
 
 #. placeholder {0}: yearsText(month)
-#: src/features/results/Dashboard.tsx:304
+#: src/features/results/Dashboard.tsx:303
 msgid "Wartość za {0}"
 msgstr "Wartość za {0}"
 
@@ -2789,6 +2810,11 @@ msgstr "Wczytano plan z pliku."
 #: src/features/results/ModelCheckPanel.tsx:41
 msgid "Wejście"
 msgstr "Wejście"
+
+#: src/charts/FanChart.tsx:199
+#: src/features/onboarding/HeroFan.tsx:100
+msgid "więcej niż"
+msgstr "więcej niż"
 
 #: src/features/portfolio/PortfolioEditor.tsx:102
 msgid "Wiek do wyboru konta {wrapper}"
@@ -2817,7 +2843,7 @@ msgstr "Wiek jest wymagany przy IKE i IKZE."
 msgid "Wiek: pełne lata od 0 do 120."
 msgstr "Wiek: pełne lata od 0 do 120."
 
-#: src/app/pages.tsx:98
+#: src/app/pages.tsx:76
 msgid "Witaj ponownie"
 msgstr "Witaj ponownie"
 
@@ -2899,7 +2925,7 @@ msgstr "Wybierz {wrapper}"
 msgid "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
 msgstr "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
 
-#: src/app/pages.tsx:141
+#: src/app/pages.tsx:119
 msgid "Wybierz coś z menu na górze."
 msgstr "Wybierz coś z menu na górze."
 
@@ -2997,8 +3023,8 @@ msgstr "Z założeniem „+{extraYears} lata” (dłuższe życie kolejnych rocz
 
 #. placeholder {0}: yearsText(month)
 #: src/features/results/Dashboard.tsx:293
-msgid "Za {0} · {year}"
-msgstr "Za {0} · {year}"
+#~ msgid "Za {0} · {year}"
+#~ msgstr "Za {0} · {year}"
 
 #. placeholder {0}: yearsText(month)
 #: src/features/results/Dashboard.tsx:239
@@ -3227,7 +3253,7 @@ msgid "Zmienność roczna"
 msgstr "Zmienność roczna"
 
 #: src/app/pages.tsx:57
-#: src/app/pages.tsx:103
+#: src/app/pages.tsx:81
 #: src/features/portfolio/PortfolioEditor.tsx:234
 msgid "Zobacz wynik"
 msgstr "Zobacz wynik"

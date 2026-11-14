@@ -1,10 +1,9 @@
 import { useLingui } from '@lingui/react/macro';
 import type { FanChart as FanData } from '@sim/engine';
 import { scaleLinear, scaleLog } from 'd3-scale';
-import { area, line } from 'd3-shape';
 import { useId, type PointerEvent } from 'react';
-import { Roll } from '../components/ui/Roll';
 import { DataTable } from './DataTable';
+import { EnergyFan, EnergyLegend, FanReadoutCards, type Pt } from './EnergyFan';
 
 export interface FanChartProps {
   fan: FanData;
@@ -13,8 +12,6 @@ export interface FanChartProps {
   onMonthChange?: (month: number) => void;
   formatValue: (v: number) => string;
   label: string;
-  /** Nagłówek podpowiedzi przy wskaźniku (np. „Za 20 lat · 2046”); bez niego podpowiedź go pomija. */
-  tipTitle?: string;
   /** Oś wartości: logarytmiczna (domyślnie, jak w projekcie v3) albo liniowa. */
   scale?: 'log' | 'linear';
   /** Pokazuje tylko pierwsze `windowMonths` miesięcy (przyciski 5L/10L/20L); dane się nie zmieniają. */
@@ -70,7 +67,6 @@ export function FanChart({
   onMonthChange,
   formatValue,
   label,
-  tipTitle,
   scale = 'log',
   windowMonths,
   startYear,
@@ -78,8 +74,6 @@ export function FanChart({
 }: FanChartProps) {
   const { t } = useLingui();
   const titleId = useId();
-  // id bez dwukropków z useId: używany w odwołaniu url(#…) filtra poświaty
-  const glowId = `${useId().replace(/:/g, '')}-glow`;
   const G = fan.months.length;
   const L = fan.levels.length;
   const at = (l: number, j: number): number => fan.values[l * G + j]!;
@@ -111,16 +105,9 @@ export function FanChart({
   const yLin = scaleLinear().domain([0, max > 0 ? max : 1]).nice().range([H - M.bottom, M.top]);
   const y = (v: number): number => (useLog ? yLog(Math.max(v, logLo)) : yLin(v));
 
-  const lineGen = (l: number): string =>
-    line<number>().x((k) => x(fan.months[k]! / 12)).y((k) => y(at(l, k)))(idx) ?? '';
-  const areaGen = (lo: number, hi: number): string =>
-    area<number>().x((k) => x(fan.months[k]! / 12)).y0((k) => y(at(lo, k))).y1((k) => y(at(hi, k)))(idx) ?? '';
-
-  const bands: [number, number, number][] = [
-    [0, L - 1, 0.32],
-    [1, L - 2, 0.5],
-    [2, L - 3, 0.85],
-  ];
+  // współrzędne linii percentyli (5…95%) w oknie czasu; rysuje je warstwa „energia”
+  const pts = (l: number): Pt[] => idx.map((k): Pt => [x(fan.months[k]! / 12), y(at(l, k))]);
+  const energyLines = fan.levels.map((_, l) => pts(l));
 
   function onPointer(e: PointerEvent<SVGSVGElement>): void {
     if (!onMonthChange) return;
@@ -146,45 +133,9 @@ export function FanChart({
   const xLabel = (v: number): string =>
     startYear === undefined ? String(v) : v === 0 ? t`Dziś` : String(startYear + Math.floor((startMonth - 1 + v * 12) / 12));
   const px = x(fan.months[j]! / 12);
-  const pyMed = y(at(mid, j));
   const yTicks = useLog ? logTicks(logLo, logHi) : yLin.ticks(5);
-  const pct = (l: number): number => Math.round(fan.levels[l]! * 100);
-  const ease = 'd .8s cubic-bezier(.2,.8,.2,1)';
-  const glowLayers = (l: number, strong: boolean) => {
-    const d = lineGen(l);
-    // cztery warstwy od szerokiej, miękkiej poświaty do białego rdzenia; wspólny rytm 6 s (opóźnienia stałe)
-    const base = strong
-      ? [
-          { c: '#1f5bff', w: 30, f: 0.3, o: 0.75, b: 18, dl: 0 },
-          { c: '#4d7dff', w: 15, f: 0.21, o: 0.75, b: 9, dl: -0.27 },
-          { c: '#a9c3ff', w: 6.5, f: 0.13, o: 0.8, b: 4, dl: -0.51 },
-          { c: '#ffffff', w: 2.2, f: 0.07, o: 0.9, b: 1.4, dl: -0.69 },
-        ]
-      : [
-          { c: '#1f5bff', w: 16.5, f: 0.3, o: 0.55, b: 12.6, dl: 0 },
-          { c: '#4d7dff', w: 8.3, f: 0.21, o: 0.6, b: 6.3, dl: -0.27 },
-          { c: '#a9c3ff', w: 3.6, f: 0.13, o: 0.65, b: 2.8, dl: -0.51 },
-          { c: '#ffffff', w: 1.2, f: 0.07, o: 0.7, b: 1, dl: -0.69 },
-        ];
-    return base.map((g) => (
-      <path
-        key={`${l}-${g.c}`}
-        d={d}
-        pathLength={1}
-        aria-hidden="true"
-        className="fv-flow"
-        style={{
-          stroke: g.c,
-          strokeWidth: g.w,
-          strokeDasharray: `${g.f} ${(1 - g.f).toFixed(2)}`,
-          opacity: g.o,
-          filter: `blur(${g.b}px)`,
-          animationDelay: `${g.dl}s`,
-          transition: ease,
-        }}
-      />
-    ));
-  };
+  const yearAt = (m: number): number | string =>
+    startYear === undefined ? m / 12 : startYear + Math.floor((startMonth - 1 + m) / 12);
 
   return (
     <figure className="m-0 flex flex-col gap-0">
@@ -200,80 +151,19 @@ export function FanChart({
           <title id={titleId}>
             {t`${label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem.`}
           </title>
-          <defs>
-            <linearGradient id={`${glowId}-band`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" style={{ stopColor: '#7fa8ff', stopOpacity: 0.55 }} />
-              <stop offset="1" style={{ stopColor: '#1d3fff', stopOpacity: 0.02 }} />
-            </linearGradient>
-            <linearGradient id={`${glowId}-past`} x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
-              <stop offset="1" style={{ stopColor: '#ffffff', stopOpacity: 0.05 }} />
-            </linearGradient>
-            <radialGradient id={`${glowId}-spot`} gradientUnits="userSpaceOnUse" cx={px} cy={pyMed} r={340}>
-              <stop offset="0" style={{ stopColor: '#ffffff' }} />
-              <stop offset="0.28" style={{ stopColor: '#b9cdff' }} />
-              <stop offset="1" style={{ stopColor: '#4d7dff', stopOpacity: 0.45 }} />
-            </radialGradient>
-            <radialGradient id={`${glowId}-bloom`} cx="0.5" cy="0.5" r="0.5">
-              <stop offset="0" style={{ stopColor: '#8fb0ff', stopOpacity: 0.6 }} />
-              <stop offset="0.35" style={{ stopColor: '#3d6bff', stopOpacity: 0.22 }} />
-              <stop offset="1" style={{ stopColor: '#2a55ff', stopOpacity: 0 }} />
-            </radialGradient>
-          </defs>
-          <rect x={M.left} y={M.top} width={Math.max(0, px - M.left)} height={H - M.bottom - M.top} fill={`url(#${glowId}-past)`} style={{ transition: 'width .18s ease-out' }} />
           {yTicks.map((v) => (
-            <line key={v} x1={M.left} x2={W - M.right} y1={y(v)} y2={y(v)} stroke="var(--chart-grid)" strokeWidth={1} />
+            <line key={v} x1={M.left} x2={W - M.right} y1={y(v)} y2={y(v)} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
           ))}
-          {bands.map(([lo, hi, op]) => (
-            <path
-              key={lo}
-              data-area={`${fan.levels[lo]}-${fan.levels[hi]}`}
-              d={areaGen(lo, hi)}
-              fill={`url(#${glowId}-band)`}
-              opacity={op}
-              style={{ transition: ease }}
-            />
-          ))}
-          {fan.levels.map((p, l) => {
-            const outer = l === 0 || l === L - 1;
-            const near = l === 1 || l === L - 2;
-            if (l === mid) return null;
-            return (
-              <path
-                key={p}
-                data-level={p}
-                d={lineGen(l)}
-                fill="none"
-                stroke={outer ? 'rgba(255,255,255,0.28)' : near ? '#7fa8ff' : 'none'}
-                strokeOpacity={near ? 0.55 : undefined}
-                strokeWidth={1}
-                strokeDasharray={outer ? '2 5' : undefined}
-                style={{ transition: ease }}
-              />
-            );
-          })}
-          {/* mediana: szeroka niebieska poświata, miękki środek i cienka linia z gradientem podążającym za znacznikiem */}
-          <path d={lineGen(mid)} aria-hidden="true" fill="none" stroke="#2a55ff" strokeWidth={18} strokeLinecap="round" style={{ opacity: 0.22, filter: 'blur(12px)', transition: ease }} />
-          <path d={lineGen(mid)} aria-hidden="true" fill="none" stroke={`url(#${glowId}-spot)`} strokeWidth={7} strokeLinecap="round" style={{ opacity: 0.45, filter: 'blur(3px)', transition: ease }} />
-          <path data-level={fan.levels[mid]} d={lineGen(mid)} fill="none" stroke={`url(#${glowId}-spot)`} strokeWidth={2.6} strokeLinecap="round" style={{ transition: ease }} />
-          {/* światło płynące po liniach: wszystkie warstwy na jednej osi czasu (6 s) */}
-          {glowLayers(1, false)}
-          {glowLayers(L - 2, false)}
-          {glowLayers(mid, true)}
+          <EnergyFan lines={energyLines} levels={Array.from(fan.levels)} />
+          {/* wybrany rok: pionowa linia i kropki 90% / mediana / 10% (jak najechanie w projekcie „energia”) */}
           <g style={{ transform: `translate(${px}px,0px)`, transition: 'transform .18s ease-out' }}>
-            <line x1={0} x2={0} y1={M.top} y2={H - M.bottom} stroke="rgba(255,255,255,0.22)" strokeWidth={1} strokeDasharray="2 4" />
+            <line x1={0} x2={0} y1={M.top} y2={H - M.bottom} style={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }} />
           </g>
-          {[1, L - 2].map((l) => (
+          {[L - 2, mid, 1].map((l) => (
             <g key={l} style={{ transform: `translate(${px}px,${y(at(l, j))}px)`, transition: 'transform .18s ease-out' }}>
-              <circle r={3.5} fill="#030409" stroke="#9db9ff" strokeWidth={1.5} />
+              <circle r={l === mid ? 5 : 3.5} style={{ fill: l === mid ? '#ffffff' : '#9db9ff', stroke: '#0a0e1e', strokeWidth: 2 }} />
             </g>
           ))}
-          <g style={{ transform: `translate(${px}px,${pyMed}px)`, transition: 'transform .18s ease-out' }}>
-            <circle r={34} fill={`url(#${glowId}-bloom)`} />
-            <circle r={11} fill="none" stroke="#9db9ff" strokeWidth={1} className="fv-ring" aria-hidden="true" />
-            <circle r={11} fill="rgba(3,4,9,0.35)" stroke="rgba(225,233,255,0.55)" strokeWidth={1} />
-            <circle r={4} fill="#ffffff" />
-          </g>
         </svg>
         {yTicks.map((v) => (
           <span
@@ -299,40 +189,21 @@ export function FanChart({
             {xLabel(v)}
           </span>
         ))}
-        {/* podpowiedź przy wskaźniku: odczyt w częstościach naturalnych (ta sama treść jest niżej dla czytników ekranu) */}
-        <div
-          aria-hidden="true"
-          className="glass glass-tip pointer-events-none absolute top-[3%] flex min-w-[190px] flex-col gap-1.5 rounded-[18px] px-3.5 py-3 transition-[left] duration-[180ms] ease-out"
-          style={{ left: `${(px / W) * 100}%`, transform: px > W * 0.56 ? 'translate(calc(-100% - 22px),0)' : 'translate(22px,0)' }}
-        >
-          {tipTitle && <span className="eyebrow !text-[10px]">{tipTitle}</span>}
-          {[...lines].reverse().map(({ l, k }) => (
-            <div key={l} className="flex justify-between gap-4 text-[13px] whitespace-nowrap">
-              <span className="text-fg/70">{l === mid ? t`Mediana` : t`${k} na 10 więcej niż`}</span>
-              <span className={`tabular-nums ${l === mid ? 'text-fg' : 'text-accent-text'}`}>
-                <Roll text={formatValue(at(l, j))} />
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
-      <div className="mt-2.5 flex flex-wrap justify-between gap-x-6 gap-y-2.5 border-t border-hairline pt-3.5">
-        <div className="eyebrow flex flex-wrap gap-x-5 gap-y-2" aria-hidden="true">
-          <span className="flex items-center gap-2">
-            <span className="h-0.5 w-[18px] rounded-sm bg-white shadow-[0_0_8px_#4d7dff]" />
-            {t`Mediana`}
-          </span>
-          {[
-            { lo: 2, hi: L - 3, a: 0.55 },
-            { lo: 1, hi: L - 2, a: 0.3 },
-            { lo: 0, hi: L - 1, a: 0.14 },
-          ].map(({ lo, hi, a }) => (
-            <span key={lo} className="flex items-center gap-2">
-              <span className="h-2.5 w-3.5 rounded-[3px]" style={{ background: `rgba(127,168,255,${a})` }} />
-              {pct(lo)}–{pct(hi)}%
-            </span>
-          ))}
-        </div>
+      <div className="mt-[22px]">
+        <FanReadoutCards
+          items={lines
+            .slice()
+            .map(({ l, k }) => ({
+              head: t`${k} na 10 · ${yearAt(fan.months[j]!)}`,
+              lead: t`więcej niż`,
+              value: formatValue(at(l, j)),
+              strong: l === mid,
+            }))}
+        />
+      </div>
+      <div className="mt-[22px] flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <EnergyLegend median={t`Mediana`} />
         <span className="eyebrow">{t`Lata od dziś — przesuń po wykresie`}</span>
       </div>
       <ul data-testid="fan-readout" className="sr-only m-0 list-none p-0">
