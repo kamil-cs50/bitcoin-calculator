@@ -153,5 +153,12 @@ export function validateScenario(s: Scenario): ValidationResult {
     });
   }
 
+  if (s.positions.some((pos) => pos.targetWeight < 0)) {
+    warnings.push({
+      code: 'NEGATIVE_TARGET_WEIGHT',
+      message: 'Ujemna docelowa waga jest traktowana jak 0 (bez krótkiej sprzedaży).',
+    });
+  }
+
   return errors.length > 0 ? { ok: false, errors } : { ok: true, warnings };
 }

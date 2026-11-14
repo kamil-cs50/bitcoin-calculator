@@ -85,6 +85,16 @@ describe('validateScenario', () => {
     if (r.ok) expect(r.warnings.map((w) => w.code)).toContain('EMPTY_PORTFOLIO');
   });
 
+  it('ujemny targetWeight daje ostrzeżenie NEGATIVE_TARGET_WEIGHT (rebalans traktuje go jak 0)', () => {
+    const s = makeScenario();
+    const r = validateScenario({
+      ...s,
+      positions: s.positions.map((p, i) => (i === 0 ? { ...p, targetWeight: -0.2 } : p)),
+    });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.warnings.map((w) => w.code)).toContain('NEGATIVE_TARGET_WEIGHT');
+  });
+
   it('pusta lista pozycji też daje EMPTY_PORTFOLIO', () => {
     const r = validateScenario(makeScenario({ positions: [] }));
     expect(r.ok).toBe(true);

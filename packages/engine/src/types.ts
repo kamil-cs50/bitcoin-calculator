@@ -19,7 +19,7 @@ export interface OneOff { month: number; amount: number; real: boolean }        
 export type RebalancePolicy = { kind: 'none' } | { kind: 'annual' } | { kind: 'band'; bandPp: number } | { kind: 'flows' };
 export type TaxMode = { kind: 'pl' } | { kind: 'none' } | { kind: 'flat'; rate: number };
 export interface Scenario { schemaVersion: 1; datasetVersion: string; baseCurrency: Currency; startYear: number; startMonth: number; horizonMonths: number; assets: AssetParams[]; positions: Position[]; market: MarketModel; contribution?: Contribution; withdrawal?: Withdrawal; events: OneOff[]; rebalance: RebalancePolicy; tax: TaxMode; goal?: { amountReal: number; month: number } }
-export interface Warning { code: 'CORR_PROJECTED' | 'LOSS_OVER_5M' | 'ALPHA_CLAMPED' | 'EMPTY_PORTFOLIO'; message: string; data?: unknown }
+export interface Warning { code: 'CORR_PROJECTED' | 'LOSS_OVER_5M' | 'ALPHA_CLAMPED' | 'EMPTY_PORTFOLIO' | 'NEGATIVE_TARGET_WEIGHT'; message: string; data?: unknown }
 export interface RunOptions { seed: number; paths: number; pathOffset?: number }
 export interface RunResult { paths: number; grid: Int32Array; wealth: Float32Array; wealthAfterTax: Float32Array; cpi: Float32Array; ruinMonth: Int32Array; maxDrawdown: Float32Array; worst12m: Float32Array; twrLog: Float32Array; collapsed: Uint8Array; meanShare: Float64Array; warnings: Warning[] }
 // wealth, wealthAfterTax, cpi: [path * grid.length + j], nominalnie w walucie bazowej; ruinMonth = -1 gdy brak
