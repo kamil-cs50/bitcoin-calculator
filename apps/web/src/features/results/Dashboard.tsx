@@ -1,7 +1,7 @@
 import { Trans, useLingui } from '@lingui/react/macro';
 import { fanChart } from '@sim/engine';
 import type { ModelCheckFull, Scenario, Warning } from '@sim/engine';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { DataTable } from '../../charts/DataTable';
 import { FanChart } from '../../charts/FanChart';
 import { Histogram } from '../../charts/Histogram';
@@ -12,7 +12,7 @@ import { useAssetNames } from '../portfolio/tiles';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useUiStore } from '../../state/uiStore';
 import { defaultMaxPaths, runTask } from '../../workers/pool';
-import { currencyWord, useBasis } from './basis';
+import { useBasis } from './basis';
 import { BtcCard } from './BtcCard';
 import { labelCheckId } from './labels';
 import { KpiHero, KpiTiles, computeKpiStats } from './KpiTiles';
@@ -91,12 +91,12 @@ export function WarningBanners({ warnings }: { warnings: Warning[] }) {
   );
 }
 
-/** Pozycja paska scenariusza: mała etykieta i wartość. */
-function Meta({ label, value }: { label: string; value: string }) {
+/** Pozycja paska scenariusza: mała etykieta (z dwukropkiem) nad wartością, jak w projekcie v3. */
+function Meta({ label, value, children }: { label: string; value?: string; children?: ReactNode }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <dt className="font-mono text-xs uppercase tracking-[0.06em] text-muted">{label}</dt>
-      <dd className="m-0 font-medium">{value}</dd>
+    <div className="flex flex-col gap-[3px]">
+      <dt className="text-label after:content-[':']">{label}</dt>
+      <dd className="m-0 text-fg">{children ?? value}</dd>
     </div>
   );
 }
@@ -152,7 +152,6 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const checkLabel = (id: string): string => labelCheckId(id, known, nameOf, annual);
   const maxPaths = sim.maxPaths ?? (expert ? defaultMaxPaths() : 10_000);
   const basis = useBasis(cur, real, afterTax);
-  const unit = currencyWord(cur);
 
   if (state.errors.length > 0) {
     return (
@@ -183,7 +182,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   if (!result || !fan || !histValues || !stats) {
     const n = new Intl.NumberFormat(numberLocale()).format(maxPaths);
     return (
-      <p role="status" className="rounded-card border border-border bg-surface p-6 text-center text-muted">
+      <p role="status" className="glass m-0 rounded-card p-6 text-center text-muted">
         <Trans>Liczymy {n} możliwych przyszłości…</Trans>
       </p>
     );
@@ -192,15 +191,16 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const calibrated = checkRows ? checkRows.every((r) => r.ok) : undefined;
   const year = calendarYear(scenario.startYear, scenario.startMonth, month);
   const label = t`Wachlarz możliwych wartości portfela (${basis.full})`;
-  const paths = new Intl.NumberFormat(numberLocale()).format(result.paths);
 
-  // sterowanie wachlarzem w nagłówku jego panelu: pasma realne/nominalne, po podatku i horyzont
+  // sterowanie wachlarzem w nagłówku jego panelu: pasma realne/nominalne, po podatku, tryb eksperta i rok na wykresie
   const fanAside = (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-      <Toggle label={t`Realnie (w dzisiejszych ${unit})`} checked={real} onCheckedChange={setReal} />
+    <div className="flex flex-wrap items-center gap-2">
+      <Toggle label={t`Realnie`} checked={real} onCheckedChange={setReal} />
       <Toggle label={t`Po podatku`} checked={afterTax} onCheckedChange={setAfterTax} />
-      <label className="flex min-h-11 items-center gap-3 text-sm font-medium">
-        <span className="whitespace-nowrap">{t`Rok na wykresie: za ${yearsText(month)} (${year})`}</span>
+      <Toggle label={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
+      <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-hairline sm:block" />
+      <label className="flex min-h-11 items-center">
+        <span className="sr-only">{t`Rok na wykresie: za ${yearsText(month)} (${year})`}</span>
         <input
           type="range"
           aria-label={t`Rok na wykresie`}
@@ -210,41 +210,55 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
           step={1}
           value={j}
           onChange={(e) => setPickedMonth(result.grid[Number(e.target.value)]!)}
-          className="h-11 w-40 accent-accent"
+          className="fv-range h-6 w-40"
         />
       </label>
     </div>
   );
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-6">
-      <Card>
-        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
-          <dl className="m-0 flex flex-wrap gap-x-8 gap-y-3">
-            <Meta label={t`Horyzont`} value={yearsText(result.grid[G - 1]!)} />
-            <Meta label={t`Waluta`} value={cur} />
-            <Meta label={t`Próba`} value={t`${paths} przyszłości`} />
-          </dl>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <Toggle label={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
-            <QualityBadge result={result} scenario={scenario} running={state.running} calibrated={calibrated} />
-          </div>
-        </div>
-        {afterTax && scenario.tax.kind === 'pl' && scenario.positions.some((p) => scenario.assets.find((a) => a.id === p.assetId)?.kind === 'realEstate') && (
-          <p className="m-0 mt-3 text-sm text-muted">
-            {t`Wartość po podatku uwzględnia podatek od sprzedaży mieszkania (19% od zysku, o ile sprzedaż nie jest zwolniona po 5 latach od zakupu; bez podanego roku zakupu zwolnienia nie zakładamy).`}
-          </p>
-        )}
-      </Card>
+    <div className="flex flex-col gap-[clamp(20px,2.4vw,28px)]">
+      <dl className="eyebrow m-0 grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-x-6 gap-y-3.5 border-b border-hairline pb-[18px]">
+        <Meta label={t`Horyzont`} value={yearsText(result.grid[G - 1]!)} />
+        <Meta label={t`Waluta`} value={cur} />
+        <Meta label={t`Próba`}>
+          <QualityBadge result={result} scenario={scenario} running={state.running} calibrated={calibrated} />
+        </Meta>
+      </dl>
+      {afterTax && scenario.tax.kind === 'pl' && scenario.positions.some((p) => scenario.assets.find((a) => a.id === p.assetId)?.kind === 'realEstate') && (
+        <p className="m-0 text-[12.5px] leading-normal font-light text-muted">
+          {t`Wartość po podatku uwzględnia podatek od sprzedaży mieszkania (19% od zysku, o ile sprzedaż nie jest zwolniona po 5 latach od zakupu; bez podanego roku zakupu zwolnienia nie zakładamy).`}
+        </p>
+      )}
       <WarningBanners warnings={state.warnings} />
       <KpiHero stats={stats} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
-      <Card title={t`Wachlarz możliwych przyszłości (${basis.full})`} aside={fanAside}>
-        <FanChart fan={fan} month={month} onMonthChange={setPickedMonth} formatValue={money} label={label} />
+      <Card
+        title={t`Wachlarz możliwych przyszłości (${basis.full})`}
+        titleNode={
+          <span className="text-[clamp(22px,2.2vw,30px)]">
+            {t`Możliwe przyszłości`} <span className="text-accent-text">{basis.full}</span>
+          </span>
+        }
+        aside={fanAside}
+        className="pb-4"
+      >
+        <FanChart
+          fan={fan}
+          month={month}
+          onMonthChange={setPickedMonth}
+          formatValue={money}
+          label={label}
+          tipTitle={t`Za ${yearsText(month)} · ${year}`}
+        />
       </Card>
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[7fr_5fr] lg:items-stretch">
-        <Card title={t`Rozkład wartości za ${yearsText(month)} (${basis.full})`}>
-          <p className="mb-2 mt-0 text-sm text-muted">{t`Najwyższe 1% przyszłości połączono w ostatnim słupku.`}</p>
-          <Histogram values={histValues} formatValue={money} label={t`Rozkład wartości portfela (${basis.full})`} />
+      <div className="flex flex-wrap items-stretch gap-[clamp(20px,2.4vw,28px)]">
+        <Card title={t`Rozkład wartości za ${yearsText(month)} (${basis.full})`} className="flex min-w-0 grow-[7] basis-[520px] flex-col">
+          <Histogram
+            values={histValues}
+            formatValue={money}
+            label={t`Rozkład wartości portfela (${basis.full})`}
+            note={t`Najwyższe 1% przyszłości połączono w ostatnim słupku.`}
+          />
         </Card>
         {/* Karta BTC liczy dwa dodatkowe przebiegi w workerach: pokazujemy ją po zakończeniu etapów,
             żeby nie konkurować z nimi o rdzenie (budżet < 1 s do pierwszego etapu). */}

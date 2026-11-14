@@ -28,12 +28,17 @@ export function QualityBadge({ result, scenario, running, calibrated }: QualityB
   const n = new Intl.NumberFormat(numberLocale()).format(result.paths);
   const pp = new Intl.NumberFormat(numberLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(half);
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span data-testid="quality" className="text-sm font-medium tabular-nums">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+      <span data-testid="quality" className="tabular-nums">
         {t`${n} przyszłości · dokładność ±${pp} pp`}
       </span>
       {running && <Badge tone="neutral">{t`liczę dalej, wynik się doprecyzuje`}</Badge>}
-      {calibrated === true && <Badge tone="ok">{t`model skalibrowany ✓`}</Badge>}
+      {calibrated === true && (
+        <span className="inline-flex items-center gap-2.5">
+          <span aria-hidden="true" className="size-[7px] rounded-full bg-[#7fa8ff] shadow-[0_0_12px_#4d7dff]" />
+          {t`model skalibrowany ✓`}
+        </span>
+      )}
     </div>
   );
 }

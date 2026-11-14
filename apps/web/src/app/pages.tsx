@@ -21,7 +21,7 @@ export function HomePage() {
 }
 export function PortfolioPage() {
   return (
-    <Page title={<Trans>Portfel</Trans>}>
+    <Page title={<Trans>Portfel</Trans>} hideTitle>
       <PortfolioEditor />
     </Page>
   );

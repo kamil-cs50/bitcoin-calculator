@@ -4,7 +4,7 @@ import { Page } from '../../components/Page';
 
 export function ResultPage() {
   return (
-    <Page title={<Trans>Wynik</Trans>}>
+    <Page title={<Trans>Wynik</Trans>} hideTitle>
       <Dashboard />
     </Page>
   );

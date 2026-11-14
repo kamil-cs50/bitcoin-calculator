@@ -21,7 +21,7 @@ export function Field({ label, hint, error, children }: FieldProps) {
   const describedBy = [hint ? hintId : null, error ? errId : null].filter(Boolean).join(' ');
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium">
+      <label htmlFor={id} className="eyebrow-sm">
         {label}
       </label>
       {children({
@@ -30,7 +30,7 @@ export function Field({ label, hint, error, children }: FieldProps) {
         ...(error ? { 'aria-invalid': true as const } : {}),
       })}
       {hint && (
-        <p id={hintId} className="text-sm text-muted">
+        <p id={hintId} className="m-0 text-[12.5px] leading-normal font-light text-muted">
           {hint}
         </p>
       )}
@@ -44,4 +44,4 @@ export function Field({ label, hint, error, children }: FieldProps) {
 }
 
 export const inputClass =
-  'num min-h-11 w-full rounded-xl border border-border-strong bg-surface px-3 py-2 text-base text-fg aria-[invalid=true]:border-danger';
+  'num min-h-11 w-full rounded-2xl border border-border bg-field px-3.5 py-2 text-base font-light text-fg outline-none transition-colors hover:border-border-strong focus:border-accent-text aria-[invalid=true]:border-danger';

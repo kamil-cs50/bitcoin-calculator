@@ -3,6 +3,7 @@ import type { FanChart as FanData } from '@sim/engine';
 import { scaleLinear } from 'd3-scale';
 import { area, line } from 'd3-shape';
 import { useId, type PointerEvent } from 'react';
+import { Roll } from '../components/ui/Roll';
 import { DataTable } from './DataTable';
 
 export interface FanChartProps {
@@ -12,11 +13,14 @@ export interface FanChartProps {
   onMonthChange?: (month: number) => void;
   formatValue: (v: number) => string;
   label: string;
+  /** Nagłówek podpowiedzi przy wskaźniku (np. „Za 20 lat · 2046”); bez niego podpowiedź go pomija. */
+  tipTitle?: string;
 }
 
-const W = 640;
-const H = 320;
-const M = { top: 12, right: 16, bottom: 34, left: 78 };
+// układ z projektu v3: viewBox 1000×360, pole wykresu x 92–985, y 20–320; podpisy osi są elementami HTML
+const W = 1000;
+const H = 360;
+const M = { top: 20, right: 15, bottom: 40, left: 92 };
 
 /** Etykieta wiersza tabeli: pełne lata jako „Rok N”, reszta jako numer miesiąca. */
 export function periodLabel(month: number, year: string, monthWord: string): string {
@@ -34,7 +38,7 @@ export function nearestIndex(months: Int32Array, month: number): number {
  * Wachlarz: 7 percentyli (5/10/25/50/75/90/95) jako linie i trzy zagnieżdżone pasma (5–95, 10–90, 25–75).
  * Podpowiedź w częstościach naturalnych oraz tabela z tymi samymi liczbami.
  */
-export function FanChart({ fan, month, onMonthChange, formatValue, label }: FanChartProps) {
+export function FanChart({ fan, month, onMonthChange, formatValue, label, tipTitle }: FanChartProps) {
   const { t } = useLingui();
   const titleId = useId();
   // id bez dwukropków z useId: używany w odwołaniu url(#…) filtra poświaty
@@ -57,9 +61,9 @@ export function FanChart({ fan, month, onMonthChange, formatValue, label }: FanC
     area<number>().x((k) => x(fan.months[k]! / 12)).y0((k) => y(at(lo, k))).y1((k) => y(at(hi, k)))(idx) ?? '';
 
   const bands: [number, number, number][] = [
-    [0, L - 1, 0.18],
-    [1, L - 2, 0.28],
-    [2, L - 3, 0.42],
+    [0, L - 1, 0.32],
+    [1, L - 2, 0.5],
+    [2, L - 3, 0.85],
   ];
 
   function onPointer(e: PointerEvent<SVGSVGElement>): void {
@@ -81,80 +85,203 @@ export function FanChart({ fan, month, onMonthChange, formatValue, label }: FanC
   const monthWord = t`Miesiąc`;
   const xTicks = x.ticks(Math.min(8, Math.max(2, Math.floor(maxYears))));
   const px = x(fan.months[j]! / 12);
+  const pyMed = y(at(mid, j));
+  const yTicks = y.ticks(5);
+  const pct = (l: number): number => Math.round(fan.levels[l]! * 100);
+  const ease = 'd .8s cubic-bezier(.2,.8,.2,1)';
+  const glowLayers = (l: number, strong: boolean) => {
+    const d = lineGen(l);
+    // cztery warstwy od szerokiej, miękkiej poświaty do białego rdzenia; wspólny rytm 6 s (opóźnienia stałe)
+    const base = strong
+      ? [
+          { c: '#1f5bff', w: 30, f: 0.3, o: 0.75, b: 18, dl: 0 },
+          { c: '#4d7dff', w: 15, f: 0.21, o: 0.75, b: 9, dl: -0.27 },
+          { c: '#a9c3ff', w: 6.5, f: 0.13, o: 0.8, b: 4, dl: -0.51 },
+          { c: '#ffffff', w: 2.2, f: 0.07, o: 0.9, b: 1.4, dl: -0.69 },
+        ]
+      : [
+          { c: '#1f5bff', w: 16.5, f: 0.3, o: 0.55, b: 12.6, dl: 0 },
+          { c: '#4d7dff', w: 8.3, f: 0.21, o: 0.6, b: 6.3, dl: -0.27 },
+          { c: '#a9c3ff', w: 3.6, f: 0.13, o: 0.65, b: 2.8, dl: -0.51 },
+          { c: '#ffffff', w: 1.2, f: 0.07, o: 0.7, b: 1, dl: -0.69 },
+        ];
+    return base.map((g) => (
+      <path
+        key={`${l}-${g.c}`}
+        d={d}
+        pathLength={1}
+        aria-hidden="true"
+        className="fv-flow"
+        style={{
+          stroke: g.c,
+          strokeWidth: g.w,
+          strokeDasharray: `${g.f} ${(1 - g.f).toFixed(2)}`,
+          opacity: g.o,
+          filter: `blur(${g.b}px)`,
+          animationDelay: `${g.dl}s`,
+          transition: ease,
+        }}
+      />
+    ));
+  };
 
   return (
-    <figure className="m-0 flex flex-col gap-3">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        role="img"
-        aria-labelledby={titleId}
-        className="h-auto w-full touch-pan-y"
-        onPointerMove={onPointer}
-        onPointerDown={onPointer}
-      >
-        <title id={titleId}>
-          {t`${label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem.`}
-        </title>
-        {y.ticks(5).map((v) => (
-          <g key={v}>
-            <line x1={M.left} x2={W - M.right} y1={y(v)} y2={y(v)} stroke="var(--chart-grid)" strokeWidth={1} />
-            <text x={M.left - 8} y={y(v)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="var(--muted)">
-              {formatValue(v)}
-            </text>
+    <figure className="m-0 flex flex-col gap-0">
+      <div className="relative">
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          role="img"
+          aria-labelledby={titleId}
+          className="block h-auto w-full cursor-crosshair touch-pan-y overflow-visible"
+          onPointerMove={onPointer}
+          onPointerDown={onPointer}
+        >
+          <title id={titleId}>
+            {t`${label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem.`}
+          </title>
+          <defs>
+            <linearGradient id={`${glowId}-band`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" style={{ stopColor: '#7fa8ff', stopOpacity: 0.55 }} />
+              <stop offset="1" style={{ stopColor: '#1d3fff', stopOpacity: 0.02 }} />
+            </linearGradient>
+            <linearGradient id={`${glowId}-past`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
+              <stop offset="1" style={{ stopColor: '#ffffff', stopOpacity: 0.05 }} />
+            </linearGradient>
+            <radialGradient id={`${glowId}-spot`} gradientUnits="userSpaceOnUse" cx={px} cy={pyMed} r={340}>
+              <stop offset="0" style={{ stopColor: '#ffffff' }} />
+              <stop offset="0.28" style={{ stopColor: '#b9cdff' }} />
+              <stop offset="1" style={{ stopColor: '#4d7dff', stopOpacity: 0.45 }} />
+            </radialGradient>
+            <radialGradient id={`${glowId}-bloom`} cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0" style={{ stopColor: '#8fb0ff', stopOpacity: 0.6 }} />
+              <stop offset="0.35" style={{ stopColor: '#3d6bff', stopOpacity: 0.22 }} />
+              <stop offset="1" style={{ stopColor: '#2a55ff', stopOpacity: 0 }} />
+            </radialGradient>
+          </defs>
+          <rect x={M.left} y={M.top} width={Math.max(0, px - M.left)} height={H - M.bottom - M.top} fill={`url(#${glowId}-past)`} style={{ transition: 'width .18s ease-out' }} />
+          {yTicks.map((v) => (
+            <line key={v} x1={M.left} x2={W - M.right} y1={y(v)} y2={y(v)} stroke="var(--chart-grid)" strokeWidth={1} />
+          ))}
+          {bands.map(([lo, hi, op]) => (
+            <path
+              key={lo}
+              data-area={`${fan.levels[lo]}-${fan.levels[hi]}`}
+              d={areaGen(lo, hi)}
+              fill={`url(#${glowId}-band)`}
+              opacity={op}
+              style={{ transition: ease }}
+            />
+          ))}
+          {fan.levels.map((p, l) => {
+            const outer = l === 0 || l === L - 1;
+            const near = l === 1 || l === L - 2;
+            if (l === mid) return null;
+            return (
+              <path
+                key={p}
+                data-level={p}
+                d={lineGen(l)}
+                fill="none"
+                stroke={outer ? 'rgba(255,255,255,0.28)' : near ? '#7fa8ff' : 'none'}
+                strokeOpacity={near ? 0.55 : undefined}
+                strokeWidth={1}
+                strokeDasharray={outer ? '2 5' : undefined}
+                style={{ transition: ease }}
+              />
+            );
+          })}
+          {/* mediana: szeroka niebieska poświata, miękki środek i cienka linia z gradientem podążającym za znacznikiem */}
+          <path d={lineGen(mid)} aria-hidden="true" fill="none" stroke="#2a55ff" strokeWidth={18} strokeLinecap="round" style={{ opacity: 0.22, filter: 'blur(12px)', transition: ease }} />
+          <path d={lineGen(mid)} aria-hidden="true" fill="none" stroke={`url(#${glowId}-spot)`} strokeWidth={7} strokeLinecap="round" style={{ opacity: 0.45, filter: 'blur(3px)', transition: ease }} />
+          <path data-level={fan.levels[mid]} d={lineGen(mid)} fill="none" stroke={`url(#${glowId}-spot)`} strokeWidth={2.6} strokeLinecap="round" style={{ transition: ease }} />
+          {/* światło płynące po liniach: wszystkie warstwy na jednej osi czasu (6 s) */}
+          {glowLayers(1, false)}
+          {glowLayers(L - 2, false)}
+          {glowLayers(mid, true)}
+          <g style={{ transform: `translate(${px}px,0px)`, transition: 'transform .18s ease-out' }}>
+            <line x1={0} x2={0} y1={M.top} y2={H - M.bottom} stroke="rgba(255,255,255,0.22)" strokeWidth={1} strokeDasharray="2 4" />
           </g>
+          {[1, L - 2].map((l) => (
+            <g key={l} style={{ transform: `translate(${px}px,${y(at(l, j))}px)`, transition: 'transform .18s ease-out' }}>
+              <circle r={3.5} fill="#030409" stroke="#9db9ff" strokeWidth={1.5} />
+            </g>
+          ))}
+          <g style={{ transform: `translate(${px}px,${pyMed}px)`, transition: 'transform .18s ease-out' }}>
+            <circle r={34} fill={`url(#${glowId}-bloom)`} />
+            <circle r={11} fill="none" stroke="#9db9ff" strokeWidth={1} className="fv-ring" aria-hidden="true" />
+            <circle r={11} fill="rgba(3,4,9,0.35)" stroke="rgba(225,233,255,0.55)" strokeWidth={1} />
+            <circle r={4} fill="#ffffff" />
+          </g>
+        </svg>
+        {yTicks.map((v) => (
+          <span
+            key={v}
+            aria-hidden="true"
+            className="pointer-events-none absolute font-mono text-[10.5px] whitespace-nowrap text-label"
+            style={{ left: `${((M.left - 11) / W) * 100}%`, top: `${(y(v) / H) * 100}%`, transform: 'translate(-100%,-50%)' }}
+          >
+            {formatValue(v)}
+          </span>
         ))}
-        {xTicks.map((v) => (
-          <text key={v} x={x(v)} y={H - M.bottom + 16} textAnchor="middle" fontSize={11} fill="var(--muted)">
+        {xTicks.map((v, i) => (
+          <span
+            key={v}
+            aria-hidden="true"
+            className="pointer-events-none absolute font-mono text-[11px] whitespace-nowrap text-label"
+            style={{
+              left: `${(x(v) / W) * 100}%`,
+              top: '95.5%',
+              transform: i === 0 ? 'translate(-20%,-50%)' : i === xTicks.length - 1 ? 'translate(-100%,-50%)' : 'translate(-50%,-50%)',
+            }}
+          >
             {v}
-          </text>
+          </span>
         ))}
-        <text x={(M.left + W - M.right) / 2} y={H - 4} textAnchor="middle" fontSize={11} fill="var(--muted)">
-          {t`lata od dziś`}
-        </text>
-        {bands.map(([lo, hi, op]) => (
-          <path key={lo} data-area={`${fan.levels[lo]}-${fan.levels[hi]}`} d={areaGen(lo, hi)} fill="var(--chart-band)" fillOpacity={op} />
-        ))}
-        {fan.levels.map((p, l) => (
-          <path
-            key={p}
-            data-level={p}
-            d={lineGen(l)}
-            fill="none"
-            stroke={l === mid ? 'var(--fg)' : 'var(--chart-band)'}
-            strokeWidth={l === mid ? 2.5 : 1}
-            strokeDasharray={l === 0 || l === L - 1 ? '4 3' : undefined}
-          />
-        ))}
-        {/* Świecące linie: wszystkie płyną w tym samym rytmie (klasa fv-flow, wspólna oś czasu 6 s). */}
-        <defs>
-          <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" />
-          </filter>
-        </defs>
-        {[
-          { l: mid, w: 7, op: 0.85 },
-          { l: 1, w: 5, op: 0.5 },
-          { l: L - 2, w: 5, op: 0.5 },
-        ].map(({ l, w, op }) => (
-          <g key={`glow-${l}`} filter={`url(#${glowId})`} opacity={op} aria-hidden="true">
-            <path d={lineGen(l)} pathLength={1} className="fv-flow" stroke="var(--chart-band)" strokeWidth={w} strokeDasharray="0.14 0.86" />
-            <path d={lineGen(l)} pathLength={1} className="fv-flow" stroke="#fff" strokeWidth={1.5} strokeDasharray="0.05 0.95" />
-          </g>
-        ))}
-        <line x1={px} x2={px} y1={M.top} y2={H - M.bottom} stroke="var(--chart-mark)" strokeWidth={2} />
-        {lines.map(({ l }) => (
-          <circle key={l} cx={px} cy={y(at(l, j))} r={4} fill="var(--chart-mark)" stroke="var(--surface)" strokeWidth={1.5} />
-        ))}
-        <circle cx={px} cy={y(at(mid, j))} r={7} fill="none" stroke="var(--chart-band)" strokeWidth={1.5} className="fv-ring" aria-hidden="true" />
-      </svg>
-      <ul data-testid="fan-readout" className="m-0 list-none p-0 text-sm">
+        {/* podpowiedź przy wskaźniku: odczyt w częstościach naturalnych (ta sama treść jest niżej dla czytników ekranu) */}
+        <div
+          aria-hidden="true"
+          className="glass glass-tip pointer-events-none absolute top-[3%] flex min-w-[190px] flex-col gap-1.5 rounded-[18px] px-3.5 py-3 transition-[left] duration-[180ms] ease-out"
+          style={{ left: `${(px / W) * 100}%`, transform: px > W * 0.56 ? 'translate(calc(-100% - 22px),0)' : 'translate(22px,0)' }}
+        >
+          {tipTitle && <span className="eyebrow !text-[10px]">{tipTitle}</span>}
+          {[...lines].reverse().map(({ l, k }) => (
+            <div key={l} className="flex justify-between gap-4 text-[13px] whitespace-nowrap">
+              <span className="text-fg/70">{l === mid ? t`Mediana` : t`${k} na 10 więcej niż`}</span>
+              <span className={`tabular-nums ${l === mid ? 'text-fg' : 'text-accent-text'}`}>
+                <Roll text={formatValue(at(l, j))} />
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-2.5 flex flex-wrap justify-between gap-x-6 gap-y-2.5 border-t border-hairline pt-3.5">
+        <div className="eyebrow flex flex-wrap gap-x-5 gap-y-2" aria-hidden="true">
+          <span className="flex items-center gap-2">
+            <span className="h-0.5 w-[18px] rounded-sm bg-white shadow-[0_0_8px_#4d7dff]" />
+            {t`Mediana`}
+          </span>
+          {[
+            { lo: 2, hi: L - 3, a: 0.55 },
+            { lo: 1, hi: L - 2, a: 0.3 },
+            { lo: 0, hi: L - 1, a: 0.14 },
+          ].map(({ lo, hi, a }) => (
+            <span key={lo} className="flex items-center gap-2">
+              <span className="h-2.5 w-3.5 rounded-[3px]" style={{ background: `rgba(127,168,255,${a})` }} />
+              {pct(lo)}–{pct(hi)}%
+            </span>
+          ))}
+        </div>
+        <span className="eyebrow">{t`Lata od dziś — przesuń po wykresie`}</span>
+      </div>
+      <ul data-testid="fan-readout" className="sr-only m-0 list-none p-0">
         {lines.map(({ l, k }) => {
           const v = formatValue(at(l, j));
           return <li key={l}>{t`w ${k} na 10 przyszłości więcej niż ${v}`}</li>;
         })}
       </ul>
-      <details>
-        <summary className="min-h-11 cursor-pointer py-2 text-sm font-medium">{t`Pokaż dane wachlarza w tabeli`}</summary>
+      <details className="mt-3.5">
+        <summary className="eyebrow-sm min-h-11 cursor-pointer py-2.5">{t`Pokaż dane wachlarza w tabeli`}</summary>
         <DataTable
           caption={t`${label}: dane w tabeli`}
           cornerLabel={t`Okres`}

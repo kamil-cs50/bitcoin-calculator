@@ -1,5 +1,4 @@
 import { Switch } from 'radix-ui';
-import { useId } from 'react';
 
 export interface ToggleProps {
   label: string;
@@ -8,23 +7,20 @@ export interface ToggleProps {
   disabled?: boolean;
 }
 
-/** Przełącznik (role=switch), obsługa spacji i klawisza Enter z Radix. */
+/**
+ * Przełącznik (role=switch) w postaci pastylki ze świecącą kropką (wygląd projektu v3).
+ * Obsługa spacji i klawisza Enter z Radix; nazwę dostępną daje treść pastylki.
+ */
 export function Toggle({ label, checked, onCheckedChange, disabled }: ToggleProps) {
-  const id = useId();
   return (
-    <div className="flex min-h-11 items-center gap-3">
-      <Switch.Root
-        id={id}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabled}
-        className="relative h-7 w-12 shrink-0 rounded-full border border-border-strong bg-surface-2 transition-colors data-[state=checked]:bg-accent"
-      >
-        <Switch.Thumb className="block size-5 translate-x-1 rounded-full bg-fg transition-transform data-[state=checked]:translate-x-6 data-[state=checked]:bg-accent-fg" />
-      </Switch.Root>
-      <label htmlFor={id} className="text-base">
-        {label}
-      </label>
-    </div>
+    <Switch.Root
+      checked={checked}
+      onCheckedChange={onCheckedChange}
+      disabled={disabled}
+      className="inline-flex min-h-9 cursor-pointer items-center gap-[9px] rounded-full border border-border bg-field px-3.5 py-1.5 text-left text-[13px] text-fg transition-[background,border-color] duration-300 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-[rgba(157,185,255,0.45)] data-[state=checked]:bg-[rgba(42,85,255,0.18)]"
+    >
+      <Switch.Thumb className="block size-1.5 shrink-0 rounded-full bg-fg/30 transition-colors duration-300 data-[state=checked]:bg-accent-text data-[state=checked]:shadow-[0_0_10px_var(--glow)]" />
+      {label}
+    </Switch.Root>
   );
 }

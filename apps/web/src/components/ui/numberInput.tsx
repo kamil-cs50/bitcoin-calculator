@@ -39,6 +39,8 @@ export interface DecimalInputProps {
   required?: boolean;
   /** Dopuszcza wiodący minus (np. spread lokaty o ujemnej wartości). */
   allowNegative?: boolean;
+  /** Duże pole „wyświetlacza” (kafelek pozycji portfela): lekka kwota z dolną kreską zamiast ramki. */
+  display?: boolean;
 }
 
 function show(v: number | null, scale: number): string {
@@ -60,6 +62,7 @@ export function DecimalInput({
   disabled,
   required,
   allowNegative,
+  display,
 }: DecimalInputProps) {
   const [text, setText] = useState(() => show(value, scale));
   const [lastEmitted, setLastEmitted] = useState<number | null>(value);
@@ -81,7 +84,11 @@ export function DecimalInput({
             placeholder={placeholder}
             disabled={disabled}
             required={required}
-            className={`${inputClass} ${suffix ? 'pr-14' : ''}`}
+            className={
+              display
+                ? `num w-full min-w-0 rounded-none border-0 border-b border-border-strong/50 bg-transparent px-0 pb-2 pt-0 text-[40px] leading-[1.15] font-light tracking-[-0.04em] text-fg outline-none transition-colors focus:border-accent-text aria-[invalid=true]:border-danger ${suffix ? 'pr-10' : ''}`
+                : `${inputClass} ${suffix ? 'pr-14' : ''}`
+            }
             onChange={(e) => {
               const next = e.target.value;
               const allowed = isEn() ? (allowNegative ? ALLOWED_EN_NEGATIVE : ALLOWED_EN) : allowNegative ? ALLOWED_NEGATIVE : ALLOWED;
@@ -96,7 +103,11 @@ export function DecimalInput({
           {suffix && (
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted"
+              className={
+                display
+                  ? 'pointer-events-none absolute inset-y-0 right-0 flex items-end pb-2.5 text-[22px] font-light tracking-[-0.02em] text-accent-text'
+                  : 'pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted'
+              }
             >
               {suffix}
             </span>

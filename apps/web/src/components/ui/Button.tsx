@@ -2,11 +2,13 @@ import type { ButtonHTMLAttributes } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
+// Pastylki z projektu v3: główny przycisk to szklany niebieski „Zobacz wynik”, pozostałe to ciche kontury.
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-accent-fg hover:bg-accent-hover',
-  secondary: 'bg-surface text-fg border border-border-strong hover:bg-surface-2',
-  ghost: 'bg-transparent text-fg hover:bg-surface-2',
-  danger: 'bg-danger text-accent-fg hover:bg-danger-hover',
+  primary: 'btn-primary',
+  secondary: 'border border-border bg-field text-fg hover:bg-soft',
+  ghost: 'border border-transparent bg-transparent text-fg hover:bg-soft',
+  danger:
+    'border border-border bg-transparent text-fg/80 hover:border-danger hover:text-danger',
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -17,7 +19,7 @@ export function Button({ variant = 'primary', className = '', type = 'button', .
   return (
     <button
       type={type}
-      className={`inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-base font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT[variant]} ${className}`}
+      className={`inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full px-[22px] py-2 text-[15px] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT[variant]} ${className}`}
       {...rest}
     />
   );

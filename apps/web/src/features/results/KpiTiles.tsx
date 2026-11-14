@@ -2,7 +2,8 @@ import { useLingui } from '@lingui/react/macro';
 import type { RunResult, Scenario } from '@sim/engine';
 import { summarize, wilson } from '@sim/engine';
 import { useId, type ReactNode } from 'react';
-import { Card } from '../../components/ui/Card';
+import { Flap, splitAmount } from '../../components/ui/Flap';
+import { Roll } from '../../components/ui/Roll';
 import { formatMoney, naturalFrequency } from '../../lib/format';
 import { currencyWord, useBasis } from './basis';
 import { capitalize, yearsText } from './periods';
@@ -38,14 +39,16 @@ const halfPp = (ci: [number, number]): string =>
   new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 1 }).format(((ci[1] - ci[0]) / 2) * 100);
 
 /** Dziesięć kropek: część wypełniona odpowiada częstości (ozdoba, prawdziwa liczba jest w tekście). */
-function Dots({ p }: { p: number }) {
+function Dots({ p, thick = false }: { p: number; thick?: boolean }) {
   const on = Math.round(Math.min(1, Math.max(0, p)) * 10);
   return (
-    <div aria-hidden="true" className="flex gap-1.5">
+    <div aria-hidden="true" className={`flex ${thick ? 'gap-1.5' : 'gap-[5px]'}`}>
       {Array.from({ length: 10 }, (_, i) => (
         <span
           key={i}
-          className={`h-1.5 flex-1 rounded-full ${i < on ? 'bg-accent fv-shimmer shadow-[0_0_10px_var(--chart-band)]' : 'bg-surface-2'}`}
+          className={`flex-1 rounded-full transition-[background] duration-[400ms] ${thick ? 'h-1.5' : 'h-[5px]'} ${
+            i < on ? 'bg-accent-text shadow-[0_0_10px_rgba(61,107,255,0.8)]' : 'bg-soft'
+          }`}
         />
       ))}
     </div>
@@ -53,19 +56,34 @@ function Dots({ p }: { p: number }) {
 }
 
 /** Wiersz panelu wyniku: tytuł, wartość, opcjonalny ozdobnik i dopisek. Nazwany region (jak Card). */
-function Row({ title, value, bar, note, children }: { title: string; value?: string; bar?: ReactNode; note: string; children?: ReactNode }) {
-  const id = useId();
+function Row({
+  title,
+  value,
+  bar,
+  note,
+  children,
+}: {
+  title: string;
+  value?: string;
+  bar?: ReactNode;
+  note: string;
+  children?: ReactNode;
+}) {
+  // pełna nazwa (z podstawą wartości) zostaje nazwą regionu; widoczny nagłówek jest krótki, jak w projekcie
+  const short = title.replace(/ \([^)]*\)$/, '');
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-3 border-t border-border py-5 first:border-t-0 first:pt-0 last:pb-0">
+    <section aria-label={title} className="flex flex-col gap-3 border-t border-hairline py-5 first:border-t-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 id={id} className="m-0 text-sm font-medium text-muted">
-          {title}
-        </h3>
-        {value && <span className="text-2xl font-light tabular-nums">{value}</span>}
+        <h3 className="eyebrow-sm m-0 font-normal">{short}</h3>
+        {value && (
+          <span className="text-[clamp(22px,2vw,28px)] leading-none font-light tracking-[-0.03em] tabular-nums">
+            <Roll text={value} />
+          </span>
+        )}
       </div>
       {bar}
       {children}
-      <p className="m-0 text-sm text-muted">{note}</p>
+      <p className="m-0 text-[12.5px] leading-[1.45] font-light text-balance text-muted">{note}</p>
     </section>
   );
 }
@@ -83,33 +101,57 @@ export function KpiHero({ stats, scenario, month, real, afterTax }: KpiProps) {
   const top = Math.max(s.p90, s.median, 1) * 1.08;
   const pos = (v: number) => `${Math.min(100, Math.max(0, (v / top) * 100))}%`;
   const width = `${Math.max(0, ((s.p90 - Math.max(0, s.p10)) / top) * 100)}%`;
+  const median = money(s.median);
+  const parts = splitAmount(median);
 
   return (
-    <section className="grid gap-4 lg:grid-cols-[7fr_5fr] lg:items-stretch">
-      <div className="flex flex-col justify-between gap-8 p-1 sm:p-4">
-        <p className="m-0 font-mono text-xs uppercase tracking-[0.06em] text-muted">{t`Typowy wynik za ${years} (${b.full})`}</p>
-        <div className="flex flex-col gap-4">
-          <p data-testid="kpi-median" className="m-0 text-[clamp(3rem,8vw,6.5rem)] leading-none font-light tabular-nums">
-            {money(s.median)}
+    <section className="flex flex-wrap items-stretch gap-[clamp(20px,2.4vw,28px)]">
+      <div className="flex min-w-0 grow-[7] basis-[520px] flex-col justify-between gap-[clamp(24px,3vw,40px)] py-[clamp(12px,2vw,28px)]">
+        <p className="eyebrow m-0">{t`Typowy wynik za ${years} (${b.full})`}</p>
+        <div className="flex flex-wrap items-end gap-[clamp(12px,1.4vw,20px)]">
+          {/* pełna wartość dla czytników ekranu i testów; zegar obok jest tylko oprawą */}
+          <p className="m-0 flex flex-wrap items-end gap-[clamp(12px,1.4vw,20px)] leading-none">
+            <span data-testid="kpi-median" className="sr-only">
+              {median}
+            </span>
+            {parts ? (
+              <>
+                <span aria-hidden="true" className="flex text-[clamp(60px,8.6vw,138px)] leading-none font-light tracking-normal">
+                  <Flap text={parts[0]} />
+                </span>
+                <span aria-hidden="true" className="text-[clamp(30px,3.6vw,54px)] leading-none font-light tracking-[-0.02em] text-accent-text">
+                  {parts[1]}
+                </span>
+              </>
+            ) : (
+              <span aria-hidden="true" className="text-[clamp(60px,8.6vw,138px)] leading-none font-light">
+                {median}
+              </span>
+            )}
           </p>
-          <p className="m-0 max-w-md text-base text-muted">{t`Mediana: połowa przyszłości kończy się wyżej, połowa niżej`}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
+          <p className="m-0 max-w-[440px] text-base leading-[1.55] font-light text-pretty text-fg/80">
+            {t`Mediana: połowa przyszłości kończy się wyżej, połowa niżej`}
+          </p>
         </div>
       </div>
-      <div className="glass flex flex-col rounded-card px-5 py-2 sm:px-7">
+      <div className="glass flex min-w-0 grow-[5] basis-[340px] flex-col justify-center rounded-card px-[clamp(20px,2.2vw,28px)] py-2">
         <Row
           title={t`Zakres wyników (${b.full})`}
+          value={`${money(s.p10)} – ${money(s.p90)}`}
           note={t`Przedział od 10. do 90. percentyla`}
           bar={
-            <div aria-hidden="true" className="relative h-1.5 rounded-full bg-surface-2">
+            <div aria-hidden="true" className="relative h-[5px] rounded-full bg-soft">
               <span
-                className="fv-shimmer absolute inset-y-0 rounded-full bg-linear-to-r from-accent to-chart-band shadow-[0_0_14px_var(--accent)]"
+                className="absolute inset-y-0 rounded-full bg-gradient-to-r from-[#2a55ff] to-[#9db9ff] shadow-[0_0_14px_#2a55ff] transition-[left,width] duration-300"
                 style={{ left: pos(Math.max(0, s.p10)), width }}
               />
-              <span className="absolute -top-1 h-3.5 w-0.5 rounded-full bg-fg" style={{ left: pos(s.median) }} />
+              <span className="absolute -top-1 h-[13px] w-0.5 rounded-sm bg-fg transition-[left] duration-300" style={{ left: pos(s.median) }} />
             </div>
           }
         >
-          <p data-testid="kpi-range" className="m-0 text-base font-medium tabular-nums">
+          <p data-testid="kpi-range" className="m-0 text-[13px] leading-[1.45] font-light tabular-nums text-fg/80">
             {t`W 8 na 10 przyszłości między ${money(s.p10)} a ${money(s.p90)}`}
           </p>
         </Row>
@@ -132,6 +174,32 @@ export function KpiHero({ stats, scenario, month, real, afterTax }: KpiProps) {
   );
 }
 
+/** Kafel wskaźnika: tytuł, duża wartość przy dole, opcjonalny ozdobnik i dopisek. Nazwany region. */
+function Tile({ title, value, bar, note }: { title: string; value: string; bar?: ReactNode; note: string }) {
+  const id = useId();
+  // długie opisy częstości („W mniej niż 1 na 100 przyszłości”) dostają mniejszy krój, krótkie wartości duży
+  const size = value.length > 14 ? 'small' : 'big';
+  return (
+    <section
+      aria-labelledby={id}
+      className="glass flex min-h-[190px] flex-col gap-3.5 rounded-tile px-[22px] pb-6 pt-[22px]"
+    >
+      <h3 id={id} className="eyebrow-sm m-0 max-w-[80%] font-normal text-pretty">
+        {title}
+      </h3>
+      <p
+        className={`m-0 mt-auto max-w-full overflow-hidden leading-none font-light tracking-[-0.045em] tabular-nums ${
+          size === 'big' ? 'text-[clamp(38px,3.8vw,52px)]' : 'text-[clamp(22px,2.3vw,32px)]'
+        }`}
+      >
+        <Roll text={value} />
+      </p>
+      {bar}
+      <p className="m-0 text-[13.5px] leading-[1.45] font-light text-pretty text-fg/70">{note}</p>
+    </section>
+  );
+}
+
 /** Pozostałe wskaźniki w równych kafelkach (typowy wynik jest już w panelu wyniku). */
 export function KpiTiles({ stats, scenario, real, afterTax, expert }: KpiProps) {
   const { t } = useLingui();
@@ -143,28 +211,28 @@ export function KpiTiles({ stats, scenario, real, afterTax, expert }: KpiProps) 
   const lossPp = halfPp(s.probRealLoss.ci);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <Card title={t`Najgorsze 5% przyszłości: średnio (${basis})`} className="h-full">
-        <p className="m-0 text-3xl font-light tabular-nums">{money(s.cvar5)}</p>
-        <p className="m-0 mt-2 text-sm text-muted">{t`Średnia wartość w najgorszych 5 na 100 przyszłości`}</p>
-      </Card>
-      <Card title={t`Szansa straty realnej (${b.tax})`} className="h-full">
-        <p className="m-0 text-3xl font-light tabular-nums">{capitalize(naturalFrequency(s.probRealLoss.p))}</p>
-        <p className="m-0 mt-2 text-sm text-muted">{t`wartość portfela niższa niż dziś po uwzględnieniu inflacji (±${lossPp} pp)`}</p>
-      </Card>
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-[clamp(20px,2.4vw,28px)]">
+      <Tile title={t`Najgorsze 5% przyszłości: średnio (${basis})`} value={money(s.cvar5)} note={t`Średnia wartość w najgorszych 5 na 100 przyszłości`} />
+      <Tile
+        title={t`Szansa straty realnej (${b.tax})`}
+        value={capitalize(naturalFrequency(s.probRealLoss.p))}
+        bar={<Dots p={s.probRealLoss.p} thick />}
+        note={t`wartość portfela niższa niż dziś po uwzględnieniu inflacji (±${lossPp} pp)`}
+      />
       {scenario.withdrawal && s.probRuin.p > 0 && (
-        <Card title={t`Szansa wyczerpania portfela`} className="h-full">
-          <p className="m-0 text-3xl font-light tabular-nums">{capitalize(naturalFrequency(s.probRuin.p))}</p>
-          <p className="m-0 mt-2 text-sm text-muted">{t`pieniądze kończą się przed wybranym rokiem`}</p>
-        </Card>
+        <Tile
+          title={t`Szansa wyczerpania portfela`}
+          value={capitalize(naturalFrequency(s.probRuin.p))}
+          bar={<Dots p={s.probRuin.p} thick />}
+          note={t`pieniądze kończą się przed wybranym rokiem`}
+        />
       )}
       {expert && (
-        <Card title={t`Średnia (tryb eksperta)`} className="h-full">
-          <p className="m-0 text-3xl font-light tabular-nums">{money(s.mean)}</p>
-          <p className="m-0 mt-2 text-sm text-muted">
-            {t`Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę.`}
-          </p>
-        </Card>
+        <Tile
+          title={t`Średnia (tryb eksperta)`}
+          value={money(s.mean)}
+          note={t`Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę.`}
+        />
       )}
     </div>
   );

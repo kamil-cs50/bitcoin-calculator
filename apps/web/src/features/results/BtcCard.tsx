@@ -3,7 +3,9 @@ import type { Dataset } from '@sim/data';
 import type { RiskyAssetParams, Scenario } from '@sim/engine';
 import { useEffect, useState } from 'react';
 import { DataTable } from '../../charts/DataTable';
-import { Card } from '../../components/ui/Card';
+import { useId } from 'react';
+import { Roll } from '../../components/ui/Roll';
+import { BtcBell } from './BtcBell';
 import { MoneyInput } from '../../components/ui/MoneyInput';
 import { formatMoney } from '../../lib/format';
 import { rebuildMarket } from '../../state/defaults';
@@ -103,6 +105,7 @@ function usePriceMultiples(
 /** Karta „Bitcoin: rozkład ceny w roku X” (spec 5.1); widoczna tylko, gdy w portfelu jest BTC. */
 export function BtcCard({ scenario, dataset, month, priceUsd, pricePln, createWorker }: BtcCardProps) {
   const { t } = useLingui();
+  const headingId = useId();
   const asset = scenario.assets.find(
     (a): a is RiskyAssetParams => a.kind === 'risky' && /^btc/.test(a.id) && scenario.positions.some((p) => p.assetId === a.id),
   );
@@ -139,20 +142,33 @@ export function BtcCard({ scenario, dataset, month, priceUsd, pricePln, createWo
     collapse = n === 0 && p > 0 ? t`Szansa upadku do roku ${year}: mniej niż 1 na 100` : t`Szansa upadku do roku ${year}: ${n} na 100`;
   }
 
+  const median = rows[1]!.cells[0]!;
   return (
-    <Card title={t`Bitcoin: rozkład ceny w roku ${year}`}>
+    <section aria-labelledby={headingId} className="glass flex min-w-0 grow-[5] basis-[380px] flex-col gap-3.5 rounded-card p-[clamp(20px,2.2vw,28px)]">
+      <h2 id={headingId} className="eyebrow m-0 font-normal">
+        {t`Bitcoin: rozkład ceny w roku ${year}`}
+      </h2>
       <div className="grid gap-3 sm:grid-cols-2">
         <MoneyInput label={t`Dzisiejsza cena 1 BTC (USD)`} suffix="USD" value={prices.usd} onChange={(v) => setPrices((p) => ({ ...p, usd: v }))} />
         <MoneyInput label={t`Dzisiejsza cena 1 BTC (zł)`} suffix={currencyWord('PLN')} value={prices.pln} onChange={(v) => setPrices((p) => ({ ...p, pln: v }))} />
       </div>
+      <BtcBell />
       {prices.usd || prices.pln ? (
-        <div className="mt-3">
+        <>
+          {median !== '–' && (
+            <div className="flex flex-col items-center gap-1 text-center" aria-hidden="true">
+              <span className="text-base font-light text-fg/80">{t`Mediana ceny 1 BTC`}</span>
+              <span className="text-[clamp(56px,6.8vw,88px)] leading-none font-light tracking-[-0.05em] tabular-nums">
+                <Roll text={median} />
+              </span>
+            </div>
+          )}
           <DataTable caption={t`Percentyle ceny bitcoina w roku ${year}`} cornerLabel={t`Częstość`} columns={['USD', 'PLN']} rows={rows} />
-        </div>
+        </>
       ) : (
-        <p className="mb-0 mt-3 text-sm text-muted">{t`Wpisz dzisiejszą cenę 1 BTC (aplikacja nie pobiera cen sama), a pokażemy możliwe ceny w przyszłości.`}</p>
+        <p className="m-0 text-[13px] leading-normal font-light text-muted">{t`Wpisz dzisiejszą cenę 1 BTC (aplikacja nie pobiera cen sama), a pokażemy możliwe ceny w przyszłości.`}</p>
       )}
-      {collapse && <p className="mb-0 mt-3 font-medium">{collapse}</p>}
-    </Card>
+      {collapse && <p className="eyebrow-sm m-0 border-t border-hairline pt-3.5 !text-accent-text">{collapse}</p>}
+    </section>
   );
 }
