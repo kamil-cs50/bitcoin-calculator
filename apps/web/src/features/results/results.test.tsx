@@ -26,7 +26,7 @@ vi.mock('../../workers/pool', async (orig) => {
   return { ...actual, runProgressive: vi.fn(actual.runProgressive) };
 });
 
-const syncWorker = (): SimWorker => ({ run: async (s, o) => runBatch(s, o), terminate: () => undefined });
+const syncWorker = (): SimWorker => ({ run: async (s, o) => runBatch(s, o), solve: async () => { throw new Error('nie dotyczy'); }, terminate: () => undefined });
 const SIM = { createWorker: syncWorker, debounceMs: 0, maxPaths: 1000, workers: 1 };
 const shell = (ui: React.ReactNode) => (
   <I18nProvider i18n={i18n}>

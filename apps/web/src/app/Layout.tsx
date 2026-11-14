@@ -1,9 +1,11 @@
 import { Trans, useLingui } from '@lingui/react/macro';
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, useLocation } from 'react-router';
+import { UpdateBanner } from '../features/settings/UpdateBanner';
 import { APP_NAME } from './appConfig';
 
 export function Layout() {
   const { t } = useLingui();
+  const { pathname } = useLocation();
   const items = [
     { to: '/portfel', label: t`Portfel` },
     { to: '/plan', label: t`Plan` },
@@ -42,6 +44,7 @@ export function Layout() {
           </ul>
         </nav>
       </header>
+      {pathname !== '/ustawienia' && <UpdateBanner />}
       <main id="tresc" tabIndex={-1} className="flex-1 pb-8 pt-2 outline-none">
         <Outlet />
       </main>

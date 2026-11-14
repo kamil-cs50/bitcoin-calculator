@@ -8,7 +8,7 @@ import type { SimWorker } from './pool';
 const scenario = makeScenario({ horizonMonths: 24 });
 
 /** Worker podmieniony na wywołanie synchroniczne (bez Comlink i bez prawdziwego wątku). */
-const syncWorker = (): SimWorker => ({ run: async (s, o) => runBatch(s, o), terminate: () => undefined });
+const syncWorker = (): SimWorker => ({ run: async (s, o) => runBatch(s, o), solve: async () => { throw new Error('nie dotyczy'); }, terminate: () => undefined });
 
 const same = (a: RunResult, b: RunResult): void => {
   expect(a.paths).toBe(b.paths);

@@ -5,6 +5,7 @@ import { AssumptionsPanel } from '../features/assumptions/AssumptionsPanel';
 import { Dashboard } from '../features/results/Dashboard';
 import { Onboarding } from '../features/onboarding/Onboarding';
 import { PlanEditor } from '../features/plan/PlanEditor';
+import { Settings } from '../features/settings/Settings';
 import { PortfolioEditor } from '../features/portfolio/PortfolioEditor';
 import { APP_NAME } from './appConfig';
 
@@ -51,7 +52,7 @@ export function AssumptionsPage() {
   return <Page title={<Trans>Założenia i źródła</Trans>}><AssumptionsPanel /></Page>;
 }
 export function SettingsPage() {
-  return <Page title={<Trans>Ustawienia</Trans>}>{null}</Page>;
+  return <Page title={<Trans>Ustawienia</Trans>}><Settings /></Page>;
 }
 export function NotFoundPage() {
   return (

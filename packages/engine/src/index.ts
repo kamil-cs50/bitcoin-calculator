@@ -13,3 +13,4 @@ export { solveRequiredContribution } from './solvers/requiredContribution';
 export { effectiveVol, fxPhi } from './models/fx';
 export { calibrateInflation } from './models/inflation';
 export { meanExpHalfVar, buildScaleTable } from './math/scaleTable';
+export type { SolverOptions, SolverResult } from './solvers/bisect';

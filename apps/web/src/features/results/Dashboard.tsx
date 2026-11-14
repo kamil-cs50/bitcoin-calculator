@@ -15,6 +15,7 @@ import { BtcCard } from './BtcCard';
 import { KpiTiles } from './KpiTiles';
 import { ModelCheckPanel } from './ModelCheckPanel';
 import { yearsText } from './periods';
+import { Solvers } from './Solvers';
 import { QualityBadge } from './QualityBadge';
 import { SIM_SEED, useSimulation, type SimOptions } from './useSimulation';
 import { calendarYear, gridIndex, valuesAt, winsorize } from './values';
@@ -156,6 +157,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
         <Histogram values={histValues} formatValue={money} label={t`Rozkład wartości portfela`} />
       </Card>
       <BtcCard scenario={scenario} dataset={dataset} month={month} />
+      <Solvers scenario={scenario} createWorker={sim.createWorker} />
       {expert && checkRows && <ModelCheckPanel rows={checkRows} labelOf={names} />}
     </div>
   );

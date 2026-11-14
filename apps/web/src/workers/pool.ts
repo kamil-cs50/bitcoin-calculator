@@ -1,7 +1,7 @@
 import { mergeResults, STAGES } from '@sim/engine';
-import type { RunOptions, RunResult, Scenario } from '@sim/engine';
+import type { RunOptions, RunResult, Scenario, SolverOptions, SolverResult } from '@sim/engine';
 import * as Comlink from 'comlink';
-import type { SimWorkerApi } from './sim.worker';
+import type { SimWorkerApi, SolverKind } from './sim.worker';
 
 export interface SimHandle {
   cancel(): void;
@@ -19,8 +19,11 @@ export interface PoolOptions {
 /** Minimalny kontrakt workera widziany przez pulę. */
 export interface SimWorker {
   run(s: Scenario, o: RunOptions): Promise<RunResult>;
+  solve(kind: SolverKind, s: Scenario, o: SolverOptions): Promise<SolverResult>;
   terminate(): void;
 }
+
+export type { SolverKind };
 
 export function defaultWorkerCount(): number {
   const hc = typeof navigator !== 'undefined' && navigator.hardwareConcurrency ? navigator.hardwareConcurrency : 2;
@@ -36,7 +39,7 @@ export function defaultMaxPaths(): number {
 function createRealWorker(): SimWorker {
   const worker = new Worker(new URL('./sim.worker.ts', import.meta.url), { type: 'module' });
   const remote = Comlink.wrap<SimWorkerApi>(worker);
-  return { run: (s, o) => remote.run(s, o), terminate: () => worker.terminate() };
+  return { run: (s, o) => remote.run(s, o), solve: (k, s, o) => remote.solve(k, s, o), terminate: () => worker.terminate() };
 }
 
 /** Skumulowane rozmiary etapów: 1000 → 4000 → 10000, obcięte do maxPaths; maxPaths ponad 10000 dodaje etap końcowy. */
@@ -112,6 +115,31 @@ export function runProgressive(s: Scenario, seed: number, o: PoolOptions): SimHa
       if (cancelled) return;
       cancelled = true;
       shutdown();
+      rejectDone(abortError());
+    },
+    done,
+  };
+}
+
+export interface SolverHandle {
+  cancel(): void;
+  done: Promise<SolverResult>;
+}
+
+/**
+ * Solver w osobnym workerze (bez blokowania interfejsu). Postęp jest nieokreślony (solver nie raportuje
+ * kroków), więc UI pokazuje pasek „w toku” i przycisk anulowania; `cancel()` kończy workera.
+ */
+export function runSolver(kind: SolverKind, s: Scenario, o: SolverOptions, createWorker: () => SimWorker = createRealWorker): SolverHandle {
+  const worker = createWorker();
+  let rejectDone: (e: Error) => void = () => undefined;
+  const done = new Promise<SolverResult>((resolve, reject) => {
+    rejectDone = reject;
+    worker.solve(kind, s, o).then(resolve, reject);
+  }).finally(() => worker.terminate());
+  return {
+    cancel(): void {
+      worker.terminate();
       rejectDone(abortError());
     },
     done,
