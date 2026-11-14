@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro';
 import type { ReactNode } from 'react';
 import { Card } from '../components/ui/Card';
 import { Onboarding } from '../features/onboarding/Onboarding';
+import { PlanEditor } from '../features/plan/PlanEditor';
 import { PortfolioEditor } from '../features/portfolio/PortfolioEditor';
 import { APP_NAME } from './appConfig';
 
@@ -35,7 +36,9 @@ export function PortfolioPage() {
   );
 }
 export function PlanPage() {
-  return <Page title={<Trans>Plan</Trans>}>{null}</Page>;
+  return <Page title={<Trans>Plan</Trans>}>
+      <PlanEditor />
+    </Page>;
 }
 export function ResultPage() {
   return <Page title={<Trans>Wynik</Trans>}>{null}</Page>;
