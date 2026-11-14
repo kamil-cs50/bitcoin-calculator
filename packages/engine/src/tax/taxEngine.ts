@@ -8,6 +8,8 @@ export interface TaxEngine {
   onSale(form: TaxForm, wrapper: Wrapper, proceeds: number, costFifo: number, month: number, holdingMonths: number): void;
   /** Podatek do zapłaty w kwietniu roku year+1. */
   closeYear(year: number): number;
+  /** Podatek za rok `year`, gdyby zamknąć go teraz (zobowiązanie z dotychczasowych sprzedaży); bez zmiany stanu. */
+  pendingTax(year: number): number;
   latentTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[], year: number): number;
   readonly warnings: Warning[];
 }
@@ -20,6 +22,9 @@ class NoTaxEngine implements TaxEngine {
   onBuy(): void {}
   onSale(): void {}
   closeYear(): number {
+    return 0;
+  }
+  pendingTax(): number {
     return 0;
   }
   latentTax(): number {
@@ -45,6 +50,9 @@ class FlatTaxEngine implements TaxEngine {
     const t = this.due;
     this.due = 0;
     return t;
+  }
+  pendingTax(): number {
+    return this.due;
   }
   latentTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[]): number {
     let t = 0;
@@ -94,6 +102,10 @@ class PlTaxEngine implements TaxEngine {
     const s = this.securities.closeYear(year);
     for (let i = 0; i < s.warnings.length; i++) this.warnings.push(s.warnings[i]!);
     return s.tax + this.crypto.closeYear();
+  }
+
+  pendingTax(year: number): number {
+    return this.securities.pendingTax(year) + this.crypto.pendingTax();
   }
 
   latentTax(positions: { form: TaxForm; wrapper: Wrapper; value: number; basis: number }[], year: number): number {

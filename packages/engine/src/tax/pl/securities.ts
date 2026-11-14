@@ -58,23 +58,31 @@ export class SecuritiesTaxPL {
       return { tax: 0, warnings };
     }
 
-    if (income > 0) {
-      for (const v of this.losses) {
-        if (income <= 0) break;
-        if (!this.valid(v, year)) continue;
-        let cap: number;
-        if (!v.lumpUsed) {
-          cap = LUMP_SUM_LIMIT;
-          v.lumpUsed = true;
-        } else {
-          cap = ANNUAL_SHARE * v.original;
-        }
-        const d = Math.min(income, v.remaining, cap);
-        v.remaining -= d;
-        income -= d;
-      }
-    }
+    if (income > 0) income = this.applyLosses(income, year, true);
     return { tax: PL_CAPITAL_GAINS_RATE * Math.max(0, income), warnings };
+  }
+
+  /** Odliczenia strat od dochodu `income` > 0; przy `commit = false` bez zmiany stanu (podgląd). */
+  private applyLosses(income: number, year: number, commit: boolean): number {
+    for (const v of this.losses) {
+      if (income <= 0) break;
+      if (!this.valid(v, year)) continue;
+      const cap = !v.lumpUsed ? LUMP_SUM_LIMIT : ANNUAL_SHARE * v.original;
+      const d = Math.min(income, v.remaining, cap);
+      if (commit) {
+        v.lumpUsed = true;
+        v.remaining -= d;
+      }
+      income -= d;
+    }
+    return income;
+  }
+
+  /** Podatek, jaki wynikałby z zamknięcia roku `year` teraz (bez zmiany stanu). */
+  pendingTax(year: number): number {
+    const income = this.proceeds - this.cost;
+    if (!(income > 0)) return 0;
+    return PL_CAPITAL_GAINS_RATE * Math.max(0, this.applyLosses(income, year, false));
   }
 
   lossesAvailable(year: number): number {

@@ -345,3 +345,12 @@ describe('MarketSimulator: waluty i inflacja (wtrącone procesy)', () => {
     }
   });
 });
+
+describe('MarketSimulator.yyLag', () => {
+  it('zwraca inflację r/r z opóźnieniem (stała historia 3,5%)', () => {
+    const sim = new MarketSimulator(makeScenario());
+    sim.initPath(1, 0);
+    expect(sim.yyLag(0)).toBeCloseTo(0.035, 9);
+    expect(sim.yyLag(2)).toBeCloseTo(0.035, 9);
+  });
+});

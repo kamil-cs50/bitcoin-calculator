@@ -41,6 +41,11 @@ export class CryptoTaxPL {
     return 0;
   }
 
+  /** Podatek z zamknięcia roku teraz (bez zmiany stanu). */
+  pendingTax(): number {
+    return PL_CAPITAL_GAINS_RATE * Math.max(0, this.proceeds - this.costs - this._carry);
+  }
+
   latentTax(marketValue: number): number {
     return PL_CAPITAL_GAINS_RATE * Math.max(0, marketValue - this._carry);
   }

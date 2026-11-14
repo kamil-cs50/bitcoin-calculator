@@ -105,4 +105,21 @@ describe('EdoHoldings', () => {
     expect(before - h.value(18)).toBeGreaterThan(5000);
     expect(before - h.value(18)).toBeLessThan(5600);
   });
+  it('redeemEarly zapisuje opłatę i podatek (wartość − opłata − podatek = wypłata)', () => {
+    const h = new EdoHoldings(edoP(), 8);
+    h.buy(10000, 0, 0.0535);
+    run(h, 18, 0.03);
+    const v = h.value(18);
+    const got = h.redeemEarly(1e9, 18, 0.19);
+    expect(h.lastFee).toBeCloseTo(300, 9);
+    expect(h.lastTax).toBeCloseTo(0.19 * (v - 10000 - 300), 9);
+    expect(v - h.lastFee - h.lastTax).toBeCloseTo(got, 9);
+    // wykup częściowy skaluje opłatę i podatek
+    const h2 = new EdoHoldings(edoP(), 8);
+    h2.buy(10000, 0, 0.0535);
+    run(h2, 18, 0.03);
+    h2.redeemEarly(got / 2, 18, 0.19);
+    expect(h2.lastFee).toBeCloseTo(150, 9);
+    expect(h2.lastTax).toBeCloseTo(0.19 * (v - 10000 - 300) / 2, 9);
+  });
 });

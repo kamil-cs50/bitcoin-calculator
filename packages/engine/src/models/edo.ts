@@ -22,6 +22,9 @@ export class EdoHoldings {
   private readonly rate: Float64Array; // oprocentowanie bieżącego roku
   private readonly buyMonth: Float64Array;
   private readonly periodStart: Float64Array;
+  /** Opłata i podatek (od odsetek) z ostatniego `redeemEarly`; kernel księguje je jako koszt i podatek. */
+  lastFee = 0;
+  lastTax = 0;
   constructor(p: EdoParams, capacity: number) {
     this.p = p;
     this.nominal = new Float64Array(capacity);
@@ -81,6 +84,8 @@ export class EdoHoldings {
   redeemEarly(amountNet: number, month: number, taxRate: number): number {
     let got = 0;
     let w = 0;
+    this.lastFee = 0;
+    this.lastTax = 0;
     const fee = this.p.earlyFeePer100;
     for (let i = 0; i < this.n; i++) {
       const remaining = amountNet - got;
@@ -91,6 +96,9 @@ export class EdoHoldings {
           // wypłata jest liniowa w ułamku partii (opłata i podatek skalują się proporcjonalnie)
           const f = Math.min(1, remaining / full);
           got += f * full;
+          const feeI = Math.min((this.nominal[i]! / 100) * fee, Math.max(0, v - this.nominal[i]!));
+          this.lastFee += f * feeI;
+          this.lastTax += f * (v - feeI - full);
           this.nominal[i] = this.nominal[i]! * (1 - f);
           this.capital[i] = this.capital[i]! * (1 - f);
           if (f >= 1) continue;

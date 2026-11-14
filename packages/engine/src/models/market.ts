@@ -346,6 +346,11 @@ export class MarketSimulator {
     out.regime = sNext;
   }
 
+  /** Inflacja r/r z opóźnieniem `lag` miesięcy względem stanu bieżącego (początek miesiąca t: po t krokach). */
+  yyLag(lag: number): number {
+    return this.infl.yy(lag);
+  }
+
   /** g(t) z zanikiem (t w miesiącach). */
   gAt(assetIndex: number, t: number): number {
     const a = this.assets[assetIndex]!;
