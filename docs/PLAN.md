@@ -203,6 +203,10 @@ Tablice GUS 2025; `P = Σ_t P̂(ruina w t)·S(t)`.
 
 - **[Z-22]** Siatka wyników do 161 punktów, trzy macierze `Float32` (do 48 MB przy 25 000 ścieżek).
 - Budżet: 10 000 ścieżek × 30 lat × 6 aktywów < 2 s na telefonie średniej klasy.
+  **Stan na 2026-11-14 (patrz [PERFORMANCE.md](PERFORMANCE.md)):** budżet telefonu jest niezmierzony na realnym
+  urządzeniu (pomiar do wykonania przez właściciela), a w emulacji (4 vCPU, throttling CPU) niespełniony: podgląd
+  ok. 0,5 s bez debounce (cel 0,3 s), 10 000 ścieżek ok. 2–2,5 s przy CPU ×1 i 3,1–3,5 s przy ×4 (cel 2 s). Bramka e2e
+  jest poluzowana do 2 s / 6 s i pilnuje tylko regresji.
 - **[Z-23]** Bez planu WASM, dopóki pomiar nie pokaże takiej potrzeby.
 
 ---

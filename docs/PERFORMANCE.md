@@ -1,5 +1,11 @@
 # Wydajność silnika (zadanie 22)
 
+> **Do wykonania przez właściciela.** Tabela „Model telefonu / Chrome / podgląd / 10 000 ścieżek” na końcu tego
+> dokumentu jest **pusta**: pomiaru na fizycznym telefonie nie da się wykonać w środowisku agenta. W emulacji (sandbox,
+> 4 współdzielone vCPU) budżet telefonu z [PLAN.md](PLAN.md) (< 2 s dla 10 000 ścieżek, podgląd < 0,3 s) **nie jest
+> spełniony**; sekcja „Wniosek” podaje liczby. Lighthouse nie mierzy tras `/wynik`, `/plan`, `/porownanie` (ciężki
+> JS i wykresy): `lighthouserc.json` obejmuje 5 tras, a te trzy pokrywa tylko bramka e2e `perf-throttled.spec.ts`.
+
 Budżet (spec 4.14, 9): 10 000 ścieżek × 360 mies. × 6 aktywów (2 w USD), tryb `realistic`, podatki `pl`,
 wpłaty miesięczne, rebalans `annual`, **jeden wątek, < 3,0 s** (odpowiada < 0,5 s na desktopie z 8 workerami).
 Scenariusz: `packages/engine/bench/perfScenario.ts`; pomiar: `bench/measure.ts`.

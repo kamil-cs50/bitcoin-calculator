@@ -1,5 +1,5 @@
-import { assetRiskShares, modelCheck, probRuinWhileAlive, runBatch, solveRequiredContribution, solveSafeWithdrawal, summarize, survivalCurve } from '@sim/engine';
-import type { AssetRiskShare, ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
+import { assetRiskShares, modelCheckFull, probRuinWhileAlive, runBatch, solveRequiredContribution, solveSafeWithdrawal, summarize, survivalCurve } from '@sim/engine';
+import type { AssetRiskShare, ModelCheckFull, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
 import { pairedFromValues, type PairedDifference } from '../features/compare/diff';
 import { estimateRealReturnSync } from '../features/plan/estimateCore';
 
@@ -14,8 +14,8 @@ export const tasks = {
   /** Solver (kilka sekund liczenia); wynik to mały obiekt. */
   solve: (kind: SolverKind, s: Scenario, o: SolverOptions): SolverResult =>
     kind === 'safeWithdrawal' ? solveSafeWithdrawal(s, o) : solveRequiredContribution(s, o),
-  /** Kontrola modelu: osobny, tańszy przebieg samego rynku. */
-  modelCheck: (s: Scenario, o: { seed: number; paths: number }): ModelCheckRow[] => modelCheck(s, o),
+  /** Kontrola modelu: osobny, tańszy przebieg samego rynku; wiersze zgodności + średnie arytmetyczne (R-6). */
+  modelCheck: (s: Scenario, o: { seed: number; paths: number }): ModelCheckFull => modelCheckFull(s, o),
   /** Udziały wartości i ryzyka aktywów (osobny przebieg 2 000 ścieżek, kowariancja rocznych log-zwrotów). */
   riskShares: (s: Scenario, o: { seed: number; paths: number }): AssetRiskShare[] => assetRiskShares(s, o),
   /** Przebieg + podsumowanie w jednym kroku (np. rozkład ceny BTC); nie przesyła buforów wyniku. */

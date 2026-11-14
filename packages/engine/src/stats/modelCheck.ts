@@ -2,7 +2,7 @@ import { buildScaleTable } from '../math/scaleTable';
 import { fxPhi } from '../models/fx';
 import { gSum } from '../models/inflation';
 import { MarketSimulator } from '../models/market';
-import { regimeConstants, sigmaMonthlyFactor } from '../models/regime';
+import { clampAlpha, regimeConstants, sigmaMonthlyFactor } from '../models/regime';
 import type { RegimeParams, RiskyAssetParams, Scenario } from '../types';
 
 /**
@@ -72,6 +72,24 @@ export interface ModelCheckRow {
   ok: boolean;
 }
 
+/** Średnie arytmetyczne E[e^r] aktywa ryzykownego (tylko tryb eksperta, R-6): miesięczna ze wzoru, roczna z symulacji kontrolnej. */
+export interface ArithmeticMeanRow {
+  id: string;
+  /** E[e^r] − 1 dla jednego miesiąca, wzór z reżimami i tabelą skali (`arithmeticMeanMonthly`). */
+  monthly: number;
+  /** E[e^R] − 1 dla rocznego log-zwrotu z symulacji kontrolnej (reżim skorelowany w czasie). */
+  annual: number;
+  /** Błąd standardowy `annual` (rozrzut między 20 blokami ścieżek). */
+  annualSe: number;
+  /** Do porównania: e^{średni roczny log-zwrot} − 1 (z symulacji), czyli zwrot „typowy”, nie średnia arytmetyczna. */
+  annualGeometric: number;
+}
+
+export interface ModelCheckFull {
+  rows: ModelCheckRow[];
+  means: ArithmeticMeanRow[];
+}
+
 const BLOCKS = 20;
 
 function meanOf(a: ArrayLike<number>): number {
@@ -128,6 +146,11 @@ class PairAcc {
  * Okno roczne to ostatnie 12 miesięcy po wypaleniu (stacjonarność AR kursu i inflacji).
  */
 export function modelCheck(s: Scenario, o: { seed: number; paths: number }): ModelCheckRow[] {
+  return modelCheckFull(s, o).rows;
+}
+
+/** To samo co `modelCheck`, plus średnie arytmetyczne aktywów ryzykownych (R-6) z tego samego przebiegu. */
+export function modelCheckFull(s: Scenario, o: { seed: number; paths: number }): ModelCheckFull {
   const nb = Math.min(BLOCKS, Math.floor(o.paths / 2));
   if (nb < 2) throw new RangeError('modelCheck: za mało ścieżek (min. 4)');
   const m = s.market;
@@ -264,5 +287,33 @@ export function modelCheck(s: Scenario, o: { seed: number; paths: number }): Mod
   }
   const pi1 = regimeConstants(sc.market.mode === 'gbm' ? { ...m.regime, p01: 0 } : m.regime).pi1;
   rows.push(row('regime', 'crisisShare', pi1, blockStat((lo, hi) => meanOf(crisis.subarray(lo, hi)))));
-  return rows;
+
+  // R-6: średnia arytmetyczna E[e^r]; wzór miesięczny (reżimy + tabela skali) i roczna z symulacji kontrolnej.
+  // Tylko aktywa „risky” (nieruchomość ma dodatkowo stochastyczny dryf inflacyjny).
+  const regimeP = m.mode === 'gbm' ? { ...m.regime, p01: 0 } : m.regime;
+  const rc = regimeConstants(regimeP);
+  const means: ArithmeticMeanRow[] = [];
+  for (let i = 0; i < nr; i++) {
+    const a = riskyById.get(ids[i]!);
+    if (!a || a.kind !== 'risky') continue;
+    let mu = 0;
+    let vr = 0;
+    for (let t = w0; t < T; t++) {
+      mu += Math.log1p(sim.gAt(i, t)) / 144; // średni miesięczny dryf okna
+      const sg = sim.sigmaAt(i, t);
+      vr += (sg * sg) / 12;
+    }
+    const monthly = arithmeticMeanMonthly({
+      mu,
+      sigma: Math.sqrt(vr),
+      alpha: clampAlpha(a.alpha, rc).alpha,
+      b: a.b,
+      nu: m.mode === 'gbm' ? Infinity : m.nu,
+      regime: regimeP,
+    });
+    const ann = blockStat((lo, hi) => arithmeticMeanFromLogReturns(annual[i]!.subarray(lo, hi)));
+    const lg = blockStat((lo, hi) => meanOf(annual[i]!.subarray(lo, hi)));
+    means.push({ id: ids[i]!, monthly: monthly - 1, annual: ann.v - 1, annualSe: ann.se, annualGeometric: Math.exp(lg.v) - 1 });
+  }
+  return { rows, means };
 }

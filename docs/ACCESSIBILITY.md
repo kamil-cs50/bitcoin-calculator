@@ -2,6 +2,12 @@
 
 Cel: WCAG 2.2 AA, Lighthouse accessibility ≥ 0,95, obsługa samą klawiaturą, oba motywy i oba języki.
 
+> **Do wykonania przez właściciela.** Tabela „Wynik ręcznego przejścia” na końcu tego dokumentu jest **pusta**:
+> przejście czytnikiem ekranu (NVDA/VoiceOver/TalkBack) oraz ręczna kontrola klawiatury i kontrastu na realnych
+> urządzeniach wymagają człowieka i sprzętu, których agent nie ma. Zadanie 46 jest więc spełnione tylko w części
+> zautomatyzowanej (axe, Lighthouse, e2e klawiatury); nie należy czytać tego dokumentu jako potwierdzenia pracy
+> z czytnikiem ekranu.
+
 ## Co zostało sprawdzone automatycznie (i jest w CI)
 
 | Kontrola | Gdzie | Wynik |

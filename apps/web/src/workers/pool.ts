@@ -1,5 +1,5 @@
 import { mergeResults, STAGES } from '@sim/engine';
-import type { AssetRiskShare, ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
+import type { AssetRiskShare, ModelCheckFull, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
 import * as Comlink from 'comlink';
 import type { PairedDifference } from '../features/compare/diff';
 import type { SimWorkerApi } from './sim.worker';
@@ -22,7 +22,7 @@ export interface PoolOptions {
 export interface SimWorker {
   run(s: Scenario, o: RunOptions): Promise<RunResult>;
   solve(kind: SolverKind, s: Scenario, o: SolverOptions): Promise<SolverResult>;
-  modelCheck(s: Scenario, o: { seed: number; paths: number }): Promise<ModelCheckRow[]>;
+  modelCheck(s: Scenario, o: { seed: number; paths: number }): Promise<ModelCheckFull>;
   riskShares(s: Scenario, o: { seed: number; paths: number }): Promise<AssetRiskShare[]>;
   summary(s: Scenario, o: RunOptions, v: { month: number; real: boolean; afterTax: boolean }): Promise<Summary>;
   estimate(s: Scenario): Promise<number>;

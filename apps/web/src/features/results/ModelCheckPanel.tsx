@@ -1,5 +1,5 @@
 import { useLingui } from '@lingui/react/macro';
-import type { ModelCheckRow } from '@sim/engine';
+import type { ArithmeticMeanRow, ModelCheckRow } from '@sim/engine';
 import { DataTable } from '../../charts/DataTable';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
@@ -8,12 +8,14 @@ import { numberLocale } from '../../i18n';
 
 export interface ModelCheckPanelProps {
   rows: ModelCheckRow[];
+  /** Średnie arytmetyczne aktywów (R-6); panel służy tylko w trybie eksperta. */
+  means?: ArithmeticMeanRow[];
   /** Czytelna nazwa identyfikatora wiersza (np. „btcBase~cpi”); domyślnie surowy identyfikator. */
   labelOf?: (id: string) => string;
 }
 
 /** „Kontrola modelu”: wejście kontra symulacja; plakietka „skalibrowany” tylko, gdy wszystkie wiersze zgodne. */
-export function ModelCheckPanel({ rows, labelOf = (id) => id }: ModelCheckPanelProps) {
+export function ModelCheckPanel({ rows, means, labelOf = (id) => id }: ModelCheckPanelProps) {
   const { t } = useLingui();
   const metric: Record<ModelCheckRow['metric'], string> = {
     meanLog: t`Średni zwrot roczny (log)`,
@@ -42,6 +44,22 @@ export function ModelCheckPanel({ rows, labelOf = (id) => id }: ModelCheckPanelP
           cells: [metric[r.metric], num(r, r.input), num(r, r.simulated), r.ok ? t`zgodne ✓` : t`odbiega ✗`],
         }))}
       />
+      {means && means.length > 0 && (
+        <div className="mt-4">
+          <p className="mb-3 mt-0 text-sm text-muted">
+            {t`Średnia arytmetyczna (tylko tryb eksperta; rzadkie skrajne scenariusze podbijają średnią ponad medianę). Miesięczna liczona wzorem z reżimami i tabelą skali, roczna z symulacji kontrolnej; zwrot typowy to e do średniego rocznego log-zwrotu.`}
+          </p>
+          <DataTable
+            caption={t`Średnia arytmetyczna zwrotu`}
+            cornerLabel={t`Aktywo`}
+            columns={[t`Miesięcznie (wzór)`, t`Rocznie (symulacja)`, t`Rocznie, zwrot typowy`]}
+            rows={means.map((r) => ({
+              label: labelOf(r.id),
+              cells: [formatPercent(r.monthly, 2), formatPercent(r.annual, 1), formatPercent(r.annualGeometric, 1)],
+            }))}
+          />
+        </div>
+      )}
     </Card>
   );
 }

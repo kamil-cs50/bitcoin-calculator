@@ -117,6 +117,20 @@ describe('ModelCheckPanel', () => {
   });
 });
 
+describe('ModelCheckPanel: średnia arytmetyczna (R-6)', () => {
+  const row: ModelCheckRow = { id: 'a', metric: 'vol', input: 0.16, simulated: 0.161, se: 0.002, ok: true };
+  it('pokazuje średnią miesięczną (wzór) i roczną (symulacja) oraz zwrot typowy', () => {
+    wrap(<ModelCheckPanel rows={[row]} means={[{ id: 'a', monthly: 0.006, annual: 0.091, annualSe: 0.002, annualGeometric: 0.07 }]} />);
+    const t = within(screen.getByRole('table', { name: /Średnia arytmetyczna/ }));
+    expect(nb(t.getAllByRole('row')[1]!.textContent)).toMatch(/0,6.*9,1.*7,0/);
+    expect(screen.getByText(/rzadkie skrajne scenariusze podbijają średnią/)).toBeInTheDocument();
+  });
+  it('bez means nie ma tabeli średniej', () => {
+    wrap(<ModelCheckPanel rows={[row]} />);
+    expect(screen.queryByRole('table', { name: /Średnia arytmetyczna/ })).toBeNull();
+  });
+});
+
 describe('BtcCard', () => {
   const dataset = loadDataset('2026.11');
   const btcScenario = (): Scenario => {
@@ -174,10 +188,12 @@ describe('liczenie poza głównym wątkiem', () => {
     useScenarioStore.getState().setScenario(goalScenario);
     useUiStore.setState({ expert: true });
     const rows: ModelCheckRow[] = [{ id: 'x', metric: 'vol', input: 0.16, simulated: 0.161, se: 0.002, ok: true }];
-    const modelCheck = vi.fn(async () => rows);
+    const modelCheck = vi.fn(async () => ({ rows, means: [{ id: 'x', monthly: 0.006, annual: 0.09, annualSe: 0.002, annualGeometric: 0.07 }] }));
     wrap(<Dashboard sim={{ ...SIM, createWorker: () => syncWorker({ modelCheck }) }} />);
     await waitFor(() => expect(modelCheck).toHaveBeenCalledTimes(1));
     expect(await screen.findByRole('table', { name: /Kontrola modelu/ })).toBeInTheDocument();
+    // R-6: średnia arytmetyczna tylko w trybie eksperta
+    expect(await screen.findByRole('table', { name: /Średnia arytmetyczna/ })).toBeInTheDocument();
   });
 });
 

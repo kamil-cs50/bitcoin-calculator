@@ -58,7 +58,7 @@ test('uszkodzony zapis: karta z kopią danych i „Zacznij od nowa”', async ({
   await expect(page.getByText('Portfel jest pusty')).toBeVisible();
 });
 
-test('ten sam przepływ działa offline po pierwszym załadowaniu', async ({ page, context }) => {
+test('offline: ten sam przepływ działa po pierwszym załadowaniu (plan: offline.spec.ts)', async ({ page, context }) => {
   const foreign = trackForeignRequests(page);
   await page.goto('/');
   await expect(page.getByRole('heading', { name: APP_NAME })).toBeVisible();

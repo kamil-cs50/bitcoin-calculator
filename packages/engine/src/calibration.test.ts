@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fxPhi } from './models/fx';
 import { MarketSimulator } from './models/market';
 import { makeScenario } from './testing/fixtures';
-import { modelCheck } from './stats/modelCheck';
+import { modelCheck, modelCheckFull } from './stats/modelCheck';
 import type { RiskyAssetParams, Scenario } from './types';
 
 /** Mnożnik σ_m wstrzykiwany przez mock (test „popsutego wejścia”); domyślnie 1 = kod produkcyjny. */
@@ -285,5 +285,30 @@ describe('modelCheck (panel „Kontrola modelu”)', () => {
     } finally {
       broken.factor = 1;
     }
+  });
+});
+
+describe('modelCheckFull: średnia arytmetyczna (R-6)', () => {
+  it('tryb gbm: miesięcznie e^{μ+σ²/24}, rocznie z symulacji w 4·SE od e^{μ_r+σ²/2}', () => {
+    const g = 0.065;
+    const sigma = 0.16;
+    const sc = build([risky({ id: 'A', g, sigma, alpha: 0 })], corrMatrix(2, [0]));
+    const gbm: Scenario = { ...sc, market: { ...sc.market, mode: 'gbm' } };
+    const { means } = modelCheckFull(gbm, { seed: SEED, paths: 8000 });
+    expect(means).toHaveLength(1);
+    const m = means[0]!;
+    expect(m.id).toBe('A');
+    expect(m.monthly + 1).toBeCloseTo(Math.exp(Math.log1p(g) / 12 + (sigma * sigma) / 24), 12);
+    const exact = Math.exp(Math.log1p(g) + (sigma * sigma) / 2) - 1;
+    expect(Math.abs(m.annual - exact)).toBeLessThanOrEqual(4 * m.annualSe);
+    expect(m.annual).toBeGreaterThan(m.annualGeometric);
+  });
+
+  it('tryb realistyczny: średnia powyżej zwrotu typowego, wiersze modelCheck bez zmian', () => {
+    const sc = build([risky({ id: 'A' })], corrMatrix(2, [0]));
+    const full = modelCheckFull(sc, { seed: SEED, paths: 4000 });
+    expect(full.rows).toEqual(modelCheck(sc, { seed: SEED, paths: 4000 }));
+    expect(full.means[0]!.monthly).toBeGreaterThan(Math.expm1(Math.log1p(0.065) / 12));
+    expect(full.means[0]!.annual).toBeGreaterThan(full.means[0]!.annualGeometric);
   });
 });

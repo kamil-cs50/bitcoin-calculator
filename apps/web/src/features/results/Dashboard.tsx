@@ -1,6 +1,6 @@
 import { Trans, useLingui } from '@lingui/react/macro';
 import { fanChart } from '@sim/engine';
-import type { ModelCheckRow, Scenario, Warning } from '@sim/engine';
+import type { ModelCheckFull, Scenario, Warning } from '@sim/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { DataTable } from '../../charts/DataTable';
 import { FanChart } from '../../charts/FanChart';
@@ -100,7 +100,8 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const [real, setReal] = useState(true);
   const [afterTax, setAfterTax] = useState(true);
   const [pickedMonth, setPickedMonth] = useState<number | null>(null);
-  const [checkRows, setCheckRows] = useState<ModelCheckRow[] | null>(null);
+  const [check, setCheck] = useState<ModelCheckFull | null>(null);
+  const checkRows = check?.rows ?? null;
 
   const state = useSimulation(scenario, { maxPaths: expert ? defaultMaxPaths() : 10_000, ...sim });
   const { result } = state;
@@ -121,8 +122,8 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
     let alive = true;
     const h = runTask((w) => w.modelCheck(scenario, { seed: SIM_SEED, paths: 2000 }), createWorker);
     h.done.then(
-      (rows) => alive && setCheckRows(rows),
-      () => alive && setCheckRows(null),
+      (full) => alive && setCheck(full),
+      () => alive && setCheck(null),
     );
     return () => {
       alive = false;
@@ -223,7 +224,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
       {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} createWorker={createWorker} />}
       {!state.running && <RiskCard scenario={scenario} createWorker={createWorker} />}
       <Solvers scenario={scenario} createWorker={sim.createWorker} />
-      {expert && checkRows && <ModelCheckPanel rows={checkRows} labelOf={checkLabel} />}
+      {expert && checkRows && <ModelCheckPanel rows={checkRows} means={check?.means} labelOf={checkLabel} />}
     </div>
   );
 }
