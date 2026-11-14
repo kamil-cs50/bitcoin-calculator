@@ -9,7 +9,7 @@ import { i18n } from '../../i18n';
 import { ScenarioSchema } from '../../state/scenarioSchema';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useUiStore } from '../../state/uiStore';
-import { AssumptionsPanel } from './AssumptionsPanel';
+import { AssumptionsPanel, switchBtcSet } from './AssumptionsPanel';
 
 const st = () => useScenarioStore.getState();
 const sc = () => st().scenario;
@@ -83,6 +83,29 @@ describe('AssumptionsPanel: wiersze parametrów', () => {
       expect(within(edo).getByRole('textbox', { name: l })).toBeInTheDocument();
     }
     expect(within(region('Inflacja i kursy walut')).getByRole('textbox', { name: /Inflacja długookresowa/ })).toBeInTheDocument();
+  });
+});
+
+describe('BTC w dwóch wariantach podatkowych (giełda + ETF)', () => {
+  it('zmiana zestawu BTC obejmuje oba aktywa i zachowuje podatek każdego', () => {
+    st().addPosition({ presetId: 'btcBase', value: 1000 });
+    st().addPosition({ presetId: 'btcBase', value: 2000, etf: true });
+    const next = switchBtcSet(sc(), st().dataset, 'btcOptimistic');
+    expect(next.assets.filter((a) => a.id.startsWith('btc')).map((a) => [a.id, a.kind === 'risky' ? a.taxForm : ''])).toEqual([
+      ['btcOptimistic', 'crypto'],
+      ['btcOptimistic#etf', 'security'],
+    ]);
+    expect(next.positions.map((p) => p.assetId).filter((id) => id.startsWith('btc')).sort()).toEqual(['btcOptimistic', 'btcOptimistic', 'btcOptimistic#etf']);
+    expect(validateScenario(next).ok).toBe(true);
+  });
+
+  it('panel pokazuje parametry wariantu ETF (z presetu bazowego) i odróżnia tytuły kart', () => {
+    st().addPosition({ presetId: 'btcBase', value: 1000 });
+    st().addPosition({ presetId: 'btcBase', value: 2000, etf: true });
+    view();
+    expect(screen.getByRole('region', { name: 'Bitcoin' })).toBeInTheDocument();
+    const etf = screen.getByRole('region', { name: 'Bitcoin (ETF/ETP)' });
+    expect(within(etf).getByRole('textbox', { name: 'Oczekiwany zwrot roczny' })).toBeInTheDocument();
   });
 });
 

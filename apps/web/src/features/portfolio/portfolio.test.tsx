@@ -142,6 +142,19 @@ describe('PortfolioEditor', () => {
     });
   });
 
+  it('nazwa aktywa własnego: bez „~” (rozdzielacz w identyfikatorach), spacje zwinięte, długość ograniczona', async () => {
+    view();
+    await userEvent.click(screen.getByRole('button', { name: 'Własne' }));
+    const name = screen.getByRole('textbox', { name: 'Nazwa' });
+    expect(name).toHaveAttribute('maxlength', '40');
+    await userEvent.type(name, '  Fun~dusz   X ');
+    await userEvent.type(screen.getByRole('textbox', { name: /Oczekiwany roczny wzrost/ }), '5');
+    await userEvent.type(screen.getByRole('textbox', { name: /Roczna zmienność/ }), '12');
+    await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '10000');
+    await userEvent.click(screen.getByRole('button', { name: 'Dodaj do portfela' }));
+    expect(useScenarioStore.getState().scenario.positions[0]!.assetId).toBe('custom:Fun-dusz X');
+  });
+
   it('aktywo własne daje poprawny scenariusz (schemat i walidacja silnika)', async () => {
     view();
     await userEvent.click(screen.getByRole('button', { name: 'Własne' }));

@@ -1,6 +1,7 @@
 import { useLingui } from '@lingui/react/macro';
 import type { Dataset } from '@sim/data';
 import type { AssetParams, MarketModel, Scenario } from '@sim/engine';
+import { presetIdOf } from '../../state/defaults';
 import { useScenarioStore } from '../../state/scenarioStore';
 import type { RowSpec } from './ParamRow';
 
@@ -28,8 +29,8 @@ export function useParamRows() {
     const sfx = name ? `: ${name}` : '';
 
     if (a.kind === 'risky') {
-      const crypto = d.crypto[a.id];
-      const asset = d.assets[a.id];
+      const crypto = d.crypto[presetIdOf(a.id)];
+      const asset = d.assets[presetIdOf(a.id)];
       const p = crypto
         ? { g: crypto.g0, sigma: crypto.sigma0, se: crypto.se, alpha: crypto.alpha, b: crypto.b, ter: crypto.ter }
         : asset

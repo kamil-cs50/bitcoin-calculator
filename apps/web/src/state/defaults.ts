@@ -5,6 +5,9 @@ import type { AssetParams, Currency, FxParams, MarketModel, Scenario, TaxForm } 
 /** Wersja zbioru danych dołączona do aplikacji; starszy zapis dostaje flagę datasetOutdated. */
 export const CURRENT_DATASET_VERSION = '2026.11';
 
+/** Korelacja dwóch wariantów podatkowych tego samego instrumentu (bez 1, żeby macierz była dodatnio określona). */
+const SAME_INSTRUMENT_CORR = 0.99;
+
 /** Domyślny koszt transakcji w punktach bazowych (zakładany; użytkownik może zmienić). */
 export const DEFAULT_COST_BPS = 10;
 
@@ -18,8 +21,32 @@ const TAX_FORM: Record<Dataset['assets'][string]['taxForm'], TaxForm> = {
   realEstate: 'none',
 };
 
+/**
+ * Przyrostek id aktywa „to samo aktywo, ale kupione przez ETF/ETP”: parametry z tego samego presetu, ale
+ * inna forma opodatkowania (papier wartościowy zamiast kryptoaktywa/złota fizycznego). Osobne aktywo ma
+ * osobny podatek, więc pozycja „giełda” i pozycja „ETF” tego samego instrumentu nie wpływają na siebie.
+ */
+export const ETF_SUFFIX = '#etf';
+
+/** Id presetu w zbiorze danych dla id aktywa (bez przyrostka wariantu ETF). */
+export function presetIdOf(assetId: string): string {
+  return assetId.endsWith(ETF_SUFFIX) ? assetId.slice(0, -ETF_SUFFIX.length) : assetId;
+}
+
+/** Wariant ETF/ETP aktywa o danym id (idempotentnie). */
+export const etfId = (presetId: string): string => (presetId.endsWith(ETF_SUFFIX) ? presetId : presetId + ETF_SUFFIX);
+
 /** Parametry aktywa z presetu zbioru danych: aktywo z tabeli 6.2, krypto z 6.3, lokata lub `edo`. */
-export function assetFromPreset(d: Dataset, presetId: string): AssetParams {
+export function assetFromPreset(d: Dataset, id: string): AssetParams {
+  if (id.endsWith(ETF_SUFFIX)) {
+    const base = baseAssetFromPreset(d, presetIdOf(id));
+    if (base.kind !== 'risky') throw new Error(`Wariant ETF dotyczy tylko aktywów ryzykownych: ${id}`);
+    return { ...base, id, taxForm: 'security' };
+  }
+  return baseAssetFromPreset(d, id);
+}
+
+function baseAssetFromPreset(d: Dataset, presetId: string): AssetParams {
   const crypto = d.crypto[presetId];
   if (crypto) {
     return {
@@ -141,15 +168,21 @@ export function rebuildMarket(
 
   const factorIds = [...risky.map((a) => a.id), ...fxList.map((c) => `fx:${c}`), 'cpi'];
   const n = factorIds.length;
-  const idx = new Map(factorIds.map((id, i) => [id, i]));
+  // czynniki po tokenie zbioru danych: aktywa po id presetu (warianty ETF dzielą korelacje z bazowym), reszta po nazwie
+  const byToken = new Map<string, number[]>();
+  factorIds.forEach((id, i) => {
+    const token = id === 'cpi' || id.startsWith('fx:') ? id : presetIdOf(id);
+    byToken.set(token, [...(byToken.get(token) ?? []), i]);
+  });
   const correlation = new Array<number>(n * n).fill(0);
   for (let i = 0; i < n; i++) correlation[i * n + i] = 1;
-  const set = (a: string, b: string, rho: number): void => {
-    const i = idx.get(a);
-    const j = idx.get(b);
-    if (i === undefined || j === undefined || i === j) return;
+  const put = (i: number, j: number, rho: number): void => {
+    if (i === j) return;
     correlation[i * n + j] = rho;
     correlation[j * n + i] = rho;
+  };
+  const set = (a: string, b: string, rho: number): void => {
+    for (const i of byToken.get(a) ?? []) for (const j of byToken.get(b) ?? []) put(i, j, rho);
   };
   for (const [key, p] of Object.entries(d.market.correlations)) {
     const [a, b] = key.split('|');
@@ -157,8 +190,12 @@ export function rebuildMarket(
   }
   for (const c of fxList) {
     for (const a of risky) {
-      if (d.assets[a.id]?.class === 'equity') set(`fx:${c}`, a.id, d.fx[c].corrEquities.value);
+      if (d.assets[presetIdOf(a.id)]?.class === 'equity') set(`fx:${c}`, presetIdOf(a.id), d.fx[c].corrEquities.value);
     }
+  }
+  // ten sam instrument w dwóch wariantach podatkowych porusza się niemal identycznie
+  for (const idxs of byToken.values()) {
+    for (let x = 0; x < idxs.length; x++) for (let y = x + 1; y < idxs.length; y++) put(idxs[x]!, idxs[y]!, SAME_INSTRUMENT_CORR);
   }
   return { ...prev, factorIds, correlation, fx: fxList.map((c) => fxParams(d, c)) };
 }

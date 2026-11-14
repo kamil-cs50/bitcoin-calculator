@@ -5,6 +5,7 @@ import { Card } from '../../components/ui/Card';
 import { Field, inputClass } from '../../components/ui/Field';
 import { MoneyInput } from '../../components/ui/MoneyInput';
 import { PercentInput } from '../../components/ui/PercentInput';
+import { formatMoney } from '../../lib/format';
 import { assetFromPreset } from '../../state/defaults';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { rebuildMarket } from '../../state/defaults';
@@ -14,6 +15,12 @@ import { TILE_PRESET, useAssetNames, type TileKind } from './tiles';
 type FetchState = 'idle' | 'loading' | 'error' | 'ok';
 
 const MINUTE = 60_000;
+
+/** Najdłuższa nazwa aktywa własnego. */
+const CUSTOM_NAME_MAX = 40;
+
+/** Nazwa aktywa własnego do id: „~” rozdziela człony w identyfikatorach kontroli modelu, więc zamieniamy go na „-”. */
+const cleanName = (raw: string): string => raw.replace(/~/g, '-').replace(/\s+/g, ' ').trim().slice(0, CUSTOM_NAME_MAX);
 
 const round2 = (x: number) => Math.round(x * 100) / 100;
 
@@ -34,15 +41,6 @@ function Radio({
       {children}
     </label>
   );
-}
-
-/** Zmienia formę opodatkowania aktywa już dodanego do scenariusza (BTC przez ETP, złoto przez ETF). */
-function setTaxForm(assetId: string, taxForm: 'security'): void {
-  const st = useScenarioStore.getState();
-  st.setScenario({
-    ...st.scenario,
-    assets: st.scenario.assets.map((a) => (a.id === assetId && a.kind === 'risky' ? { ...a, taxForm } : a)),
-  });
 }
 
 /** Aktywo użytkownika: parametry g i σ podaje użytkownik, reszta z szablonu akcji polskich. */
@@ -87,6 +85,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
     return t`${h} godz. temu`;
   };
   const addPosition = useScenarioStore((s) => s.addPosition);
+  const baseCurrency = useScenarioStore((s) => s.scenario.baseCurrency);
 
   const [amount, setAmount] = useState<number | null>(null);
   const [units, setUnits] = useState<number | null>(null);
@@ -104,7 +103,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
   const value = byUnits ? (units !== null && units > 0 && priceOk ? round2(units * price) : null) : amount;
   const customOk =
     kind !== 'custom' ||
-    (customName.trim() !== '' && g !== null && g > -0.5 && g < 0.5 && sigma !== null && sigma > 0 && sigma <= 1.5);
+    (cleanName(customName) !== '' && g !== null && g > -0.5 && g < 0.5 && sigma !== null && sigma > 0 && sigma <= 1.5);
   const valid = value !== null && value > 0 && customOk;
 
   async function loadPrice() {
@@ -122,11 +121,11 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
   function submit() {
     if (!valid || value === null) return;
     if (kind === 'custom') {
-      addCustom(customName.trim(), g ?? 0, sigma ?? 0, value);
+      addCustom(cleanName(customName), g ?? 0, sigma ?? 0, value);
     } else {
       const presetId = TILE_PRESET[kind];
-      addPosition({ presetId, value });
-      if (variant === 'etf' && (kind === 'btc' || kind === 'gold')) setTaxForm(presetId, 'security');
+      // wariant ETF to osobne aktywo (osobny podatek), więc nie zmienia podatku już dodanej pozycji „giełda”
+      addPosition({ presetId, value, etf: variant === 'etf' && (kind === 'btc' || kind === 'gold') });
     }
     onDone();
   }
@@ -188,6 +187,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
                 <input
                   {...p}
                   type="text"
+                  maxLength={CUSTOM_NAME_MAX}
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   className={inputClass}
@@ -246,7 +246,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
             </div>
             {value !== null && (
               <p className="text-sm">
-                <Trans>Wartość pozycji: {value.toLocaleString('pl-PL')} zł</Trans>
+                <Trans>Wartość pozycji: {formatMoney(value, baseCurrency)}</Trans>
               </p>
             )}
           </>

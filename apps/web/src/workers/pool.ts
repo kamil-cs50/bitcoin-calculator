@@ -93,6 +93,11 @@ export function runProgressive(s: Scenario, seed: number, o: PoolOptions): SimHa
   let cancelled = false;
   let pool: SimWorker[] = [];
   let rejectDone: (e: Error) => void = () => undefined;
+  let signalCancel: () => void = () => undefined;
+  const cancelSignal = new Promise<never>((_, reject) => {
+    signalCancel = () => reject(abortError());
+  });
+  cancelSignal.catch(() => undefined); // sygnał bywa nieużyty (brak anulowania): bez ostrzeżenia o nieobsłużonym odrzuceniu
 
   const shutdown = (): void => {
     for (const w of pool) w.terminate();
@@ -108,7 +113,11 @@ export function runProgressive(s: Scenario, seed: number, o: PoolOptions): SimHa
         let have = 0;
         for (const target of stages) {
           const chunks = splitRange(have, target - have, count);
-          const parts = await Promise.all(chunks.map((c, i) => pool[i]!.run(s, { seed, paths: c.paths, pathOffset: c.pathOffset })));
+          // po cancel() zakończone workery nigdy nie odpowiedzą: wyścig z sygnałem anulowania zwalnia tę pętlę
+          const parts = await Promise.race([
+            Promise.all(chunks.map((c, i) => pool[i]!.run(s, { seed, paths: c.paths, pathOffset: c.pathOffset }))),
+            cancelSignal,
+          ]);
           if (cancelled) throw abortError();
           acc = mergeResults(acc ? [acc, ...parts] : parts);
           have = target;
@@ -129,6 +138,7 @@ export function runProgressive(s: Scenario, seed: number, o: PoolOptions): SimHa
       if (cancelled) return;
       cancelled = true;
       shutdown();
+      signalCancel();
       rejectDone(abortError());
     },
     done,

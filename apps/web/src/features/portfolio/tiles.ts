@@ -1,4 +1,5 @@
 import { useLingui } from '@lingui/react/macro';
+import { ETF_SUFFIX, presetIdOf } from '../../state/defaults';
 
 export type TileKind = 'btc' | 'world' | 'sp500' | 'edo' | 'deposit' | 'gold' | 'home' | 'custom';
 
@@ -44,6 +45,11 @@ export function useAssetNames(): { tile: (k: TileKind) => string; asset: (assetI
   };
   return {
     tile: (k) => names[k]!,
-    asset: (id) => byAsset[id] ?? (id.startsWith('custom:') ? id.slice(7) : id),
+    asset: (id) => {
+      const base = presetIdOf(id);
+      const name = byAsset[base] ?? (base.startsWith('custom:') ? base.slice(7) : base);
+      if (!id.endsWith(ETF_SUFFIX)) return name;
+      return base.startsWith('btc') ? t`${name} (ETF/ETP)` : t`${name} (ETF)`;
+    },
   };
 }

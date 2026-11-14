@@ -3,7 +3,7 @@ import type { Dataset } from '@sim/data';
 import type { Scenario } from '@sim/engine';
 import { RadioGroup } from 'radix-ui';
 import { Card } from '../../components/ui/Card';
-import { assetFromPreset, rebuildMarket } from '../../state/defaults';
+import { assetFromPreset, ETF_SUFFIX, etfId, presetIdOf, rebuildMarket } from '../../state/defaults';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useUiStore } from '../../state/uiStore';
 import { useAssetNames } from '../portfolio/tiles';
@@ -14,15 +14,21 @@ import { useParamRows } from './useParamRows';
 export const BTC_SETS = ['btcPessimistic', 'btcBase', 'btcOptimistic'] as const;
 type BtcSet = (typeof BTC_SETS)[number];
 
-/** Podmienia parametry aktywa BTC na wybrany zestaw (pozycje i czynniki rynku idą za nowym id). */
+/**
+ * Podmienia parametry aktywów BTC na wybrany zestaw (pozycje i czynniki rynku idą za nowym id). Dotyczy też
+ * wariantu ETF/ETP; każde aktywo zachowuje swój koszt transakcji i formę opodatkowania.
+ */
 export function switchBtcSet(s: Scenario, d: Dataset, presetId: BtcSet): Scenario {
-  const old = s.assets.find((a) => (BTC_SETS as readonly string[]).includes(a.id));
-  if (!old || old.id === presetId) return s;
-  const fresh = assetFromPreset(d, presetId);
-  const next =
-    fresh.kind === 'risky' && old.kind === 'risky' ? { ...fresh, costBps: old.costBps, taxForm: old.taxForm } : fresh;
-  const assets = s.assets.map((a) => (a === old ? next : a));
-  const positions = s.positions.map((p) => (p.assetId === old.id ? { ...p, assetId: presetId } : p));
+  const isBtc = (id: string): boolean => (BTC_SETS as readonly string[]).includes(presetIdOf(id));
+  const olds = s.assets.filter((a) => isBtc(a.id) && presetIdOf(a.id) !== presetId);
+  if (olds.length === 0) return s;
+  const newId = (old: string): string => (old.endsWith(ETF_SUFFIX) ? etfId(presetId) : presetId);
+  const assets = s.assets.map((old) => {
+    if (!olds.includes(old)) return old;
+    const fresh = assetFromPreset(d, newId(old.id));
+    return fresh.kind === 'risky' && old.kind === 'risky' ? { ...fresh, costBps: old.costBps, taxForm: old.taxForm } : fresh;
+  });
+  const positions = s.positions.map((p) => (olds.some((o) => o.id === p.assetId) ? { ...p, assetId: newId(p.assetId) } : p));
   return { ...s, assets, positions, market: rebuildMarket(d, s.market, assets, s.baseCurrency) };
 }
 
@@ -34,7 +40,7 @@ export function AssumptionsPanel() {
   const expert = useUiStore((s) => s.expert);
   const { dataset, assetRows, marketRows } = useParamRows();
   const names = useAssetNames();
-  const btc = scenario.assets.find((a) => (BTC_SETS as readonly string[]).includes(a.id));
+  const btc = scenario.assets.find((a) => (BTC_SETS as readonly string[]).includes(presetIdOf(a.id)));
   const scale = scenario.market.uncertaintyScale;
   const scaleText = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(scale);
   const setLabel: Record<BtcSet, string> = {
@@ -91,7 +97,7 @@ export function AssumptionsPanel() {
         <Card title={t`Bitcoin: zestaw założeń`}>
           <RadioGroup.Root
             aria-label={t`Zestaw założeń dla Bitcoina`}
-            value={btc.id}
+            value={presetIdOf(btc.id)}
             onValueChange={(v) => setScenario(switchBtcSet(useScenarioStore.getState().scenario, dataset, v as BtcSet))}
             className="flex flex-wrap gap-2"
           >

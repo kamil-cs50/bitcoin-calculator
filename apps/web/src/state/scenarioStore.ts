@@ -6,6 +6,7 @@ import {
   assetFromPreset,
   CURRENT_DATASET_VERSION,
   defaultScenario,
+  etfId,
   rebuildMarket,
 } from './defaults';
 import { migrate } from './migrations';
@@ -27,6 +28,8 @@ export interface NewPosition {
   value: number;
   /** Domyślnie równa wartości (brak zysku/straty na starcie). */
   costBasis?: number;
+  /** Wariant ETF/ETP tego samego instrumentu (osobne aktywo z podatkiem papieru wartościowego). */
+  etf?: boolean;
   wrapper?: Wrapper;
   /** Wagi są względne (rebalans je normalizuje); domyślnie wartość pozycji. */
   targetWeight?: number;
@@ -117,7 +120,8 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
 
   addPosition: (p) =>
     set((st) => {
-      const asset = st.scenario.assets.find((a) => a.id === p.presetId) ?? assetFromPreset(st.dataset, p.presetId);
+      const id = p.etf ? etfId(p.presetId) : p.presetId;
+      const asset = st.scenario.assets.find((a) => a.id === id) ?? assetFromPreset(st.dataset, id);
       const position: Position = {
         assetId: asset.id,
         wrapper: p.wrapper ?? 'taxable',

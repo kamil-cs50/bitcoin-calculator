@@ -90,6 +90,57 @@ describe('store: pozycje', () => {
   });
 });
 
+describe('wariant ETF jako osobne aktywo (podatek per pozycja)', () => {
+  const add = () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'globalEquity', value: 50_000 });
+    st.addPosition({ presetId: 'btcBase', value: 10_000 });
+    st.addPosition({ presetId: 'btcBase', value: 5_000, etf: true });
+    return useScenarioStore.getState().scenario;
+  };
+
+  it('BTC „giełda” i BTC „ETF” to dwa aktywa o różnym podatku; każda pozycja trzyma swoje', () => {
+    const s = add();
+    expect(s.positions.map((p) => p.assetId)).toEqual(['globalEquity', 'btcBase', 'btcBase#etf']);
+    expect(s.assets.find((a) => a.id === 'btcBase')).toMatchObject({ taxForm: 'crypto' });
+    expect(s.assets.find((a) => a.id === 'btcBase#etf')).toMatchObject({ taxForm: 'security', g: assetFromPreset(d, 'btcBase').kind === 'risky' ? (assetFromPreset(d, 'btcBase') as { g: number }).g : 0 });
+    expect(ScenarioSchema.safeParse(s).success).toBe(true);
+    expect(validateScenario(s).ok).toBe(true);
+  });
+
+  it('korelacje wariantu ETF jak bazowego (z akcjami 0,35), a z bazowym BTC bardzo wysoka', () => {
+    const s = add();
+    const ids = s.market.factorIds;
+    const n = ids.length;
+    const c = (a: string, b: string) => s.market.correlation[ids.indexOf(a) * n + ids.indexOf(b)];
+    expect(c('btcBase#etf', 'globalEquity')).toBe(0.35);
+    expect(c('btcBase', 'btcBase#etf')).toBe(0.99);
+    expect(c('btcBase#etf', 'btcBase')).toBe(0.99);
+  });
+
+  it('ETF na złoto: gold#etf ma podatek security, fizyczne złoto zostaje physicalGold', () => {
+    const st = useScenarioStore.getState();
+    st.addPosition({ presetId: 'gold', value: 1000 });
+    st.addPosition({ presetId: 'gold', value: 2000, etf: true });
+    const a = useScenarioStore.getState().scenario.assets;
+    expect(a.find((x) => x.id === 'gold')).toMatchObject({ taxForm: 'physicalGold' });
+    expect(a.find((x) => x.id === 'gold#etf')).toMatchObject({ taxForm: 'security' });
+  });
+
+  it('usunięcie jednej pozycji nie rusza podatku drugiej', () => {
+    add();
+    useScenarioStore.getState().removePosition(1); // btcBase (giełda)
+    const s = useScenarioStore.getState().scenario;
+    expect(s.assets.map((a) => a.id)).toEqual(['globalEquity', 'btcBase#etf']);
+    expect(s.assets[1]).toMatchObject({ taxForm: 'security' });
+    expect(validateScenario(s).ok).toBe(true);
+  });
+
+  it('assetFromPreset rozumie przyrostek #etf', () => {
+    expect(assetFromPreset(d, 'btcBase#etf')).toMatchObject({ id: 'btcBase#etf', taxForm: 'security' });
+  });
+});
+
 describe('zapis lokalny (Dexie)', () => {
   it('zapis i odczyt daje równy obiekt', async () => {
     const st = useScenarioStore.getState();

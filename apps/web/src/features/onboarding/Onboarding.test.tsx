@@ -118,14 +118,29 @@ describe('Onboarding krok 1', () => {
     await userEvent.click(screen.getByRole('radio', { name: /Kwotę w zł/ }));
     await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '1000');
     await userEvent.click(screen.getByRole('button', { name: 'Dodaj do portfela' }));
-    expect(asset('btcBase')).toMatchObject({ taxForm: 'security' });
+    expect(asset('btcBase#etf')).toMatchObject({ taxForm: 'security' });
+    expect(asset('btcBase')).toBeUndefined();
 
     await userEvent.click(screen.getByRole('button', { name: 'Złoto' }));
     expect(screen.getByRole('radio', { name: /Fizyczne/ })).toBeChecked();
     await userEvent.click(screen.getByRole('radio', { name: /^ETF/ }));
     await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '2000');
     await userEvent.click(screen.getByRole('button', { name: 'Dodaj do portfela' }));
-    expect(asset('gold')).toMatchObject({ taxForm: 'security' });
+    expect(asset('gold#etf')).toMatchObject({ taxForm: 'security' });
+  });
+
+  it('BTC na giełdzie i BTC w ETF dodane po sobie mają każdy swój podatek (nie nadpisują się)', async () => {
+    view();
+    for (const etf of [false, true]) {
+      await userEvent.click(screen.getByRole('button', { name: 'Bitcoin' }));
+      await userEvent.click(screen.getByRole('radio', { name: etf ? /ETF\/ETP/ : /Giełda/ }));
+      await userEvent.click(screen.getByRole('radio', { name: /Kwotę w zł/ }));
+      await userEvent.type(screen.getByRole('textbox', { name: /Kwota/ }), '1000');
+      await userEvent.click(screen.getByRole('button', { name: 'Dodaj do portfela' }));
+    }
+    expect(asset('btcBase')).toMatchObject({ taxForm: 'crypto' });
+    expect(asset('btcBase#etf')).toMatchObject({ taxForm: 'security' });
+    expect(pos().map((p) => p.assetId)).toEqual(['btcBase', 'btcBase#etf']);
   });
 
   it('domyślnie BTC „na giełdzie/w portfelu” daje taxForm crypto', async () => {
