@@ -7,7 +7,7 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pl\n"
 
-#: src/features/results/Dashboard.tsx:132
+#: src/features/results/Dashboard.tsx:133
 msgid "(roczna)"
 msgstr "(roczna)"
 
@@ -52,6 +52,10 @@ msgstr "{name} (ETF)"
 #: src/features/portfolio/tiles.ts:52
 msgid "{name} (ETF/ETP)"
 msgstr "{name} (ETF/ETP)"
+
+#: src/features/results/RiskCard.tsx:63
+msgid "{name} to {value}% wartości i {risk}% ryzyka"
+msgstr "{name} to {value}% wartości i {risk}% ryzyka"
 
 #: src/features/assumptions/AssumptionsPanel.tsx:77
 msgid "{scaleText}× domyślnej niepewności"
@@ -116,6 +120,10 @@ msgstr "Akcje polskie"
 #: src/features/portfolio/tiles.ts:41
 msgid "Akcje rynków wschodzących"
 msgstr "Akcje rynków wschodzących"
+
+#: src/features/results/RiskCard.tsx:67
+msgid "Aktywo"
+msgstr "Aktywo"
 
 #: src/features/plan/WithdrawalForm.tsx:177
 msgid "Amortyzacja (ABW)"
@@ -266,7 +274,7 @@ msgstr "Dalej"
 msgid "dane"
 msgstr "dane"
 
-#: src/features/results/Dashboard.tsx:142
+#: src/features/results/Dashboard.tsx:143
 msgid "Dane planu są niepoprawne albo niekompletne. Popraw portfel i plan albo zacznij od nowa w Ustawieniach."
 msgstr "Dane planu są niepoprawne albo niekompletne. Popraw portfel i plan albo zacznij od nowa w Ustawieniach."
 
@@ -298,7 +306,7 @@ msgstr "Dodaj bieżący scenariusz"
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
 
-#: src/features/results/Dashboard.tsx:228
+#: src/features/results/Dashboard.tsx:230
 msgid "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 msgstr "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 
@@ -407,7 +415,7 @@ msgstr "Ile odkładasz co miesiąc. Puste albo 0 oznacza brak wpłat."
 msgid "Indeksacja wpłat"
 msgstr "Indeksacja wpłat"
 
-#: src/features/results/Dashboard.tsx:131
+#: src/features/results/Dashboard.tsx:132
 msgid "Inflacja"
 msgstr "Inflacja"
 
@@ -491,7 +499,7 @@ msgid "Krok {step} z 3"
 msgstr "Krok {step} z 3"
 
 #. placeholder {0}: id.slice(3)
-#: src/features/results/Dashboard.tsx:131
+#: src/features/results/Dashboard.tsx:132
 msgid "Kurs {0}"
 msgstr "Kurs {0}"
 
@@ -549,7 +557,7 @@ msgstr "Liczbę BTC"
 msgid "liczę dalej, wynik się doprecyzuje"
 msgstr "liczę dalej, wynik się doprecyzuje"
 
-#: src/features/results/Dashboard.tsx:168
+#: src/features/results/Dashboard.tsx:169
 msgid "Liczymy {n} możliwych przyszłości…"
 msgstr "Liczymy {n} możliwych przyszłości…"
 
@@ -573,7 +581,7 @@ msgstr "Liczymy… to potrwa kilka sekund. Możesz w tym czasie oglądać wyniki
 msgid "Lokata"
 msgstr "Lokata"
 
-#: src/features/results/Dashboard.tsx:37
+#: src/features/results/Dashboard.tsx:38
 msgid "Macierz korelacji po korekcie"
 msgstr "Macierz korelacji po korekcie"
 
@@ -655,7 +663,7 @@ msgstr "Można porównać najwyżej {MAX_COMPARE} scenariusze. Usuń jeden, aby 
 msgid "Najgorsze 5% przyszłości: średnio ({basis})"
 msgstr "Najgorsze 5% przyszłości: średnio ({basis})"
 
-#: src/features/results/Dashboard.tsx:209
+#: src/features/results/Dashboard.tsx:210
 msgid "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 msgstr "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 
@@ -672,7 +680,7 @@ msgstr "Nazwa"
 msgid "Nie ma takiej strony"
 msgstr "Nie ma takiej strony"
 
-#: src/features/results/Dashboard.tsx:141
+#: src/features/results/Dashboard.tsx:142
 msgid "Nie możemy policzyć tego scenariusza"
 msgstr "Nie możemy policzyć tego scenariusza"
 
@@ -692,7 +700,7 @@ msgstr "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie 
 msgid "Nie udało się policzyć odpowiedzi. Spróbuj jeszcze raz."
 msgstr "Nie udało się policzyć odpowiedzi. Spróbuj jeszcze raz."
 
-#: src/features/results/Dashboard.tsx:159
+#: src/features/results/Dashboard.tsx:160
 msgid "Nie udało się policzyć wyniku"
 msgstr "Nie udało się policzyć wyniku"
 
@@ -724,7 +732,7 @@ msgstr "nominalnie"
 msgid "O aplikacji"
 msgstr "O aplikacji"
 
-#: src/features/results/Dashboard.tsx:160
+#: src/features/results/Dashboard.tsx:161
 msgid "Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie albo odśwież stronę, żeby spróbować ponownie."
 msgstr "Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie albo odśwież stronę, żeby spróbować ponownie."
 
@@ -855,7 +863,7 @@ msgstr "Plan obejmuje {0} lat."
 msgid "po podatku"
 msgstr "po podatku"
 
-#: src/features/results/Dashboard.tsx:182
+#: src/features/results/Dashboard.tsx:183
 msgid "Po podatku"
 msgstr "Po podatku"
 
@@ -1012,7 +1020,7 @@ msgstr "Realistyczny"
 msgid "Realistyczny: ogony grubsze niż w rozkładzie normalnym i okresy kryzysu. Podręcznikowy: zwroty o rozkładzie log-normalnym, bez kryzysów."
 msgstr "Realistyczny: ogony grubsze niż w rozkładzie normalnym i okresy kryzysu. Podręcznikowy: zwroty o rozkładzie log-normalnym, bez kryzysów."
 
-#: src/features/results/Dashboard.tsx:181
+#: src/features/results/Dashboard.tsx:182
 msgid "Realnie (w dzisiejszych {unit})"
 msgstr "Realnie (w dzisiejszych {unit})"
 
@@ -1040,12 +1048,12 @@ msgstr "Roczne ryzyko upadku"
 msgid "Rok"
 msgstr "Rok"
 
-#: src/features/results/Dashboard.tsx:196
+#: src/features/results/Dashboard.tsx:197
 msgid "Rok na wykresie"
 msgstr "Rok na wykresie"
 
 #. placeholder {0}: yearsText(month)
-#: src/features/results/Dashboard.tsx:193
+#: src/features/results/Dashboard.tsx:194
 msgid "Rok na wykresie: za {0} ({year})"
 msgstr "Rok na wykresie: za {0} ({year})"
 
@@ -1054,7 +1062,7 @@ msgstr "Rok na wykresie: za {0} ({year})"
 #~ msgstr "Rozkład wartości portfela"
 
 #. placeholder {0}: basis.full
-#: src/features/results/Dashboard.tsx:210
+#: src/features/results/Dashboard.tsx:211
 msgid "Rozkład wartości portfela ({0})"
 msgstr "Rozkład wartości portfela ({0})"
 
@@ -1065,7 +1073,7 @@ msgstr "Rozkład wartości portfela ({0})"
 
 #. placeholder {0}: yearsText(month)
 #. placeholder {1}: basis.full
-#: src/features/results/Dashboard.tsx:208
+#: src/features/results/Dashboard.tsx:209
 msgid "Rozkład wartości za {0} ({1})"
 msgstr "Rozkład wartości za {0} ({1})"
 
@@ -1086,9 +1094,17 @@ msgstr "Różnice względem „{0}”"
 msgid "Rozumiem"
 msgstr "Rozumiem"
 
+#: src/features/results/RiskCard.tsx:68
+msgid "Ryzyko"
+msgstr "Ryzyko"
+
 #: src/features/results/KpiTiles.tsx:67
 msgid "Ryzyko spadku o ponad 30%"
 msgstr "Ryzyko spadku o ponad 30%"
+
+#: src/features/results/RiskCard.tsx:64
+msgid "Ryzyko to zmienność wartości portfela w skali roku; udział aktywa uwzględnia jego wagę, zmienność i zależność od pozostałych."
+msgstr "Ryzyko to zmienność wartości portfela w skali roku; udział aktywa uwzględnia jego wagę, zmienność i zależność od pozostałych."
 
 #: src/features/portfolio/tiles.ts:24
 msgid "S&P 500"
@@ -1148,7 +1164,7 @@ msgstr "Stała miesięczna wypłata (w dzisiejszych zł), przy której pieniądz
 msgid "Stały procent portfela"
 msgstr "Stały procent portfela"
 
-#: src/features/results/Dashboard.tsx:62
+#: src/features/results/Dashboard.tsx:63
 msgid "Strata przekracza 5 mln zł; model upraszcza zasady odliczania strat w podatku od zysków kapitałowych."
 msgstr "Strata przekracza 5 mln zł; model upraszcza zasady odliczania strat w podatku od zysków kapitałowych."
 
@@ -1160,7 +1176,7 @@ msgstr "Strata przy upadku"
 msgid "Sufit (zł miesięcznie, opcjonalnie)"
 msgstr "Sufit (zł miesięcznie, opcjonalnie)"
 
-#: src/features/results/Dashboard.tsx:64
+#: src/features/results/Dashboard.tsx:65
 msgid "Suma docelowych wag aktywów płynnych wynosi 0, więc rebalansowanie nie wykona żadnych transakcji."
 msgstr "Suma docelowych wag aktywów płynnych wynosi 0, więc rebalansowanie nie wykona żadnych transakcji."
 
@@ -1209,7 +1225,7 @@ msgstr "Szansa wyczerpania portfela"
 msgid "Szansa wyjścia z kryzysu (na miesiąc)"
 msgstr "Szansa wyjścia z kryzysu (na miesiąc)"
 
-#: src/features/results/Dashboard.tsx:144
+#: src/features/results/Dashboard.tsx:145
 msgid "Szczegóły techniczne"
 msgstr "Szczegóły techniczne"
 
@@ -1237,7 +1253,7 @@ msgstr "Teraz: {scaleText}× domyślnej niepewności. Im wyżej, tym szerzej roz
 msgid "To założenie, nie prognoza. Zmienisz je później w Założeniach."
 msgstr "To założenie, nie prognoza. Zmienisz je później w Założeniach."
 
-#: src/features/results/Dashboard.tsx:183
+#: src/features/results/Dashboard.tsx:184
 msgid "Tryb eksperta"
 msgstr "Tryb eksperta"
 
@@ -1265,11 +1281,15 @@ msgstr "Typowy wynik"
 msgid "Typowy wynik za {years} ({basis})"
 msgstr "Typowy wynik za {years} ({basis})"
 
+#: src/features/results/RiskCard.tsx:66
+msgid "Udział aktywów w wartości i ryzyku portfela"
+msgstr "Udział aktywów w wartości i ryzyku portfela"
+
 #: src/features/results/ModelCheckPanel.tsx:22
 msgid "Udział miesięcy kryzysowych"
 msgstr "Udział miesięcy kryzysowych"
 
-#: src/features/results/Dashboard.tsx:66
+#: src/features/results/Dashboard.tsx:67
 msgid "Ujemna docelowa waga jest traktowana jak 0 (bez krótkiej sprzedaży)."
 msgstr "Ujemna docelowa waga jest traktowana jak 0 (bez krótkiej sprzedaży)."
 
@@ -1367,7 +1387,7 @@ msgstr "w żadnej przyszłości"
 #~ msgstr "Wachlarz możliwych przyszłości"
 
 #. placeholder {0}: basis.full
-#: src/features/results/Dashboard.tsx:191
+#: src/features/results/Dashboard.tsx:192
 msgid "Wachlarz możliwych przyszłości ({0})"
 msgstr "Wachlarz możliwych przyszłości ({0})"
 
@@ -1376,11 +1396,12 @@ msgstr "Wachlarz możliwych przyszłości ({0})"
 #~ msgstr "Wachlarz możliwych wartości portfela"
 
 #. placeholder {0}: basis.full
-#: src/features/results/Dashboard.tsx:175
+#: src/features/results/Dashboard.tsx:176
 msgid "Wachlarz możliwych wartości portfela ({0})"
 msgstr "Wachlarz możliwych wartości portfela ({0})"
 
 #: src/features/portfolio/AssetTile.tsx:29
+#: src/features/results/RiskCard.tsx:68
 msgid "Wartość"
 msgstr "Wartość"
 
@@ -1436,6 +1457,10 @@ msgstr "Wiek docelowy"
 msgid "Wiek docelowy musi być większy niż Twój obecny wiek."
 msgstr "Wiek docelowy musi być większy niż Twój obecny wiek."
 
+#: src/features/results/RiskCard.tsx:62
+msgid "Wkład aktywów w ryzyko"
+msgstr "Wkład aktywów w ryzyko"
+
 #: src/features/portfolio/tiles.ts:29
 msgid "Własne"
 msgstr "Własne"
@@ -1473,11 +1498,11 @@ msgstr "Wpłaty trwają najwyżej do końca horyzontu."
 msgid "Wrażliwość na kryzysy"
 msgstr "Wrażliwość na kryzysy"
 
-#: src/features/results/Dashboard.tsx:59
+#: src/features/results/Dashboard.tsx:60
 msgid "Wrażliwość na kryzysy aktywa „{name}” została przycięta, żeby kryzys nie tłumaczył ponad 80% jego zmienności."
 msgstr "Wrażliwość na kryzysy aktywa „{name}” została przycięta, żeby kryzys nie tłumaczył ponad 80% jego zmienności."
 
-#: src/features/results/Dashboard.tsx:56
+#: src/features/results/Dashboard.tsx:57
 msgid "Wrażliwość na kryzysy kursu {cur} została przycięta, żeby kryzys nie tłumaczył ponad 80% jego zmienności."
 msgstr "Wrażliwość na kryzysy kursu {cur} została przycięta, żeby kryzys nie tłumaczył ponad 80% jego zmienności."
 
@@ -1549,7 +1574,7 @@ msgstr "Wypłaty muszą zacząć się przed końcem horyzontu."
 #~ msgstr "Wypłaty zaczynają się po końcu horyzontu, więc nigdy nie nastąpią."
 
 #. placeholder {0}: yearsText(month)
-#: src/features/results/Dashboard.tsx:197
+#: src/features/results/Dashboard.tsx:198
 msgid "za {0} ({year})"
 msgstr "za {0} ({year})"
 
@@ -1602,7 +1627,7 @@ msgstr "Założenia i źródła"
 msgid "założenie"
 msgstr "założenie"
 
-#: src/features/results/Dashboard.tsx:51
+#: src/features/results/Dashboard.tsx:52
 msgid "Założone korelacje nie tworzyły poprawnej macierzy, więc do symulacji użyliśmy najbliższej poprawnej macierzy korelacji (pokazanej poniżej)."
 msgstr "Założone korelacje nie tworzyły poprawnej macierzy, więc do symulacji użyliśmy najbliższej poprawnej macierzy korelacji (pokazanej poniżej)."
 

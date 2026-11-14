@@ -1,5 +1,5 @@
 import { mergeResults, STAGES } from '@sim/engine';
-import type { ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
+import type { AssetRiskShare, ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
 import * as Comlink from 'comlink';
 import type { PairedDifference } from '../features/compare/diff';
 import type { SimWorkerApi } from './sim.worker';
@@ -23,6 +23,7 @@ export interface SimWorker {
   run(s: Scenario, o: RunOptions): Promise<RunResult>;
   solve(kind: SolverKind, s: Scenario, o: SolverOptions): Promise<SolverResult>;
   modelCheck(s: Scenario, o: { seed: number; paths: number }): Promise<ModelCheckRow[]>;
+  riskShares(s: Scenario, o: { seed: number; paths: number }): Promise<AssetRiskShare[]>;
   summary(s: Scenario, o: RunOptions, v: { month: number; real: boolean; afterTax: boolean }): Promise<Summary>;
   estimate(s: Scenario): Promise<number>;
   pairedDiff(va: Float64Array, vb: Float64Array, reps?: number): Promise<Omit<PairedDifference, 'month'>>;
@@ -49,6 +50,7 @@ function createRealWorker(): SimWorker {
     run: (s, o) => remote.run(s, o),
     solve: (k, s, o) => remote.solve(k, s, o),
     modelCheck: (s, o) => remote.modelCheck(s, o),
+    riskShares: (s, o) => remote.riskShares(s, o),
     summary: (s, o, v) => remote.summary(s, o, v),
     estimate: (s) => remote.estimate(s),
     pairedDiff: (a, b, r) => remote.pairedDiff(a, b, r),

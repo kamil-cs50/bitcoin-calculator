@@ -19,6 +19,7 @@ import { KpiTiles } from './KpiTiles';
 import { ModelCheckPanel } from './ModelCheckPanel';
 import { yearsText } from './periods';
 import { Solvers } from './Solvers';
+import { RiskCard } from './RiskCard';
 import { QualityBadge } from './QualityBadge';
 import { SIM_SEED, useSimulation, type SimOptions } from './useSimulation';
 import { calendarYear, gridIndex, valuesAt, winsorize } from './values';
@@ -212,6 +213,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
       {/* Karta BTC liczy dwa dodatkowe przebiegi w workerach: pokazujemy ją po zakończeniu etapów,
           żeby nie konkurować z nimi o rdzenie (budżet < 1 s do pierwszego etapu). */}
       {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} createWorker={createWorker} />}
+      {!state.running && <RiskCard scenario={scenario} createWorker={createWorker} />}
       <Solvers scenario={scenario} createWorker={sim.createWorker} />
       {expert && checkRows && <ModelCheckPanel rows={checkRows} labelOf={checkLabel} />}
     </div>

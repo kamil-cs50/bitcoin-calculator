@@ -9,6 +9,8 @@ export { modelCheck } from './stats/modelCheck';
 export { wilson, quantileCI } from './stats/intervals';
 export { survivalCurve, probRuinWhileAlive, remainingLifeExpectancy } from './stats/mortality';
 export type { ModelCheckRow } from './stats/modelCheck';
+export { riskContributions, annualLogCovariance, assetRiskShares } from './stats/riskContribution';
+export type { AssetRiskShare } from './stats/riskContribution';
 export { solveSafeWithdrawal } from './solvers/safeWithdrawal';
 export { solveRequiredContribution } from './solvers/requiredContribution';
 export { effectiveVol, fxPhi } from './models/fx';

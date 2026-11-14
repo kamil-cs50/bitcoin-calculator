@@ -1,5 +1,5 @@
-import { modelCheck, runBatch, solveRequiredContribution, solveSafeWithdrawal, summarize } from '@sim/engine';
-import type { ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
+import { assetRiskShares, modelCheck, runBatch, solveRequiredContribution, solveSafeWithdrawal, summarize } from '@sim/engine';
+import type { AssetRiskShare, ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
 import { pairedFromValues, type PairedDifference } from '../features/compare/diff';
 import { estimateRealReturnSync } from '../features/plan/estimateCore';
 
@@ -16,6 +16,8 @@ export const tasks = {
     kind === 'safeWithdrawal' ? solveSafeWithdrawal(s, o) : solveRequiredContribution(s, o),
   /** Kontrola modelu: osobny, tańszy przebieg samego rynku. */
   modelCheck: (s: Scenario, o: { seed: number; paths: number }): ModelCheckRow[] => modelCheck(s, o),
+  /** Udziały wartości i ryzyka aktywów (osobny przebieg 2 000 ścieżek, kowariancja rocznych log-zwrotów). */
+  riskShares: (s: Scenario, o: { seed: number; paths: number }): AssetRiskShare[] => assetRiskShares(s, o),
   /** Przebieg + podsumowanie w jednym kroku (np. rozkład ceny BTC); nie przesyła buforów wyniku. */
   summary: (s: Scenario, o: RunOptions, v: { month: number; real: boolean; afterTax: boolean }): Summary =>
     summarize(runBatch(s, o), s, v),
