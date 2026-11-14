@@ -80,7 +80,7 @@ describe('T3: zmienność efektywna aktywa w USD przeliczonego na PLN (gbm, 12 m
     const rho = -0.3;
     const sigA = 0.16;
     const sa = sigA / Math.sqrt(12);
-    const sm = 0.11 / Math.sqrt(12);
+    const sm = fxMonthlySigma(P, 0, { p01: 0, p10: 0.2, kappa1: 1, delta: 0 }, regimeConstants({ p01: 0, p10: 0.2, kappa1: 1, delta: 0 }));
     const phi = fxPhi(4);
     const varQ = (sm * sm * (1 - phi ** 24)) / (1 - phi * phi);
     const sigFx12 = Math.sqrt(varQ);

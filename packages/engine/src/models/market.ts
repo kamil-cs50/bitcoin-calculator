@@ -96,6 +96,7 @@ export class MarketSimulator {
   private readonly cholAssets: Float64Array; // Cholesky wpisanej ρ aktywów ryzykownych
   private readonly seAssets: Float64Array;
   private readonly zUnc: Float64Array;
+  private readonly zAssetsUnc: Float64Array;
   private readonly rngParam = new Xoshiro128ss();
 
   private readonly rngRegime = new Xoshiro128ss();
@@ -227,6 +228,7 @@ export class MarketSimulator {
     this.cholAssets = robustCholesky(sub, nr);
     this.seAssets = Float64Array.from(this.assets.map((a) => a.se));
     this.zUnc = new Float64Array(nr + 1);
+    this.zAssetsUnc = new Float64Array(nr);
     for (let k = 0; k < this.nfx; k++) this.fxp.push(deps.fx(m.fx[k]!, fxSigmaM[k]!));
 
     // strumienie i bufory
@@ -265,11 +267,13 @@ export class MarketSimulator {
     for (let i = 0; i < this.nr; i++) this.rngCollapse[i]?.reseed(streamSeed(seed, path, this.collapseSeedKeys[i]!));
     this.regime = this.rngRegime.nextUniform() < this.c.pi1 ? 1 : 0;
     this.collapsedNow.fill(0);
-    // niepewność parametrów (strumień $paramUnc): nr normalnych dla dryfów, ostatnia dla średniej inflacji
+    // niepewność parametrów (strumień $paramUnc): pierwsza normalna dla średniej inflacji, potem po jednej
+    // na aktywo ryzykowne (CRN: indeks inflacji nie zależy od liczby aktywów, spec 4.2)
     this.rngParam.reseed(streamSeed(seed, path, KEY_PARAM));
     for (let i = 0; i <= this.nr; i++) this.zUnc[i] = normalInv(this.rngParam.nextUniform());
-    drawDriftShifts(this.zUnc, this.seAssets, this.cholAssets, this.nr, this.uncScale, this.driftShift);
-    this.infl.init(this.meanInflation + this.meanInflationSe * this.uncScale * this.zUnc[this.nr]!);
+    for (let i = 0; i < this.nr; i++) this.zAssetsUnc[i] = this.zUnc[i + 1]!;
+    drawDriftShifts(this.zAssetsUnc, this.seAssets, this.cholAssets, this.nr, this.uncScale, this.driftShift);
+    this.infl.init(this.meanInflation + this.meanInflationSe * this.uncScale * this.zUnc[0]!);
     for (let k = 0; k < this.nfx; k++) {
       this.fxp[k]!.init();
       this.prevFx[k] = this.fxp[k]!.logRate;
@@ -296,11 +300,11 @@ export class MarketSimulator {
     }
 
     const delta = sPrev === 0 ? c.delta0 : c.delta1;
-    const tYears = t / 12;
 
     // inflacja i kursy
     if (this.cpiFactor >= 0) this.infl.step(this.eps[this.cpiFactor]!);
     else this.infl.step(0);
+    // cpiLog po kroku (t+1), a `t` to miesiąc początku kroku: spójne z FxProcess.step (π^F·(t+1)/12)
     const cpiLog = this.infl.cpiLog;
     for (let k = 0; k < nfx; k++) {
       const kap = sPrev === 0 ? 1 : this.fxKappa[k]!;
@@ -312,21 +316,12 @@ export class MarketSimulator {
     const baseD = baseFx >= 0 ? this.fxp[baseFx]!.logRate - this.prevFx[baseFx]! : 0;
     for (let i = 0; i < nr; i++) {
       const a = this.assets[i]!;
-      const d = a.decay;
       const dead = this.collapsedNow[i] === 1;
-      let mu: number;
-      let sigma: number;
-      if (d) {
-        const gT = d.gInf + (a.g - d.gInf) * Math.exp(-tYears / d.tauG);
-        mu = Math.log1p(gT) / 12;
-        sigma = dead ? d.sigmaInf : d.sigmaInf + (a.sigma - d.sigmaInf) * Math.exp(-tYears / d.tauSigma);
-      } else {
-        mu = Math.log1p(a.g) / 12;
-        sigma = a.sigma;
-      }
+      // po upadku: σ = σ_∞ (jeśli jest zanik), dryf wyłączony; wzory g(t), σ(t) wspólne z gAt/sigmaAt
+      const sigma = dead && a.decay ? a.decay.sigmaInf : this.sigmaAt(i, t);
       const kap = sPrev === 0 ? this.kap0[i]! : this.kap1[i]!;
       let r = this.alpha[i]! * sigma * delta + sigma * this.fMonthly[i]! * kap * this.eps[this.factorIndex[i]!]!;
-      if (!dead) r += mu + this.driftShift[i]! / 12;
+      if (!dead) r += Math.log1p(this.gAt(i, t)) / 12 + this.driftShift[i]! / 12;
       // 5. upadek (strumień collapse:<id>)
       const rc = this.rngCollapse[i];
       if (rc && !dead && rc.nextUniform() < this.pCollapse[i]!) {

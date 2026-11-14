@@ -73,6 +73,33 @@ describe('MarketSimulator: gbm', () => {
     }
   });
 
+  it('CRN: dodanie drugiego aktywa przy uncertaintyScale = 1 nie zmienia inflacji ani aktywa 0', () => {
+    const base0 = oneAsset();
+    const base = { ...base0, market: { ...base0.market, uncertaintyScale: 1 } };
+    const two = makeScenario({
+      assets: [asset(), asset({ id: 'other', g: 0.03, sigma: 0.1 })],
+      market: {
+        ...base.market,
+        factorIds: ['globalEquity', 'other', 'cpi'],
+        correlation: [1, 0, 0.1, 0, 1, 0, 0.1, 0, 1],
+      },
+    });
+    const a = new MarketSimulator(base);
+    const b = new MarketSimulator(two);
+    const sa = a.newState();
+    const sb = b.newState();
+    for (let p = 0; p < 50; p++) {
+      a.initPath(SEED, p);
+      b.initPath(SEED, p);
+      for (let t = 0; t < 24; t++) {
+        a.step(t, sa);
+        b.step(t, sb);
+        expect(sb.cpiLog).toBeCloseTo(sa.cpiLog, 12);
+        expect(sb.assetLogRet[0]).toBeCloseTo(sa.assetLogRet[0]!, 12);
+      }
+    }
+  });
+
   it('determinizm: initPath(seed, 5) po initPath(seed, 9) = bez wcześniejszych ścieżek', () => {
     const sc = oneAsset({ collapse: { hazard: 0.3, loss: 0.5 } }, { market: { ...makeScenario().market, mode: 'realistic', nu: 5 } });
     const run = (sim: MarketSimulator): number[] => {
@@ -179,6 +206,48 @@ describe('MarketSimulator: zanik g i σ', () => {
     expect(sim.sigmaAt(0, 0)).toBeCloseTo(0.5, 14);
     expect(sim.sigmaAt(0, 96)).toBeCloseTo(0.3 + 0.2 * Math.exp(-1), 14);
     expect(sim.riskyIds).toEqual(['btc']);
+  });
+});
+
+describe('MarketSimulator: step stosuje zanik g(t) i σ(t)', () => {
+  const decay = { gInf: 0.04, tauG: 5, sigmaInf: 0.2, tauSigma: 4 };
+
+  it('σ = 0: suma log-zwrotów = Σ ln(1+g(t))/12 z g(t) = g∞ + (g0 − g∞)e^{−t/(12τ)}', () => {
+    const sim = new MarketSimulator(oneAsset({ g: 0.12, sigma: 0, decay: { ...decay, sigmaInf: 0 } }));
+    const st = sim.newState();
+    sim.initPath(SEED, 0);
+    let s = 0;
+    let expected = 0;
+    for (let t = 0; t < 84; t++) {
+      sim.step(t, st);
+      s += st.assetLogRet[0]!;
+      expected += Math.log1p(0.04 + (0.12 - 0.04) * Math.exp(-t / 12 / 5)) / 12;
+    }
+    expect(s).toBeCloseTo(expected, 12);
+    expect(Math.abs(s - (84 * Math.log1p(0.12)) / 12)).toBeGreaterThan(0.01); // zanik jest istotny
+  });
+
+  it('wariancja miesięcznego log-zwrotu w kroku t = σ(t)²/12 (t = 0 i t = 96, 4 SE)', () => {
+    const a = asset({ g: 0.05, sigma: 0.5, decay: { ...decay, gInf: 0.05 } });
+    const sim = new MarketSimulator(makeScenario({ assets: [a] }));
+    const st = sim.newState();
+    const n = 40_000;
+    const at0: number[] = [];
+    const at96: number[] = [];
+    for (let p = 0; p < n; p++) {
+      sim.initPath(SEED, p);
+      for (let t = 0; t <= 96; t++) {
+        sim.step(t, st);
+        if (t === 0) at0.push(st.assetLogRet[0]!);
+        if (t === 96) at96.push(st.assetLogRet[0]!);
+      }
+    }
+    const check = (xs: number[], sigma: number): void => {
+      const v = (sigma * sigma) / 12;
+      expect(Math.abs(variance(xs) - v)).toBeLessThan(4 * v * Math.sqrt(2 / (n - 1)));
+    };
+    check(at0, 0.5);
+    check(at96, 0.2 + 0.3 * Math.exp(-96 / 12 / 4));
   });
 });
 

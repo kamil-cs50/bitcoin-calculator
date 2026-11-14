@@ -15,6 +15,9 @@ export function effectiveVol(sigmaAsset: number, sigmaFx: number, rho: number): 
 /**
  * σ_{q,m} wg R-2: Var(q_{t+12} − q_t) = 2·V_q·(1 − φ^12) + ω_q·σ_q², V_q = σ_{q,m}²·K_q/(1 − φ²);
  * σ_q to odchylenie 12-miesięcznej zmiany ln q, a po stronie szumu zostaje σ_q²(1 − ω_q).
+ * Przybliżenie: składnik reżimowy ω_q·σ_q² zakłada, że przesunięcie wchodzi do Δ12 q bez tłumienia
+ * przez φ_q (wagi φ^k, k ≤ 11), więc przy dużym α_q i krótkim półokresie realne sd jest nieco niższe
+ * niż σ_q (symulacja: α_q = 1, H = 4 lata → ok. −2%; H = 1 rok → ok. −5%).
  */
 export function fxMonthlySigma(f: FxParams, alpha: number, r: RegimeParams, c: RegimeConstants): number {
   const phi = fxPhi(f.halfLifeYears);

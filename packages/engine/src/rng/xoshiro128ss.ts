@@ -26,18 +26,27 @@ export class Xoshiro128ss {
 
   /** Cztery słowa stanu ze SplitMix32; bez alokacji. */
   reseed(seed: number): void {
-    let x = seed >>> 0;
-    const next = (): number => {
-      x = (x + 0x9e3779b9) >>> 0;
-      let z = x;
-      z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
-      z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
-      return (z ^ (z >>> 16)) >>> 0;
-    };
-    this.s0 = next();
-    this.s1 = next();
-    this.s2 = next();
-    this.s3 = next();
+    // SplitMix32 rozwinięty inline (bez domknięcia, więc bez alokacji w gorącej ścieżce)
+    let x = (seed >>> 0) + 0x9e3779b9;
+    let z = x >>> 0;
+    z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
+    z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
+    this.s0 = (z ^ (z >>> 16)) >>> 0;
+    x = (x + 0x9e3779b9) >>> 0;
+    z = x;
+    z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
+    z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
+    this.s1 = (z ^ (z >>> 16)) >>> 0;
+    x = (x + 0x9e3779b9) >>> 0;
+    z = x;
+    z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
+    z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
+    this.s2 = (z ^ (z >>> 16)) >>> 0;
+    x = (x + 0x9e3779b9) >>> 0;
+    z = x;
+    z = Math.imul(z ^ (z >>> 16), 0x85ebca6b) >>> 0;
+    z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35) >>> 0;
+    this.s3 = (z ^ (z >>> 16)) >>> 0;
   }
 
   nextU32(): number {
