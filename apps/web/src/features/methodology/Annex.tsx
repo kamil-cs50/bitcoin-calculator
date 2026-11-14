@@ -5,7 +5,7 @@ import { Formula } from './Formula';
 function Group({ title, children }: { title: ReactNode; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">{title}</h3>
+      <h3 className="m-0 text-[19px] font-normal tracking-[-0.01em] text-fg">{title}</h3>
       {children}
     </div>
   );

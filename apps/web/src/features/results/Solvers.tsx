@@ -78,7 +78,7 @@ function SolverCard({ feature, kind, title, question, button, scenario, createWo
         <p className="mb-3 mt-0 text-sm text-muted">{question}</p>
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1">
-            <label htmlFor={selId} className="text-sm font-medium">
+            <label htmlFor={selId} className="eyebrow-sm">
               <Trans>Jak pewnie ma starczyć</Trans>
             </label>
             <select

@@ -2,6 +2,7 @@ import { useLingui } from '@lingui/react/macro';
 import type { Dataset } from '@sim/data';
 import type { Scenario } from '@sim/engine';
 import { RadioGroup } from 'radix-ui';
+import { StatusMark } from '../../components/ui/Status';
 import { Card } from '../../components/ui/Card';
 import { assetFromPreset, ETF_SUFFIX, etfId, presetIdOf, rebuildMarket } from '../../state/defaults';
 import { useScenarioStore } from '../../state/scenarioStore';
@@ -58,15 +59,24 @@ export function AssumptionsPanel() {
           {t`Każda liczba, na której opiera się symulacja, ma tu swoje źródło i status. Wartości możesz zmienić; zawsze da się wrócić do domyślnej. Zbiór danych: wersja ${dataset.version}.`}
         </p>
         <ul className="m-0 flex list-none flex-col gap-1 p-0 text-sm">
-          <li>{t`✅ zweryfikowane: liczba odczytana ze źródła i sprawdzona.`}</li>
-          <li>{t`◐ źródło wtórne: liczba pochodzi z omówienia, nie z oryginału.`}</li>
-          <li>{t`❌ niezweryfikowane: założenie albo liczba czekająca na kalibrację.`}</li>
+          <li className="flex items-center gap-2.5">
+            <StatusMark status="yes" />
+            {t`zweryfikowane: liczba odczytana ze źródła i sprawdzona.`}
+          </li>
+          <li className="flex items-center gap-2.5">
+            <StatusMark status="secondary" />
+            {t`źródło wtórne: liczba pochodzi z omówienia, nie z oryginału.`}
+          </li>
+          <li className="flex items-center gap-2.5">
+            <StatusMark status="no" />
+            {t`niezweryfikowane: założenie albo liczba czekająca na kalibrację.`}
+          </li>
         </ul>
       </Card>
 
       <Card title={t`Jak pewny jesteś oczekiwanego zwrotu?`}>
         <div className="flex flex-col gap-2">
-          <label htmlFor="uncertainty" className="text-sm font-medium">
+          <label htmlFor="uncertainty" className="sr-only">
             {t`Jak pewny jesteś oczekiwanego zwrotu?`}
           </label>
           <input

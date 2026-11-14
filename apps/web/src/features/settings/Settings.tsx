@@ -30,7 +30,7 @@ function RadioChoice<T extends string>({
   const labelId = useId();
   return (
     <div>
-      <p id={labelId} className="mb-2 mt-0 text-sm font-medium">
+      <p id={labelId} className="eyebrow-sm mb-2.5 mt-0">
         {label}
       </p>
       <div role="radiogroup" aria-labelledby={labelId} className="flex flex-wrap gap-2">
@@ -38,8 +38,10 @@ function RadioChoice<T extends string>({
           <label
             key={o.id}
             lang={o.lang}
-            className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-4 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus ${
-              value === o.id ? 'border-accent bg-accent-soft font-semibold text-accent-soft-fg' : 'border-border-strong bg-surface'
+            className={`inline-flex min-h-10 cursor-pointer items-center gap-[9px] rounded-full border px-4 text-[14px] text-fg transition-[background,border-color] duration-300 before:size-1.5 before:rounded-full before:content-[''] has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus ${
+              value === o.id
+                ? 'border-[rgba(157,185,255,0.45)] bg-[rgba(42,85,255,0.18)] before:bg-accent-text before:shadow-[0_0_10px_var(--glow)]'
+                : 'border-border bg-field before:bg-fg/30 hover:bg-soft'
             }`}
           >
             <input type="radio" name={name} className="sr-only" checked={value === o.id} onChange={() => onChange(o.id)} />
@@ -142,7 +144,7 @@ function DataCard() {
             </Button>
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor={fileId} className="text-sm font-medium">
+            <label htmlFor={fileId} className="eyebrow-sm">
               <Trans>Wczytaj plik JSON</Trans>
             </label>
             <input
@@ -150,7 +152,7 @@ function DataCard() {
               type="file"
               accept="application/json,.json"
               onChange={(e) => void onImport(e)}
-              className="min-h-11 text-base file:mr-3 file:min-h-11 file:rounded-xl file:border file:border-border-strong file:bg-surface file:px-4"
+              className="min-h-11 w-fit cursor-pointer rounded-full text-[0px] text-transparent file:min-h-11 file:cursor-pointer file:rounded-full file:border file:border-solid file:border-border file:bg-field file:px-[22px] file:text-[15px] file:text-fg file:transition-colors hover:file:bg-soft"
             />
             <p className="m-0 text-sm text-muted">
               <Trans>Wczytanie zastępuje bieżący plan.</Trans>

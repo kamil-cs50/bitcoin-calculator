@@ -161,7 +161,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
         {kind === 'btc' && (
           <>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-1 text-sm font-medium">
+              <legend className="eyebrow-sm mb-2.5">
                 <Trans>Gdzie trzymasz bitcoina?</Trans>
               </legend>
               <Radio name="btc-where" checked={variant === 'direct'} onChange={() => setVariant('direct')}>
@@ -172,7 +172,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
               </Radio>
             </fieldset>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-1 text-sm font-medium">
+              <legend className="eyebrow-sm mb-2.5">
                 <Trans>Co wpisujesz?</Trans>
               </legend>
               <Radio name="btc-mode" checked={mode === 'units'} onChange={() => setMode('units')}>
@@ -187,7 +187,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
 
         {kind === 'gold' && (
           <fieldset className="m-0 border-0 p-0">
-            <legend className="mb-1 text-sm font-medium">
+            <legend className="eyebrow-sm mb-2.5">
               <Trans>Jakie złoto?</Trans>
             </legend>
             <Radio name="gold-kind" checked={variant === 'direct'} onChange={() => setVariant('direct')}>

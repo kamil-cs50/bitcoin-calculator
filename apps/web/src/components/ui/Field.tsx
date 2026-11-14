@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from 'react';
+import { StatusText } from './Status';
 
 export interface FieldControlProps {
   id: string;
@@ -31,7 +32,7 @@ export function Field({ label, hint, error, children }: FieldProps) {
       })}
       {hint && (
         <p id={hintId} className="m-0 text-[12.5px] leading-normal font-light text-muted">
-          {hint}
+          <StatusText text={hint} />
         </p>
       )}
       {error && (

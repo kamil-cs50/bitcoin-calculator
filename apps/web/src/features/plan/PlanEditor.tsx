@@ -116,7 +116,7 @@ export function PlanEditor() {
       <Card title={t`Horyzont`}>
         <div className="flex flex-col gap-3">
           <fieldset className="m-0 border-0 p-0">
-            <legend className="mb-1 text-sm font-medium">
+            <legend className="eyebrow-sm mb-2.5">
               <Trans>Jak podać długość planu?</Trans>
             </legend>
             <RadioOption

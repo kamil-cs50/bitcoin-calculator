@@ -57,7 +57,7 @@ export function Formula({ id, children }: { id: FormulaId; children: ReactNode }
   }, [tex, near]);
 
   return (
-    <div ref={ref} data-formula={id} className="rounded-xl border border-border bg-surface-2 p-3">
+    <div ref={ref} data-formula={id} className="rounded-2xl border border-hairline bg-white/[0.03] px-5 py-4">
       <div className="text-sm text-muted">{children}</div>
       {html ? (
         <div

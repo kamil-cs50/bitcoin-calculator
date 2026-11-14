@@ -149,7 +149,7 @@ export function WithdrawalForm() {
     <Card title={t`Wypłaty`}>
       <div className="flex flex-col gap-4">
         <fieldset className="m-0 border-0 p-0">
-          <legend className="mb-1 text-sm font-medium">
+          <legend className="eyebrow-sm mb-2.5">
             <Trans>Jak chcesz wypłacać pieniądze?</Trans>
           </legend>
           <RadioOption

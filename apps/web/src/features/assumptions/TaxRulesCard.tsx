@@ -1,3 +1,4 @@
+import { StatusText } from '../../components/ui/Status';
 import { useLingui } from '@lingui/react/macro';
 import type { Param } from '@sim/data';
 import { Card } from '../../components/ui/Card';
@@ -24,7 +25,9 @@ export function TaxRulesCard() {
   return (
     <Card title={t`Podatki i limity (Polska)`}>
       <p className="mt-0 text-sm text-muted">
-        {t`Przepisy cytowane z pamięci, nie sprawdzone w ISAP (❌), mogą się różnić od obowiązujących; limity IKE i IKZE pochodzą ze źródeł wtórnych (◐). Traktuj wyniki po podatku jako orientacyjne. Wartości są wbudowane w obliczenia i nie podlegają edycji.`}
+        <StatusText
+          text={t`Przepisy cytowane z pamięci, nie sprawdzone w ISAP (❌), mogą się różnić od obowiązujących; limity IKE i IKZE pochodzą ze źródeł wtórnych (◐). Traktuj wyniki po podatku jako orientacyjne. Wartości są wbudowane w obliczenia i nie podlegają edycji.`}
+        />
       </p>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
         <ReadOnlyParamRow label={t`Podatek od zysków kapitałowych`} valueText={pct(tax.capitalGainsRate.value)} param={tax.capitalGainsRate} />

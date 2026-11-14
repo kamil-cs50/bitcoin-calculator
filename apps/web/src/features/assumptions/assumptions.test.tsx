@@ -60,12 +60,12 @@ describe('AssumptionsPanel: wiersze parametrów', () => {
   it('status weryfikacji ma tekst: zweryfikowane / źródło wtórne / niezweryfikowane', () => {
     view();
     const yes = row(region('ETF na świat'), 'Oczekiwany zwrot roczny');
-    expect(within(yes).getByText(/^✅ zweryfikowane$/)).toBeInTheDocument();
+    expect(within(yes).getByText(/^zweryfikowane$/)).toBeInTheDocument();
     expect(within(yes).queryByText(/niezweryfikowane|źródło wtórne/)).toBeNull();
     const secondary = row(region('S&P 500'), 'Oczekiwany zwrot roczny');
-    expect(within(secondary).getByText(/^◐ źródło wtórne$/)).toBeInTheDocument();
+    expect(within(secondary).getByText(/^źródło wtórne$/)).toBeInTheDocument();
     const no = row(region('ETF na świat'), 'Zmienność roczna');
-    expect(within(no).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(no).getByText(/^niezweryfikowane$/)).toBeInTheDocument();
   });
 
   it('każdy parametr aktywa ma wiersz: ryzykowne, krypto, EDO, inflacja', () => {
@@ -204,7 +204,7 @@ describe('AssumptionsPanel: niepewność i tryb eksperta', () => {
 
     const nu = screen.getByRole('textbox', { name: /Liczba stopni swobody/ });
     expect(nu).toHaveValue('5');
-    expect(within(nu.closest('li')!).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(nu.closest('li')!).getByText(/^niezweryfikowane$/)).toBeInTheDocument();
     await userEvent.clear(nu);
     await userEvent.type(nu, '8');
     expect(sc().market.nu).toBe(8);
@@ -283,12 +283,12 @@ describe('AssumptionsPanel: przepisy podatkowe i limity ze statusem', () => {
     view();
     const reg = region('Podatki i limity (Polska)');
     const li = (label: RegExp) => within(reg).getByText(label).closest('li') as HTMLElement;
-    expect(within(li(/Limit wpłat na IKE w 2026/)).getByText(/^◐ źródło wtórne$/)).toBeInTheDocument();
-    expect(within(li(/Limit wpłat na IKZE w 2027/)).getByText(/^◐ źródło wtórne$/)).toBeInTheDocument();
-    expect(within(li(/Podatek od zysków kapitałowych/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
-    expect(within(li(/Ryczałt od najmu do progu/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
-    expect(within(li(/Zwolnienie sprzedaży mieszkania/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
-    expect(within(li(/Zasady wypłat z IKE i IKZE/)).getByText(/^❌ niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(li(/Limit wpłat na IKE w 2026/)).getByText(/^źródło wtórne$/)).toBeInTheDocument();
+    expect(within(li(/Limit wpłat na IKZE w 2027/)).getByText(/^źródło wtórne$/)).toBeInTheDocument();
+    expect(within(li(/Podatek od zysków kapitałowych/)).getByText(/^niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(li(/Ryczałt od najmu do progu/)).getByText(/^niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(li(/Zwolnienie sprzedaży mieszkania/)).getByText(/^niezweryfikowane$/)).toBeInTheDocument();
+    expect(within(li(/Zasady wypłat z IKE i IKZE/)).getByText(/^niezweryfikowane$/)).toBeInTheDocument();
     expect(within(reg).getByText(/Traktuj wyniki po podatku jako orientacyjne/)).toBeInTheDocument();
   });
 });

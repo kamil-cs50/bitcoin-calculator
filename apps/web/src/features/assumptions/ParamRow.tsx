@@ -4,6 +4,7 @@ import type { Param } from '@sim/data';
 import { useState } from 'react';
 import { Badge, type BadgeTone } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
+import { StatusMark, StatusText, type VerifyStatus } from '../../components/ui/Status';
 import { DecimalInput } from '../../components/ui/numberInput';
 import { i18n, numberLocale } from '../../i18n';
 import { DATASET_NOTES } from './datasetNotes';
@@ -40,15 +41,15 @@ const fmt = (v: number, unit: ParamUnit): string =>
   new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 4 }).format(unit === 'percent' ? v * 100 : v) +
   (unit === 'percent' ? '%' : '');
 
-/** Etykiety rodzaju i statusu weryfikacji parametru (✅/◐/❌ tekstem, nie tylko kolorem). */
+/** Etykiety rodzaju i statusu weryfikacji parametru (znacznik v3 i tekst, nie tylko kolor). */
 function useParamLabels(): { kind: Record<Param['kind'], string>; verified: Record<Param['verified'], { text: string; tone: BadgeTone }> } {
   const { t } = useLingui();
   return {
     kind: { data: t`dane`, forecast: t`prognoza instytucji`, assumption: t`założenie` },
     verified: {
-      yes: { text: t`✅ zweryfikowane`, tone: 'ok' },
-      secondary: { text: t`◐ źródło wtórne`, tone: 'warning' },
-      no: { text: t`❌ niezweryfikowane`, tone: 'danger' },
+      yes: { text: t`zweryfikowane`, tone: 'neutral' },
+      secondary: { text: t`źródło wtórne`, tone: 'neutral' },
+      no: { text: t`niezweryfikowane`, tone: 'neutral' },
     },
   };
 }
@@ -89,9 +90,16 @@ export function ReadOnlyParamRow({ label, valueText, param }: { label: string; v
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone="neutral">{labels.kind[param.kind]}</Badge>
-        <Badge tone={v.tone}>{v.text}</Badge>
+        <Badge tone={v.tone}>
+          <StatusMark status={param.verified as VerifyStatus} className="mr-2" />
+          {v.text}
+        </Badge>
       </div>
-      {param.note && <p className="m-0 text-sm text-muted">{noteText(param.note)}</p>}
+      {param.note && (
+        <p className="m-0 text-[13px] leading-normal font-light text-muted">
+          <StatusText text={noteText(param.note)} />
+        </p>
+      )}
       <Sources param={param} />
     </li>
   );
@@ -149,7 +157,10 @@ export function ParamRow({ spec }: { spec: RowSpec }) {
       />
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone="neutral">{kind[param.kind]}</Badge>
-        <Badge tone={v.tone}>{v.text}</Badge>
+        <Badge tone={v.tone}>
+          <StatusMark status={param.verified as VerifyStatus} className="mr-2" />
+          {v.text}
+        </Badge>
         {changed && <Badge tone="accent">{t`zmienione przez Ciebie`}</Badge>}
         {(changed || draft !== value) && (
           <Button variant="ghost" onClick={reset} aria-label={t`Przywróć domyślne: ${spec.label}`}>
@@ -162,7 +173,11 @@ export function ParamRow({ spec }: { spec: RowSpec }) {
           {t`Zakres w źródłach: ${fmt(param.range[0], unit)} – ${fmt(param.range[1], unit)}`}
         </p>
       )}
-      {param.note && <p className="m-0 text-sm text-muted">{noteText(param.note)}</p>}
+      {param.note && (
+        <p className="m-0 text-[13px] leading-normal font-light text-muted">
+          <StatusText text={noteText(param.note)} />
+        </p>
+      )}
       <Sources param={param} />
     </li>
   );

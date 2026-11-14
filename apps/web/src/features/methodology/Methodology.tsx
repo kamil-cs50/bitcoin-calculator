@@ -24,9 +24,9 @@ function Section({
       data-spec={spec}
       data-section={name}
       id={spec ? `s-${spec.replace('.', '-')}` : name}
-      className="flex flex-col gap-3"
+      className="flex scroll-mt-6 flex-col gap-4 border-t border-hairline pt-8"
     >
-      <h2 className="text-xl font-semibold">{title}</h2>
+      <h2 className="m-0 text-[clamp(22px,2.2vw,30px)] leading-tight font-light tracking-[-0.02em] text-fg">{title}</h2>
       {children}
     </section>
   );
@@ -34,7 +34,7 @@ function Section({
 
 function Note({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-xl border border-border bg-accent-soft p-3 text-accent-soft-fg">
+    <p className="rounded-2xl border border-[rgba(157,185,255,0.3)] bg-[rgba(42,85,255,0.1)] px-5 py-4 text-fg/90">
       {children}
     </p>
   );
@@ -54,10 +54,15 @@ function referenceText(b: Reference): string {
 
 export function Methodology() {
   return (
-    <div className="flex flex-col gap-8 leading-relaxed">
-      <h1 className="text-2xl font-semibold">
-        <Trans>Metodologia</Trans>
-      </h1>
+    <div className="mx-auto flex w-full max-w-[880px] flex-col gap-10 text-[15.5px] leading-[1.75] font-light text-fg/85 [&_a]:text-accent-text [&_a]:underline-offset-2 [&_p]:m-0 [&_strong]:font-normal [&_strong]:text-fg">
+      <div className="flex flex-col gap-4">
+        <p className="eyebrow">
+          <Trans>Jak działa symulacja</Trans>
+        </p>
+        <h1 className="m-0 text-[clamp(44px,6vw,88px)] leading-[0.95] font-light tracking-[-0.05em] text-fg">
+          <Trans>Metodologia</Trans>
+        </h1>
+      </div>
 
       <Card>
         <p>
@@ -67,7 +72,7 @@ export function Methodology() {
             repozytorium.
           </Trans>
         </p>
-        <p className="mt-3">
+        <p className="!mt-3">
           <Trans>
             Najważniejsze zdanie: model nie jest prognozą. Pokazuje, jak mogą potoczyć się losy
             portfela przy założeniach, które możesz zobaczyć i zmienić, a nie jak się potoczą. Wynik

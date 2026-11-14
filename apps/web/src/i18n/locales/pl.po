@@ -84,7 +84,7 @@ msgstr "{name} to {value}% wartości i {risk}% ryzyka"
 #~ msgid "{paths} przyszłości"
 #~ msgstr "{paths} przyszłości"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:79
+#: src/features/assumptions/AssumptionsPanel.tsx:89
 msgid "{scaleText}× domyślnej niepewności"
 msgstr "{scaleText}× domyślnej niepewności"
 
@@ -100,15 +100,15 @@ msgstr "{y, plural, one {# rok} few {# lata} many {# lat} other {# roku}}"
 msgid "×{multiple} dzisiejszej ceny · przesuń po krzywej"
 msgstr "×{multiple} dzisiejszej ceny · przesuń po krzywej"
 
-#: src/features/methodology/Methodology.tsx:575
+#: src/features/methodology/Methodology.tsx:580
 msgid "<0>Backtest nie dowodzi, że model jest dobry.</0> Test T9 sprawdza, czy rozkład 10- i 20-letnich realnych zwrotów akcji USA z modelu obejmuje historyczne okna (dane Shillera, 1871–2024). Przechodzi tylko wtedy, gdy uwzględnimy niepewność parametrów; bez niej model nie przechodzi (górny ogon). Zgodność wynika głównie z szerokości rozkładu modelu, nie z jego środka: mediana modelu to około 3% realnie, a w historii około 7%. Wynika to stąd, że domyślne założenia to ostrożna prognoza (6% nominalnie), a nie dopasowanie do przeszłości. Okna historyczne nakładają się (to kilkanaście niezależnych obserwacji dla 10 lat i kilka dla 20 lat), dotyczą jednego kraju, który przetrwał, a inflacja w teście jest stała."
 msgstr "<0>Backtest nie dowodzi, że model jest dobry.</0> Test T9 sprawdza, czy rozkład 10- i 20-letnich realnych zwrotów akcji USA z modelu obejmuje historyczne okna (dane Shillera, 1871–2024). Przechodzi tylko wtedy, gdy uwzględnimy niepewność parametrów; bez niej model nie przechodzi (górny ogon). Zgodność wynika głównie z szerokości rozkładu modelu, nie z jego środka: mediana modelu to około 3% realnie, a w historii około 7%. Wynika to stąd, że domyślne założenia to ostrożna prognoza (6% nominalnie), a nie dopasowanie do przeszłości. Okna historyczne nakładają się (to kilkanaście niezależnych obserwacji dla 10 lat i kilka dla 20 lat), dotyczą jednego kraju, który przetrwał, a inflacja w teście jest stała."
 
-#: src/features/methodology/Methodology.tsx:684
+#: src/features/methodology/Methodology.tsx:689
 msgid "<0>Czego nie ma w modelu:</0> zmian przepisów w przyszłości, niepewności samej zmienności, dywidend i podatku u źródła od zagranicznych dywidend, daniny solidarnościowej, kosztów życia poza wpisanymi wypłatami, a także trwałego trendu realnego kursu złotego. Wartości na przyszłość to pewne założenia, nie fakty."
 msgstr "<0>Czego nie ma w modelu:</0> zmian przepisów w przyszłości, niepewności samej zmienności, dywidend i podatku u źródła od zagranicznych dywidend, daniny solidarnościowej, kosztów życia poza wpisanymi wypłatami, a także trwałego trendu realnego kursu złotego. Wartości na przyszłość to pewne założenia, nie fakty."
 
-#: src/features/methodology/Methodology.tsx:628
+#: src/features/methodology/Methodology.tsx:633
 msgid "<0>IKE i IKZE są uproszczone.</0> Limity wpłat (2026 i 2027) są zaszyte w aplikacji ze źródeł wtórnych i rosną w symulacji o inflację plus 1 pp (założenie). Wypłata z IKE po 60. roku życia jest wolna od podatku, a wcześniej opodatkowana 19% od zysku. Z IKZE po 65. roku życia pobieramy 10% od całej kwoty, a wcześniej 19% od zysku, bez zwrotu wcześniej odliczonych kwot (w rzeczywistości wypłata z IKZE przed 65. rokiem życia to zwrot odliczeń, czego nie modelujemy). Pomijamy warunek 5 lat wpłat do IKE przed 60. rokiem życia i do IKZE przed 65. oraz wyższy limit IKZE dla prowadzących działalność gospodarczą. Wpłaty początkowe nie zużywają limitu. Wiek jest wymagany przy wyborze IKE lub IKZE i nie jest zakładany po cichu. Te zasady są cytowane z pamięci i niezweryfikowane w ISAP, o czym przypominamy też przy polu wieku i w Założeniach."
 msgstr "<0>IKE i IKZE są uproszczone.</0> Limity wpłat (2026 i 2027) są zaszyte w aplikacji ze źródeł wtórnych i rosną w symulacji o inflację plus 1 pp (założenie). Wypłata z IKE po 60. roku życia jest wolna od podatku, a wcześniej opodatkowana 19% od zysku. Z IKZE po 65. roku życia pobieramy 10% od całej kwoty, a wcześniej 19% od zysku, bez zwrotu wcześniej odliczonych kwot (w rzeczywistości wypłata z IKZE przed 65. rokiem życia to zwrot odliczeń, czego nie modelujemy). Pomijamy warunek 5 lat wpłat do IKE przed 60. rokiem życia i do IKZE przed 65. oraz wyższy limit IKZE dla prowadzących działalność gospodarczą. Wpłaty początkowe nie zużywają limitu. Wiek jest wymagany przy wyborze IKE lub IKZE i nie jest zakładany po cichu. Te zasady są cytowane z pamięci i niezweryfikowane w ISAP, o czym przypominamy też przy polu wieku i w Założeniach."
 
@@ -116,11 +116,11 @@ msgstr "<0>IKE i IKZE są uproszczone.</0> Limity wpłat (2026 i 2027) są zaszy
 #~ msgid "<0>IKE i IKZE są uproszczone.</0> Limity wpłat (2026 i 2027) są zaszyte w aplikacji ze źródeł wtórnych i rosną w symulacji o inflację plus 1 pp (założenie). Wypłata z IKE po 60. roku życia jest wolna od podatku, a wcześniej opodatkowana 19% od zysku. Z IKZE po 65. roku życia pobieramy 10% od całej kwoty, a wcześniej 19% od zysku, bez zwrotu wcześniej odliczonych kwot. Pomijamy warunek 5 lat wpłat do IKE przed 60. rokiem życia. Wpłaty początkowe nie zużywają limitu. Wiek startowy jest zakładany, dopóki go nie wpiszesz."
 #~ msgstr "<0>IKE i IKZE są uproszczone.</0> Limity wpłat (2026 i 2027) są zaszyte w aplikacji ze źródeł wtórnych i rosną w symulacji o inflację plus 1 pp (założenie). Wypłata z IKE po 60. roku życia jest wolna od podatku, a wcześniej opodatkowana 19% od zysku. Z IKZE po 65. roku życia pobieramy 10% od całej kwoty, a wcześniej 19% od zysku, bez zwrotu wcześniej odliczonych kwot. Pomijamy warunek 5 lat wpłat do IKE przed 60. rokiem życia. Wpłaty początkowe nie zużywają limitu. Wiek startowy jest zakładany, dopóki go nie wpiszesz."
 
-#: src/features/methodology/Methodology.tsx:656
+#: src/features/methodology/Methodology.tsx:661
 msgid "<0>Kryptowaluty:</0> parametry dryfu BTC i ETH to założenia, nie prognozy. Upadek jest stanem pochłaniającym o stałej intensywności, a wpisany CAGR to mediana warunkowa na przetrwaniu, więc typowy wynik zakłada, że nie nastąpił. Nakładka potęgowa, jeśli ją włączysz, opiera się na regresji, która nie ma uzasadnienia ekonomicznego, a jej parametry są niezweryfikowane."
 msgstr "<0>Kryptowaluty:</0> parametry dryfu BTC i ETH to założenia, nie prognozy. Upadek jest stanem pochłaniającym o stałej intensywności, a wpisany CAGR to mediana warunkowa na przetrwaniu, więc typowy wynik zakłada, że nie nastąpił. Nakładka potęgowa, jeśli ją włączysz, opiera się na regresji, która nie ma uzasadnienia ekonomicznego, a jej parametry są niezweryfikowane."
 
-#: src/features/methodology/Methodology.tsx:642
+#: src/features/methodology/Methodology.tsx:647
 msgid "<0>Nieruchomość jest uproszczona.</0> Jest niepłynna, bez częściowej sprzedaży i bez automatycznej sprzedaży przy niedoborze środków (przy ruinie jej wartość też jest zerowana w modelu, żeby bilans się zgadzał). Podatek od sprzedaży to 19% od zysku bez kosztów zbycia i nakładów; ryczałt od czynszu to 8,5% i 12,5% (progi niezweryfikowane). Rok zakupu, cenę zakupu i rok sprzedaży wpisujesz przy dodawaniu mieszkania albo w kafelku pozycji. Bez roku zakupu nie zakładamy zwolnienia po 5 latach (podatek liczymy konserwatywnie), bez ceny zakupu koszt równa się wartości dziś, a bez roku sprzedaży mieszkania nie sprzedajemy w trakcie planu. Wartość „po podatku” odejmuje podatek od sprzedaży mieszkania. Zmienność i błąd standardowy ceny to założenia."
 msgstr "<0>Nieruchomość jest uproszczona.</0> Jest niepłynna, bez częściowej sprzedaży i bez automatycznej sprzedaży przy niedoborze środków (przy ruinie jej wartość też jest zerowana w modelu, żeby bilans się zgadzał). Podatek od sprzedaży to 19% od zysku bez kosztów zbycia i nakładów; ryczałt od czynszu to 8,5% i 12,5% (progi niezweryfikowane). Rok zakupu, cenę zakupu i rok sprzedaży wpisujesz przy dodawaniu mieszkania albo w kafelku pozycji. Bez roku zakupu nie zakładamy zwolnienia po 5 latach (podatek liczymy konserwatywnie), bez ceny zakupu koszt równa się wartości dziś, a bez roku sprzedaży mieszkania nie sprzedajemy w trakcie planu. Wartość „po podatku” odejmuje podatek od sprzedaży mieszkania. Zmienność i błąd standardowy ceny to założenia."
 
@@ -128,55 +128,55 @@ msgstr "<0>Nieruchomość jest uproszczona.</0> Jest niepłynna, bez częściowe
 #~ msgid "<0>Nieruchomość jest uproszczona.</0> Jest niepłynna, bez częściowej sprzedaży i bez automatycznej sprzedaży przy niedoborze środków (przy ruinie jej wartość też jest zerowana w modelu, żeby bilans się zgadzał). Podatek od sprzedaży to 19% od zysku bez kosztów zbycia i nakładów; ryczałt od czynszu to 8,5% i 12,5% (progi niezweryfikowane). W obecnym interfejsie nie ma jeszcze pól na rok zakupu, cenę zakupu i rok sprzedaży: domyślnie koszt równa się wartości, a sprzedaży nie ma. Zmienność i błąd standardowy ceny to założenia."
 #~ msgstr "<0>Nieruchomość jest uproszczona.</0> Jest niepłynna, bez częściowej sprzedaży i bez automatycznej sprzedaży przy niedoborze środków (przy ruinie jej wartość też jest zerowana w modelu, żeby bilans się zgadzał). Podatek od sprzedaży to 19% od zysku bez kosztów zbycia i nakładów; ryczałt od czynszu to 8,5% i 12,5% (progi niezweryfikowane). W obecnym interfejsie nie ma jeszcze pól na rok zakupu, cenę zakupu i rok sprzedaży: domyślnie koszt równa się wartości, a sprzedaży nie ma. Zmienność i błąd standardowy ceny to założenia."
 
-#: src/features/methodology/Methodology.tsx:617
+#: src/features/methodology/Methodology.tsx:622
 msgid "<0>Podatek od niezrealizowanych zysków jest przybliżeniem.</0> Wartość „po podatku” zakłada sprzedaż całości w jednym roku podatkowym, a rok likwidacji traktuje jak rok otwarty, więc wygaśnięcie strat liczone jest na ten rok. Dla krypto podatek utajony to 19% z dodatniej części: przychody roku plus wartość pozycji minus koszty roku minus przeniesiona nadwyżka kosztów. Pomijamy złoto fizyczne trzymane krócej niż pół roku oraz zysk w IKE i IKZE. W rzeczywistości sprzedaż rozłożona na kilka lat dałaby inny podatek."
 msgstr "<0>Podatek od niezrealizowanych zysków jest przybliżeniem.</0> Wartość „po podatku” zakłada sprzedaż całości w jednym roku podatkowym, a rok likwidacji traktuje jak rok otwarty, więc wygaśnięcie strat liczone jest na ten rok. Dla krypto podatek utajony to 19% z dodatniej części: przychody roku plus wartość pozycji minus koszty roku minus przeniesiona nadwyżka kosztów. Pomijamy złoto fizyczne trzymane krócej niż pół roku oraz zysk w IKE i IKZE. W rzeczywistości sprzedaż rozłożona na kilka lat dałaby inny podatek."
 
-#: src/features/methodology/Methodology.tsx:597
+#: src/features/methodology/Methodology.tsx:602
 msgid "<0>Przepisy podatkowe są z pamięci, niezweryfikowane w ISAP.</0> Serwis ISAP nie był dostępny dla narzędzi użytych przy budowie (pętla przekierowań), więc brzmienie ustaw (PIT, ustawa o ryczałcie, ustawa o IKE i IKZE) nie zostało potwierdzone. Dotyczy to stawek, 5 lat zwolnienia nieruchomości, progu ryczałtu najmu, zasad krypto i limitów IKE i IKZE (limity pochodzą ze źródeł wtórnych, Monitor Polski nie był dostępny). Przed użyciem tych wyników do decyzji podatkowej sprawdź aktualne przepisy."
 msgstr "<0>Przepisy podatkowe są z pamięci, niezweryfikowane w ISAP.</0> Serwis ISAP nie był dostępny dla narzędzi użytych przy budowie (pętla przekierowań), więc brzmienie ustaw (PIT, ustawa o ryczałcie, ustawa o IKE i IKZE) nie zostało potwierdzone. Dotyczy to stawek, 5 lat zwolnienia nieruchomości, progu ryczałtu najmu, zasad krypto i limitów IKE i IKZE (limity pochodzą ze źródeł wtórnych, Monitor Polski nie był dostępny). Przed użyciem tych wyników do decyzji podatkowej sprawdź aktualne przepisy."
 
-#: src/features/methodology/Methodology.tsx:607
+#: src/features/methodology/Methodology.tsx:612
 msgid "<0>Rozliczanie strat z papierów to heurystyka zachłanna.</0> Zgodnie z naszym odczytaniem art. 9 ust. 3 ustawy o PIT stratę można odliczyć przez 5 kolejnych lat: jednorazowo do 5 mln zł w wybranym roku, a resztę w limicie 50% pierwotnej straty rocznie. Model wybiera zawsze pierwszy rok z dodatnim dochodem, i to nie jest optymalizacja podatnika: rzeczywisty podatnik może wybrać lepszy rok. Straty rozliczamy od najstarszych roczników. Strata powyżej 5 mln zł wywołuje ostrzeżenie."
 msgstr "<0>Rozliczanie strat z papierów to heurystyka zachłanna.</0> Zgodnie z naszym odczytaniem art. 9 ust. 3 ustawy o PIT stratę można odliczyć przez 5 kolejnych lat: jednorazowo do 5 mln zł w wybranym roku, a resztę w limicie 50% pierwotnej straty rocznie. Model wybiera zawsze pierwszy rok z dodatnim dochodem, i to nie jest optymalizacja podatnika: rzeczywisty podatnik może wybrać lepszy rok. Straty rozliczamy od najstarszych roczników. Strata powyżej 5 mln zł wywołuje ostrzeżenie."
 
-#: src/features/methodology/Methodology.tsx:665
+#: src/features/methodology/Methodology.tsx:670
 msgid "<0>Waluty i inflacja zagraniczna.</0> Wzór na zmienność miesięczną kursu jest przybliżeniem: składnik reżimowy pomija tłumienie przez powrót do średniej, więc przy silnym wpływie kryzysu odchylenie roczne wychodzi o 2–5% niższe od wpisanego. Dla czynników autoregresyjnych (inflacja, kurs) wpisana korelacja oznacza korelację szoków miesięcznych, nie rocznych. Inflacja USA i strefy euro jest stała."
 msgstr "<0>Waluty i inflacja zagraniczna.</0> Wzór na zmienność miesięczną kursu jest przybliżeniem: składnik reżimowy pomija tłumienie przez powrót do średniej, więc przy silnym wpływie kryzysu odchylenie roczne wychodzi o 2–5% niższe od wpisanego. Dla czynników autoregresyjnych (inflacja, kurs) wpisana korelacja oznacza korelację szoków miesięcznych, nie rocznych. Inflacja USA i strefy euro jest stała."
 
-#: src/features/methodology/Methodology.tsx:588
+#: src/features/methodology/Methodology.tsx:593
 msgid "<0>Większość parametrów to założenia.</0> Zmienności, korelacje, błędy standardowe, ładunki kryzysowe, parametry reżimów i grubości ogonów nie zostały skalibrowane na realnych danych i mają status niezweryfikowanych. Inflacja nie została skalibrowana na miesięcznym szeregu GUS (nie udało się go pobrać). Skrypty kalibracyjne istnieją i będą uruchomione, gdy dostarczymy pliki wejściowe."
 msgstr "<0>Większość parametrów to założenia.</0> Zmienności, korelacje, błędy standardowe, ładunki kryzysowe, parametry reżimów i grubości ogonów nie zostały skalibrowane na realnych danych i mają status niezweryfikowanych. Inflacja nie została skalibrowana na miesięcznym szeregu GUS (nie udało się go pobrać). Skrypty kalibracyjne istnieją i będą uruchomione, gdy dostarczymy pliki wejściowe."
 
-#: src/features/methodology/Methodology.tsx:674
+#: src/features/methodology/Methodology.tsx:679
 msgid "<0>Zachowanie w drobnych przypadkach.</0> Niezapłacony podatek (brak środków) nie jest ruiną i przechodzi na kolejny kwiecień. Początkowe obligacje EDO traktujemy jak kupione w chwili zero, a wykup przedterminowy jest liniowy, bez zaokrąglania do obligacji po 100 zł. Przedziały dla prawdopodobieństwa ruiny za życia uwzględniają tylko błąd symulacji. Solver zwraca mniej korzystny koniec przedziału i jego wynik warto potwierdzić pełnym przebiegiem."
 msgstr "<0>Zachowanie w drobnych przypadkach.</0> Niezapłacony podatek (brak środków) nie jest ruiną i przechodzi na kolejny kwiecień. Początkowe obligacje EDO traktujemy jak kupione w chwili zero, a wykup przedterminowy jest liniowy, bez zaokrąglania do obligacji po 100 zł. Przedziały dla prawdopodobieństwa ruiny za życia uwzględniają tylko błąd symulacji. Solver zwraca mniej korzystny koniec przedziału i jego wynik warto potwierdzić pełnym przebiegiem."
 
 #: src/features/assumptions/ParamRow.tsx:50
-msgid "◐ źródło wtórne"
-msgstr "◐ źródło wtórne"
+#~ msgid "◐ źródło wtórne"
+#~ msgstr "◐ źródło wtórne"
 
 #: src/features/assumptions/AssumptionsPanel.tsx:62
-msgid "◐ źródło wtórne: liczba pochodzi z omówienia, nie z oryginału."
-msgstr "◐ źródło wtórne: liczba pochodzi z omówienia, nie z oryginału."
+#~ msgid "◐ źródło wtórne: liczba pochodzi z omówienia, nie z oryginału."
+#~ msgstr "◐ źródło wtórne: liczba pochodzi z omówienia, nie z oryginału."
 
 #: src/features/assumptions/ParamRow.tsx:49
-msgid "✅ zweryfikowane"
-msgstr "✅ zweryfikowane"
+#~ msgid "✅ zweryfikowane"
+#~ msgstr "✅ zweryfikowane"
 
 #: src/features/assumptions/AssumptionsPanel.tsx:61
-msgid "✅ zweryfikowane: liczba odczytana ze źródła i sprawdzona."
-msgstr "✅ zweryfikowane: liczba odczytana ze źródła i sprawdzona."
+#~ msgid "✅ zweryfikowane: liczba odczytana ze źródła i sprawdzona."
+#~ msgstr "✅ zweryfikowane: liczba odczytana ze źródła i sprawdzona."
 
 #: src/features/assumptions/ParamRow.tsx:51
-msgid "❌ niezweryfikowane"
-msgstr "❌ niezweryfikowane"
+#~ msgid "❌ niezweryfikowane"
+#~ msgstr "❌ niezweryfikowane"
 
 #: src/features/assumptions/AssumptionsPanel.tsx:63
-msgid "❌ niezweryfikowane: założenie albo liczba czekająca na kalibrację."
-msgstr "❌ niezweryfikowane: założenie albo liczba czekająca na kalibrację."
+#~ msgid "❌ niezweryfikowane: założenie albo liczba czekająca na kalibrację."
+#~ msgstr "❌ niezweryfikowane: założenie albo liczba czekająca na kalibrację."
 
-#: src/features/assumptions/AssumptionsPanel.tsx:88
+#: src/features/assumptions/AssumptionsPanel.tsx:98
 msgid "0: pewny"
 msgstr "0: pewny"
 
@@ -188,7 +188,7 @@ msgstr "1 BTC dziś"
 msgid "1 na 10"
 msgstr "1 na 10"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:89
+#: src/features/assumptions/AssumptionsPanel.tsx:99
 msgid "1: domyślnie"
 msgstr "1: domyślnie"
 
@@ -200,7 +200,7 @@ msgstr "19% od dochodu z papierów i kryptowalut (art. 30b PIT, 4.10). Przepisy 
 msgid "19% od odsetek (art. 30a PIT). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 msgstr "19% od odsetek (art. 30a PIT). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 
-#: src/features/assumptions/AssumptionsPanel.tsx:90
+#: src/features/assumptions/AssumptionsPanel.tsx:100
 msgid "2: niepewny"
 msgstr "2: niepewny"
 
@@ -225,7 +225,7 @@ msgstr "Akcje polskie"
 msgid "Akcje rynków wschodzących"
 msgstr "Akcje rynków wschodzących"
 
-#: src/features/methodology/Methodology.tsx:296
+#: src/features/methodology/Methodology.tsx:301
 msgid "Aktywa ryzykowne (akcje, ETF, złoto, własne) używają modelu z sekcji o grubych ogonach, reżimach i niepewności parametrów. Lokata to stopa, która z opóźnieniem podąża za inflacją plus rozpiętość, z odsetkami naliczanymi miesięcznie i podatkiem 19% przy wypłacie. Obligacje stałokuponowe to aktywo ryzykowne o niskiej zmienności, ujemnie skorelowane z szokami inflacji."
 msgstr "Aktywa ryzykowne (akcje, ETF, złoto, własne) używają modelu z sekcji o grubych ogonach, reżimach i niepewności parametrów. Lokata to stopa, która z opóźnieniem podąża za inflacją plus rozpiętość, z odsetkami naliczanymi miesięcznie i podatkiem 19% przy wypłacie. Obligacje stałokuponowe to aktywo ryzykowne o niskiej zmienności, ujemnie skorelowane z szokami inflacji."
 
@@ -234,7 +234,7 @@ msgstr "Aktywa ryzykowne (akcje, ETF, złoto, własne) używają modelu z sekcji
 msgid "Aktywo"
 msgstr "Aktywo"
 
-#: src/features/methodology/Methodology.tsx:270
+#: src/features/methodology/Methodology.tsx:275
 msgid "Aktywo w dolarach lub euro zachowuje się jak aktywo w złotych razem z kursem. Realny kurs walutowy nie błądzi bez końca, tylko powoli wraca do parytetu siły nabywczej, z półokresem rzędu 3–5 lat (domyślnie 4 lata) <0/> <1/>. Gdyby kurs był zwykłym błądzeniem, jego wariancja rosłaby bez ograniczeń."
 msgstr "Aktywo w dolarach lub euro zachowuje się jak aktywo w złotych razem z kursem. Realny kurs walutowy nie błądzi bez końca, tylko powoli wraca do parytetu siły nabywczej, z półokresem rzędu 3–5 lat (domyślnie 4 lata) <0/> <1/>. Gdyby kurs był zwykłym błądzeniem, jego wariancja rosłaby bez ograniczeń."
 
@@ -242,7 +242,7 @@ msgstr "Aktywo w dolarach lub euro zachowuje się jak aktywo w złotych razem z 
 msgid "Amortyzacja (ABW)"
 msgstr "Amortyzacja (ABW)"
 
-#: src/features/methodology/Methodology.tsx:421
+#: src/features/methodology/Methodology.tsx:426
 msgid "Amortyzacja liczy w styczniu ratę jak rentę z góry (jak funkcja PMT w arkuszu) z pozostałych lat i oczekiwanego realnego zwrotu portfela, z opcjonalną podłogą i sufitem <0/>. Reguły Guytona i Klingera <1/> to zestaw sprzężonych zasad: coroczna indeksacja wypłaty (pomijana po ujemnym roku, jeśli stopa wypłaty jest ponad startową), ochrona kapitału (obcięcie wypłaty, gdy stopa wzrośnie za bardzo, ale nie w ostatnich 15 latach planu) i reguła dobrobytu (podwyżka, gdy stopa spadnie). W aplikacji ich parametry są stałe, a Ty wpisujesz tylko stopę startową."
 msgstr "Amortyzacja liczy w styczniu ratę jak rentę z góry (jak funkcja PMT w arkuszu) z pozostałych lat i oczekiwanego realnego zwrotu portfela, z opcjonalną podłogą i sufitem <0/>. Reguły Guytona i Klingera <1/> to zestaw sprzężonych zasad: coroczna indeksacja wypłaty (pomijana po ujemnym roku, jeśli stopa wypłaty jest ponad startową), ochrona kapitału (obcięcie wypłaty, gdy stopa wzrośnie za bardzo, ale nie w ostatnich 15 latach planu) i reguła dobrobytu (podwyżka, gdy stopa spadnie). W aplikacji ich parametry są stałe, a Ty wpisujesz tylko stopę startową."
 
@@ -250,18 +250,18 @@ msgstr "Amortyzacja liczy w styczniu ratę jak rentę z góry (jak funkcja PMT w
 #~ msgid "Amortyzacja liczy w styczniu ratę jak rentę z góry (jak funkcja PMT w arkuszu) z pozostałych lat i oczekiwanego realnego zwrotu portfela, z opcjonalną podłogą i sufitem <0/>. Reguły Guytona i Klingera <1/> to zestaw sprzężonych zasad: coroczna indeksacja wypłaty (pomijana po ujemnym roku, jeśli stopa wypłaty jest ponad startową), ochrona kapitału (obcięcie wypłaty, gdy stopa wzrośnie za bardzo) i reguła dobrobytu (podwyżka, gdy stopa spadnie). W aplikacji ich parametry są stałe, a Ty wpisujesz tylko stopę startową."
 #~ msgstr "Amortyzacja liczy w styczniu ratę jak rentę z góry (jak funkcja PMT w arkuszu) z pozostałych lat i oczekiwanego realnego zwrotu portfela, z opcjonalną podłogą i sufitem <0/>. Reguły Guytona i Klingera <1/> to zestaw sprzężonych zasad: coroczna indeksacja wypłaty (pomijana po ujemnym roku, jeśli stopa wypłaty jest ponad startową), ochrona kapitału (obcięcie wypłaty, gdy stopa wzrośnie za bardzo) i reguła dobrobytu (podwyżka, gdy stopa spadnie). W aplikacji ich parametry są stałe, a Ty wpisujesz tylko stopę startową."
 
-#: src/features/methodology/Methodology.tsx:706
+#: src/features/methodology/Methodology.tsx:711
 msgid "Aneks: wzory"
 msgstr "Aneks: wzory"
 
 #: src/features/portfolio/PortfolioEditor.tsx:121
 #: src/features/portfolio/PositionForm.tsx:297
 #: src/features/results/Solvers.tsx:98
-#: src/features/settings/Settings.tsx:177
+#: src/features/settings/Settings.tsx:179
 msgid "Anuluj"
 msgstr "Anuluj"
 
-#: src/features/methodology/Methodology.tsx:556
+#: src/features/methodology/Methodology.tsx:561
 msgid "Aplikacja zawiera tylko statystyki pochodne i cytowania, nie surowe szeregi. Kalibracja używa też estymatora kowariancji Ledoita i Wolfa <0/>. Notowania BTC i kursy walut pobieramy tylko na Twoje żądanie, a dane portfela nigdy nie opuszczają urządzenia."
 msgstr "Aplikacja zawiera tylko statystyki pochodne i cytowania, nie surowe szeregi. Kalibracja używa też estymatora kowariancji Ledoita i Wolfa <0/>. Notowania BTC i kursy walut pobieramy tylko na Twoje żądanie, a dane portfela nigdy nie opuszczają urządzenia."
 
@@ -278,7 +278,7 @@ msgstr "Autokorelacja r/r przy lagu 12 = 0,4 (❌ do kalibracji na danych GUS)."
 msgid "b (udział w zmienności kryzysu){sfx}"
 msgstr "b (udział w zmienności kryzysu){sfx}"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:50
+#: src/features/assumptions/AssumptionsPanel.tsx:51
 msgid "Bazowy"
 msgstr "Bazowy"
 
@@ -306,7 +306,7 @@ msgstr "Bitcoin · cena w roku {year}"
 msgid "Bitcoin: rozkład ceny w roku {year}"
 msgstr "Bitcoin: rozkład ceny w roku {year}"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:99
+#: src/features/assumptions/AssumptionsPanel.tsx:109
 msgid "Bitcoin: zestaw założeń"
 msgstr "Bitcoin: zestaw założeń"
 
@@ -338,7 +338,7 @@ msgstr "Brak wartości w spec; 0."
 msgid "Brak wypłat"
 msgstr "Brak wypłat"
 
-#: src/features/assumptions/ParamRow.tsx:77
+#: src/features/assumptions/ParamRow.tsx:78
 msgid "brak źródła: wartość jest założeniem lub oczekuje na kalibrację"
 msgstr "brak źródła: wartość jest założeniem lub oczekuje na kalibrację"
 
@@ -416,7 +416,7 @@ msgstr "Cena zakupu (opcjonalnie)"
 msgid "Cena zakupu musi być większa od zera."
 msgstr "Cena zakupu musi być większa od zera."
 
-#: src/features/settings/Settings.tsx:63
+#: src/features/settings/Settings.tsx:65
 msgid "Ciemny"
 msgstr "Ciemny"
 
@@ -501,7 +501,7 @@ msgstr "Czynsz netto 3,5% ceny rocznie (❌ założenie)."
 msgid "Dalej"
 msgstr "Dalej"
 
-#: src/features/assumptions/ParamRow.tsx:47
+#: src/features/assumptions/ParamRow.tsx:48
 msgid "dane"
 msgstr "dane"
 
@@ -509,7 +509,7 @@ msgstr "dane"
 msgid "Dane planu są niepoprawne albo niekompletne. Popraw portfel i plan albo zacznij od nowa w Ustawieniach."
 msgstr "Dane planu są niepoprawne albo niekompletne. Popraw portfel i plan albo zacznij od nowa w Ustawieniach."
 
-#: src/features/settings/Settings.tsx:129
+#: src/features/settings/Settings.tsx:131
 msgid "Dane usunięte. Zaczynasz od nowa."
 msgstr "Dane usunięte. Zaczynasz od nowa."
 
@@ -517,15 +517,15 @@ msgstr "Dane usunięte. Zaczynasz od nowa."
 msgid "Dane zostają na tym urządzeniu"
 msgstr "Dane zostają na tym urządzeniu"
 
-#: src/features/methodology/Methodology.tsx:709
+#: src/features/methodology/Methodology.tsx:714
 msgid "Dla czytających szczegółowo: wzory użyte w silniku. Symbole: g to mediana rocznego CAGR, σ zmienność roczna, ν stopnie swobody rozkładu t, T horyzont w latach, indeks i numeruje aktywa, p ścieżkę, t miesiąc."
 msgstr "Dla czytających szczegółowo: wzory użyte w silniku. Symbole: g to mediana rocznego CAGR, σ zmienność roczna, ν stopnie swobody rozkładu t, T horyzont w latach, indeks i numeruje aktywa, p ścieżkę, t miesiąc."
 
-#: src/features/methodology/Methodology.tsx:402
+#: src/features/methodology/Methodology.tsx:407
 msgid "Dla osób spoza Polski są tryby „bez podatków” i „stawka ogólna” (jedna stawka od zysku przy sprzedaży). Poza zakresem: danina solidarnościowa, zaokrąglenia do pełnych złotych, dywidendy i podatek u źródła od zagranicznych dywidend."
 msgstr "Dla osób spoza Polski są tryby „bez podatków” i „stawka ogólna” (jedna stawka od zysku przy sprzedaży). Poza zakresem: danina solidarnościowa, zaokrąglenia do pełnych złotych, dywidendy i podatek u źródła od zagranicznych dywidend."
 
-#: src/features/plan/PersonCard.tsx:58
+#: src/features/plan/PersonCard.tsx:59
 msgid "Dłuższe życie kolejnych roczników (+2 lata, założenie)"
 msgstr "Dłuższe życie kolejnych roczników (+2 lata, założenie)"
 
@@ -574,15 +574,15 @@ msgstr "Dodaj drugi scenariusz, aby zobaczyć różnice."
 msgid "Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej."
 msgstr "Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej."
 
-#: src/features/assumptions/AssumptionsPanel.tsx:128
+#: src/features/assumptions/AssumptionsPanel.tsx:138
 msgid "Dodaj pozycje w portfelu, a pojawią się tu założenia dla każdego aktywa."
 msgstr "Dodaj pozycje w portfelu, a pojawią się tu założenia dla każdego aktywa."
 
-#: src/features/methodology/Methodology.tsx:534
+#: src/features/methodology/Methodology.tsx:539
 msgid "Dodatkowo model porównaliśmy z historią: rozkład 10- i 20-letnich realnych zwrotów akcji USA z modelu ma objąć historyczne okna z danych Shillera <0/>. Wynik i jego ograniczenia opisujemy otwarcie w sekcji „Uproszczenia i ograniczenia”. Kod bootstrapu historycznego (blokowy, stacjonarny <1/>) jest w silniku, ale nie jest podłączony do interfejsu."
 msgstr "Dodatkowo model porównaliśmy z historią: rozkład 10- i 20-letnich realnych zwrotów akcji USA z modelu ma objąć historyczne okna z danych Shillera <0/>. Wynik i jego ograniczenia opisujemy otwarcie w sekcji „Uproszczenia i ograniczenia”. Kod bootstrapu historycznego (blokowy, stacjonarny <1/>) jest w silniku, ale nie jest podłączony do interfejsu."
 
-#: src/features/methodology/Methodology.tsx:441
+#: src/features/methodology/Methodology.tsx:446
 msgid "Dodatkowo można wpisać zdarzenia jednorazowe (kwota realna albo nominalna, data, znak)."
 msgstr "Dodatkowo można wpisać zdarzenia jednorazowe (kwota realna albo nominalna, data, znak)."
 
@@ -594,7 +594,7 @@ msgstr "Dodatkowo można wpisać zdarzenia jednorazowe (kwota realna albo nomina
 msgid "Domyślna strata przy upadku L = 0,95 (4.8, Z-15)."
 msgstr "Domyślna strata przy upadku L = 0,95 (4.8, Z-15)."
 
-#: src/features/methodology/Methodology.tsx:287
+#: src/features/methodology/Methodology.tsx:292
 msgid "Domyślnie nie zakładamy trwałego umacniania ani osłabiania złotego w ujęciu realnym (efekt Balassy i Samuelsona jest parametrem eksperta, domyślnie zerowym)."
 msgstr "Domyślnie nie zakładamy trwałego umacniania ani osłabiania złotego w ujęciu realnym (efekt Balassy i Samuelsona jest parametrem eksperta, domyślnie zerowym)."
 
@@ -620,7 +620,7 @@ msgstr "Domyślny ładunek złota (4.4)."
 
 #. placeholder {0}: b.accessed
 #. placeholder {0}: s.accessed
-#: src/features/assumptions/ParamRow.tsx:71
+#: src/features/assumptions/ParamRow.tsx:72
 #: src/features/methodology/Methodology.tsx:51
 msgid "dostęp: {0}"
 msgstr "dostęp: {0}"
@@ -631,7 +631,7 @@ msgstr "Dostępna nowa wersja — odśwież"
 
 #. placeholder {0}: fmt(min, unit)
 #. placeholder {1}: fmt(max, unit)
-#: src/features/assumptions/ParamRow.tsx:116
+#: src/features/assumptions/ParamRow.tsx:124
 msgid "Dozwolony zakres: od {0} do {1}."
 msgstr "Dozwolony zakres: od {0} do {1}."
 
@@ -712,7 +712,7 @@ msgid "Gotowe"
 msgstr "Gotowe"
 
 #: src/features/methodology/Annex.tsx:36
-#: src/features/methodology/Methodology.tsx:149
+#: src/features/methodology/Methodology.tsx:154
 msgid "Grube ogony"
 msgstr "Grube ogony"
 
@@ -731,7 +731,7 @@ msgstr "Horyzont (lata)"
 msgid "Horyzont może mieć od 1 miesiąca do 80 lat."
 msgstr "Horyzont może mieć od 1 miesiąca do 80 lat."
 
-#: src/features/assumptions/TaxRulesCard.tsx:46
+#: src/features/assumptions/TaxRulesCard.tsx:49
 msgid "IKE bez podatku od 60 lat, IKZE 10% od 65 lat, wcześniej 19% od zysku (wymóg 5 lat wpłat pominięty)"
 msgstr "IKE bez podatku od 60 lat, IKZE 10% od 65 lat, wcześniej 19% od zysku (wymóg 5 lat wpłat pominięty)"
 
@@ -748,7 +748,7 @@ msgstr "Ile muszę wpłacać?"
 msgid "Ile odkładasz co miesiąc. Puste albo 0 oznacza brak wpłat."
 msgstr "Ile odkładasz co miesiąc. Puste albo 0 oznacza brak wpłat."
 
-#: src/features/methodology/Methodology.tsx:261
+#: src/features/methodology/Methodology.tsx:266
 msgid "Indeks cen na każdej ścieżce służy do przeliczania na złote realne, indeksowania wpłat i wypłat oraz do obligacji EDO. Inflację zagraniczną (USD, EUR) przyjmujemy jako stałą."
 msgstr "Indeks cen na każdej ścieżce służy do przeliczania na złote realne, indeksowania wpłat i wypłat oraz do obligacji EDO. Inflację zagraniczną (USD, EUR) przyjmujemy jako stałą."
 
@@ -765,7 +765,7 @@ msgstr "Inflacja"
 msgid "Inflacją"
 msgstr "Inflacją"
 
-#: src/features/methodology/Methodology.tsx:243
+#: src/features/methodology/Methodology.tsx:248
 msgid "Inflacja (Polska)"
 msgstr "Inflacja (Polska)"
 
@@ -773,7 +773,7 @@ msgstr "Inflacja (Polska)"
 msgid "Inflacja długookresowa"
 msgstr "Inflacja długookresowa"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:148
+#: src/features/assumptions/AssumptionsPanel.tsx:158
 msgid "Inflacja i kursy walut"
 msgstr "Inflacja i kursy walut"
 
@@ -781,7 +781,7 @@ msgstr "Inflacja i kursy walut"
 msgid "Inflacją i realnym wzrostem"
 msgstr "Inflacją i realnym wzrostem"
 
-#: src/features/methodology/Methodology.tsx:245
+#: src/features/methodology/Methodology.tsx:250
 msgid "Inflacja jest procesem, który wraca do długookresowej średniej, ale powoli. Startujemy od ostatniego odczytu rok do roku, a nie od odczytu miesięcznego, który mógłby dać absurdalną inflację roczną. W zbiorze danych jest 13 ostatnich poziomów indeksu cen, żeby inflacja roczna i indeksacja obligacji EDO były poprawne od pierwszego miesiąca."
 msgstr "Inflacja jest procesem, który wraca do długookresowej średniej, ale powoli. Startujemy od ostatniego odczytu rok do roku, a nie od odczytu miesięcznego, który mógłby dać absurdalną inflację roczną. W zbiorze danych jest 13 ostatnich poziomów indeksu cen, żeby inflacja roczna i indeksacja obligacji EDO były poprawne od pierwszego miesiąca."
 
@@ -798,12 +798,16 @@ msgstr "Inflacja zagraniczna ({0})"
 msgid "Jak chcesz wypłacać pieniądze?"
 msgstr "Jak chcesz wypłacać pieniądze?"
 
+#: src/features/methodology/Methodology.tsx:60
+msgid "Jak działa symulacja"
+msgstr "Jak działa symulacja"
+
 #: src/features/results/Solvers.tsx:82
 msgid "Jak pewnie ma starczyć"
 msgstr "Jak pewnie ma starczyć"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:67
-#: src/features/assumptions/AssumptionsPanel.tsx:70
+#: src/features/assumptions/AssumptionsPanel.tsx:77
+#: src/features/assumptions/AssumptionsPanel.tsx:80
 msgid "Jak pewny jesteś oczekiwanego zwrotu?"
 msgstr "Jak pewny jesteś oczekiwanego zwrotu?"
 
@@ -811,11 +815,11 @@ msgstr "Jak pewny jesteś oczekiwanego zwrotu?"
 msgid "Jak podać długość planu?"
 msgstr "Jak podać długość planu?"
 
-#: src/features/methodology/Methodology.tsx:522
+#: src/features/methodology/Methodology.tsx:527
 msgid "Jak sprawdzamy poprawność"
 msgstr "Jak sprawdzamy poprawność"
 
-#: src/features/settings/Settings.tsx:61
+#: src/features/settings/Settings.tsx:63
 msgid "Jak w systemie"
 msgstr "Jak w systemie"
 
@@ -823,7 +827,7 @@ msgstr "Jak w systemie"
 msgid "Jakie złoto?"
 msgstr "Jakie złoto?"
 
-#: src/features/settings/Settings.tsx:62
+#: src/features/settings/Settings.tsx:64
 msgid "Jasny"
 msgstr "Jasny"
 
@@ -831,7 +835,7 @@ msgstr "Jasny"
 msgid "Jednorazowe odliczenie straty do 5 000 000 zł (art. 9 ust. 3, R-3). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 msgstr "Jednorazowe odliczenie straty do 5 000 000 zł (art. 9 ust. 3, R-3). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 
-#: src/features/methodology/Methodology.tsx:449
+#: src/features/methodology/Methodology.tsx:454
 msgid "Jeśli podasz wiek i płeć (w Planie, oba pola są opcjonalne), aplikacja policzy w Wynikach prawdopodobieństwo wyczerpania środków za Twojego życia. Bierze pod uwagę, że ruina w odległym roku liczy się tylko wtedy, gdy dożyjesz tego roku. Używamy tablic trwania życia GUS (rok 2025); śmiertelność całkujemy analitycznie, bez dodatkowego szumu."
 msgstr "Jeśli podasz wiek i płeć (w Planie, oba pola są opcjonalne), aplikacja policzy w Wynikach prawdopodobieństwo wyczerpania środków za Twojego życia. Bierze pod uwagę, że ruina w odległym roku liczy się tylko wtedy, gdy dożyjesz tego roku. Używamy tablic trwania życia GUS (rok 2025); śmiertelność całkujemy analitycznie, bez dodatkowego szumu."
 
@@ -839,12 +843,11 @@ msgstr "Jeśli podasz wiek i płeć (w Planie, oba pola są opcjonalne), aplikac
 #~ msgid "Jeśli podasz wiek i płeć, aplikacja policzy prawdopodobieństwo wyczerpania środków za Twojego życia. Bierze pod uwagę, że ruina w odległym roku liczy się tylko wtedy, gdy dożyjesz tego roku. Używamy tablic trwania życia GUS (rok 2025); śmiertelność całkujemy analitycznie, bez dodatkowego szumu."
 #~ msgstr "Jeśli podasz wiek i płeć, aplikacja policzy prawdopodobieństwo wyczerpania środków za Twojego życia. Bierze pod uwagę, że ruina w odległym roku liczy się tylko wtedy, gdy dożyjesz tego roku. Używamy tablic trwania życia GUS (rok 2025); śmiertelność całkujemy analitycznie, bez dodatkowego szumu."
 
-#: src/features/methodology/Methodology.tsx:170
+#: src/features/methodology/Methodology.tsx:175
 msgid "Jeśli wpiszesz własną macierz korelacji, która nie jest poprawna (nie jest dodatnio określona), aplikacja zastąpi ją najbliższą poprawną macierzą metodą Highama <0/>, pokaże ostrzeżenie i macierz po korekcie."
 msgstr "Jeśli wpiszesz własną macierz korelacji, która nie jest poprawna (nie jest dodatnio określona), aplikacja zastąpi ją najbliższą poprawną macierzą metodą Highama <0/>, pokaże ostrzeżenie i macierz po korekcie."
 
-#: src/app/Layout.tsx:52
-#: src/features/settings/Settings.tsx:74
+#: src/features/settings/Settings.tsx:76
 msgid "Język"
 msgstr "Język"
 
@@ -872,20 +875,20 @@ msgstr "JPM 7,5; Vanguard ok. 5,9 (ważone regionami); AQR 4,2 realnie + 2,4 inf
 msgid "k = 0,15 na miesiąc (❌ założenie)."
 msgstr "k = 0,15 na miesiąc (❌ założenie)."
 
-#: src/features/methodology/Methodology.tsx:253
+#: src/features/methodology/Methodology.tsx:258
 msgid "Kalibrujemy proces do odchylenia i autokorelacji inflacji rok do roku (opóźnienie 12 miesięcy). Trzeba pamiętać, że inflacja rok do roku jest sumą 12 przyrostów miesięcznych, więc jej autokorelacja nie jest autokorelacją procesu miesięcznego; wzory są w aneksie. Deflacja jest dozwolona (Polska miała ją w latach 2014–2016)."
 msgstr "Kalibrujemy proces do odchylenia i autokorelacji inflacji rok do roku (opóźnienie 12 miesięcy). Trzeba pamiętać, że inflacja rok do roku jest sumą 12 przyrostów miesięcznych, więc jej autokorelacja nie jest autokorelacją procesu miesięcznego; wzory są w aneksie. Deflacja jest dozwolona (Polska miała ją w latach 2014–2016)."
 
 #. placeholder {0}: dataset.version
-#: src/features/assumptions/AssumptionsPanel.tsx:58
+#: src/features/assumptions/AssumptionsPanel.tsx:59
 msgid "Każda liczba, na której opiera się symulacja, ma tu swoje źródło i status. Wartości możesz zmienić; zawsze da się wrócić do domyślnej. Zbiór danych: wersja {0}."
 msgstr "Każda liczba, na której opiera się symulacja, ma tu swoje źródło i status. Wartości możesz zmienić; zawsze da się wrócić do domyślnej. Zbiór danych: wersja {0}."
 
-#: src/features/methodology/Methodology.tsx:359
+#: src/features/methodology/Methodology.tsx:364
 msgid "Każda pozycja należy do konta: zwykłego, IKE albo IKZE. IKE i IKZE mają roczne limity wpłat i własne reguły podatkowe (opisane w sekcji o podatkach i w uproszczeniach). Wpłata ponad limit trafia na konto zwykłe."
 msgstr "Każda pozycja należy do konta: zwykłego, IKE albo IKZE. IKE i IKZE mają roczne limity wpłat i własne reguły podatkowe (opisane w sekcji o podatkach i w uproszczeniach). Wpłata ponad limit trafia na konto zwykłe."
 
-#: src/features/methodology/Methodology.tsx:131
+#: src/features/methodology/Methodology.tsx:136
 msgid "Każda ścieżka i każdy czynnik (aktywo, kurs, inflacja, reżim rynku i tak dalej) ma własny strumień liczb. Jedno losowanie zużywa dokładnie jedną liczbę, a liczby normalne powstają przez odwrócenie dystrybuanty algorytmem AS 241 <0/>. Z tego wynika, że wynik nie zależy od liczby wątków, a dodanie aktywa nie zmienia losowań pozostałych."
 msgstr "Każda ścieżka i każdy czynnik (aktywo, kurs, inflacja, reżim rynku i tak dalej) ma własny strumień liczb. Jedno losowanie zużywa dokładnie jedną liczbę, a liczby normalne powstają przez odwrócenie dystrybuanty algorytmem AS 241 <0/>. Z tego wynika, że wynik nie zależy od liczby wątków, a dodanie aktywa nie zmienia losowań pozostałych."
 
@@ -893,7 +896,7 @@ msgstr "Każda ścieżka i każdy czynnik (aktywo, kurs, inflacja, reżim rynku 
 msgid "kobieta"
 msgstr "kobieta"
 
-#: src/features/plan/PersonCard.tsx:53
+#: src/features/plan/PersonCard.tsx:54
 msgid "Kobieta"
 msgstr "Kobieta"
 
@@ -941,7 +944,7 @@ msgstr "Koszt ustawia użytkownik; domyślnie 0."
 msgid "Krok {step} z 3"
 msgstr "Krok {step} z 3"
 
-#: src/features/methodology/Methodology.tsx:79
+#: src/features/methodology/Methodology.tsx:84
 msgid "Krok czasowy i kolejność zdarzeń"
 msgstr "Krok czasowy i kolejność zdarzeń"
 
@@ -949,11 +952,11 @@ msgstr "Krok czasowy i kolejność zdarzeń"
 msgid "Krok czasowy i liczby losowe"
 msgstr "Krok czasowy i liczby losowe"
 
-#: src/features/methodology/Methodology.tsx:384
+#: src/features/methodology/Methodology.tsx:389
 msgid "Kryptowaluty kupione bezpośrednio (nie przez fundusz giełdowy) rozlicza się inaczej: bez FIFO. Dochód roczny to przychody ze sprzedaży minus wydatki na zakup poniesione w tym samym roku (także na niesprzedane jednostki) minus nadwyżka kosztów z lat poprzednich. Nadwyżka przechodzi na kolejne lata bez limitu czasu i nie łączy się z papierami wartościowymi. Kryptowaluta w funduszu giełdowym (ETP) to zwykły papier wartościowy."
 msgstr "Kryptowaluty kupione bezpośrednio (nie przez fundusz giełdowy) rozlicza się inaczej: bez FIFO. Dochód roczny to przychody ze sprzedaży minus wydatki na zakup poniesione w tym samym roku (także na niesprzedane jednostki) minus nadwyżka kosztów z lat poprzednich. Nadwyżka przechodzi na kolejne lata bez limitu czasu i nie łączy się z papierami wartościowymi. Kryptowaluta w funduszu giełdowym (ETP) to zwykły papier wartościowy."
 
-#: src/features/methodology/Methodology.tsx:314
+#: src/features/methodology/Methodology.tsx:319
 msgid "Kryptowaluty mają dodatkowo zanik: wzrost i zmienność powoli maleją od wartości początkowych do długookresowych. Upadek (np. utrata zaufania) to zdarzenie losowe o ustalonej intensywności na rok, po którym wartość spada o zadany procent (domyślnie 95%), a dryf wynosi zero. Wpisany CAGR to mediana warunkowa na przetrwaniu: dryfu nie podnosimy w zamian za ryzyko upadku, bo to zawyżałoby typowy wynik. Osobno pokazujemy prawdopodobieństwo upadku do wybranego roku."
 msgstr "Kryptowaluty mają dodatkowo zanik: wzrost i zmienność powoli maleją od wartości początkowych do długookresowych. Upadek (np. utrata zaufania) to zdarzenie losowe o ustalonej intensywności na rok, po którym wartość spada o zadany procent (domyślnie 95%), a dryf wynosi zero. Wpisany CAGR to mediana warunkowa na przetrwaniu: dryfu nie podnosimy w zamian za ryzyko upadku, bo to zawyżałoby typowy wynik. Osobno pokazujemy prawdopodobieństwo upadku do wybranego roku."
 
@@ -986,15 +989,15 @@ msgstr "Kwota miesięczna"
 msgid "Kwotę w zł"
 msgstr "Kwotę w zł"
 
-#: src/features/results/Dashboard.tsx:230
+#: src/features/results/Dashboard.tsx:229
 msgid "L"
 msgstr "L"
 
-#: src/features/assumptions/ParamRow.tsx:29
+#: src/features/assumptions/ParamRow.tsx:30
 #: src/features/onboarding/Onboarding.tsx:210
 #: src/features/onboarding/Onboarding.tsx:232
 #: src/features/onboarding/Onboarding.tsx:276
-#: src/features/plan/PersonCard.tsx:33
+#: src/features/plan/PersonCard.tsx:34
 #: src/features/plan/PlanEditor.tsx:138
 #: src/features/plan/PlanEditor.tsx:151
 #: src/features/plan/PlanEditor.tsx:160
@@ -1029,7 +1032,7 @@ msgstr "Liczba lat"
 msgid "Liczba przyszłości"
 msgstr "Liczba przyszłości"
 
-#: src/features/methodology/Methodology.tsx:476
+#: src/features/methodology/Methodology.tsx:481
 msgid "Liczba ścieżek rośnie w stałych etapach (1 000, 4 000, 10 000, opcjonalnie 25 000). Nie zatrzymujemy symulacji, gdy wynik „wygląda dobrze”, bo to psułoby przedziały ufności. Plakietka pokazuje osiągniętą dokładność. Pokazujemy też: prawdopodobieństwo osiągnięcia celu, realnej straty i ruiny, rozkład maksymalnego obsunięcia (liczony co miesiąc na indeksie portfela, nie na wartości zniekształconej wpłatami) i „najgorsze 5% przyszłości: średnio X” (średnia z najniższych 5% wartości końcowych)."
 msgstr "Liczba ścieżek rośnie w stałych etapach (1 000, 4 000, 10 000, opcjonalnie 25 000). Nie zatrzymujemy symulacji, gdy wynik „wygląda dobrze”, bo to psułoby przedziały ufności. Plakietka pokazuje osiągniętą dokładność. Pokazujemy też: prawdopodobieństwo osiągnięcia celu, realnej straty i ruiny, rozkład maksymalnego obsunięcia (liczony co miesiąc na indeksie portfela, nie na wartości zniekształconej wpłatami) i „najgorsze 5% przyszłości: średnio X” (średnia z najniższych 5% wartości końcowych)."
 
@@ -1041,7 +1044,7 @@ msgstr "Liczba stopni swobody ν (grubość ogonów)"
 msgid "Liczbę BTC"
 msgstr "Liczbę BTC"
 
-#: src/features/methodology/Methodology.tsx:122
+#: src/features/methodology/Methodology.tsx:127
 msgid "Liczby losowe"
 msgstr "Liczby losowe"
 
@@ -1093,27 +1096,27 @@ msgstr "Limit IKZE 2027 dla działalności: 18 059,40 zł; źródła sprzeczne c
 msgid "Limit IKZE 2027: 12 039,60 zł; źródła sprzeczne co do publikacji obwieszczenia."
 msgstr "Limit IKZE 2027: 12 039,60 zł; źródła sprzeczne co do publikacji obwieszczenia."
 
-#: src/features/assumptions/TaxRulesCard.tsx:39
+#: src/features/assumptions/TaxRulesCard.tsx:42
 msgid "Limit wpłat na IKE w 2026"
 msgstr "Limit wpłat na IKE w 2026"
 
-#: src/features/assumptions/TaxRulesCard.tsx:40
+#: src/features/assumptions/TaxRulesCard.tsx:43
 msgid "Limit wpłat na IKE w 2027"
 msgstr "Limit wpłat na IKE w 2027"
 
-#: src/features/assumptions/TaxRulesCard.tsx:41
+#: src/features/assumptions/TaxRulesCard.tsx:44
 msgid "Limit wpłat na IKZE w 2026"
 msgstr "Limit wpłat na IKZE w 2026"
 
-#: src/features/assumptions/TaxRulesCard.tsx:43
+#: src/features/assumptions/TaxRulesCard.tsx:46
 msgid "Limit wpłat na IKZE w 2026 przy działalności gospodarczej (nieużywany w symulacji)"
 msgstr "Limit wpłat na IKZE w 2026 przy działalności gospodarczej (nieużywany w symulacji)"
 
-#: src/features/assumptions/TaxRulesCard.tsx:42
+#: src/features/assumptions/TaxRulesCard.tsx:45
 msgid "Limit wpłat na IKZE w 2027"
 msgstr "Limit wpłat na IKZE w 2027"
 
-#: src/features/methodology/Methodology.tsx:694
+#: src/features/methodology/Methodology.tsx:699
 msgid "Literatura"
 msgstr "Literatura"
 
@@ -1129,7 +1132,7 @@ msgstr "Lokata bez zmienności rynkowej (spec: brak)."
 msgid "Lokata nie ma ładunku kryzysowego."
 msgstr "Lokata nie ma ładunku kryzysowego."
 
-#: src/features/methodology/Methodology.tsx:124
+#: src/features/methodology/Methodology.tsx:129
 msgid "Losowość pochodzi z generatora xoshiro128** <0/>, inicjowanego z ziarna. Dzięki temu ten sam scenariusz zawsze daje ten sam wynik, a zmiana jednego parametru nie rozsypuje całej reszty losowań."
 msgstr "Losowość pochodzi z generatora xoshiro128** <0/>, inicjowanego z ziarna. Dzięki temu ten sam scenariusz zawsze daje ten sam wynik, a zmiana jednego parametru nie rozsypuje całej reszty losowań."
 
@@ -1171,7 +1174,7 @@ msgid "Mediana: połowa przyszłości kończy się wyżej, połowa niżej. To ×
 msgstr "Mediana: połowa przyszłości kończy się wyżej, połowa niżej. To ×{mult} tego, co masz dziś."
 
 #: src/app/Layout.tsx:127
-#: src/features/methodology/Methodology.tsx:59
+#: src/features/methodology/Methodology.tsx:63
 msgid "Metodologia"
 msgstr "Metodologia"
 
@@ -1179,7 +1182,7 @@ msgstr "Metodologia"
 msgid "mężczyzna"
 msgstr "mężczyzna"
 
-#: src/features/plan/PersonCard.tsx:54
+#: src/features/plan/PersonCard.tsx:55
 msgid "Mężczyzna"
 msgstr "Mężczyzna"
 
@@ -1227,7 +1230,7 @@ msgstr "Mnożnik zmienności w kryzysie (κ₁)"
 msgid "model kontrowersyjny"
 msgstr "model kontrowersyjny"
 
-#: src/features/methodology/Methodology.tsx:567
+#: src/features/methodology/Methodology.tsx:572
 msgid "Model nie jest prognozą ani rekomendacją. Uczciwa lista poniżej mówi, gdzie model upraszcza rzeczywistość lub opiera się na niesprawdzonych wartościach. Im więcej tu punktów dotyczy Twojej sytuacji, tym ostrożniej czytaj wynik."
 msgstr "Model nie jest prognozą ani rekomendacją. Uczciwa lista poniżej mówi, gdzie model upraszcza rzeczywistość lub opiera się na niesprawdzonych wartościach. Im więcej tu punktów dotyczy Twojej sytuacji, tym ostrożniej czytaj wynik."
 
@@ -1245,7 +1248,7 @@ msgstr "model skalibrowany ✓"
 msgid "Mój wiek"
 msgstr "Mój wiek"
 
-#: src/features/settings/Settings.tsx:73
+#: src/features/settings/Settings.tsx:75
 msgid "Motyw"
 msgstr "Motyw"
 
@@ -1269,7 +1272,7 @@ msgstr "Można porównać najwyżej {MAX_COMPARE} scenariusze. Usuń jeden, aby 
 msgid "Najgorsze 5% przyszłości: średnio ({basis})"
 msgstr "Najgorsze 5% przyszłości: średnio ({basis})"
 
-#: src/features/methodology/Methodology.tsx:71
+#: src/features/methodology/Methodology.tsx:76
 msgid "Najważniejsze zdanie: model nie jest prognozą. Pokazuje, jak mogą potoczyć się losy portfela przy założeniach, które możesz zobaczyć i zmienić, a nie jak się potoczą. Wynik jest edukacyjny i nie stanowi rekomendacji inwestycyjnej."
 msgstr "Najważniejsze zdanie: model nie jest prognozą. Pokazuje, jak mogą potoczyć się losy portfela przy założeniach, które możesz zobaczyć i zmienić, a nie jak się potoczą. Wynik jest edukacyjny i nie stanowi rekomendacji inwestycyjnej."
 
@@ -1286,7 +1289,7 @@ msgstr "Nakładka potęgowa"
 msgid "Nazwa"
 msgstr "Nazwa"
 
-#: src/features/methodology/Methodology.tsx:197
+#: src/features/methodology/Methodology.tsx:202
 msgid "Nie ma osobnych macierzy korelacji dla kryzysu. Wzrost współruchu w kryzysie dają już wspólne przesunięcie średniej, wspólny mnożnik zmienności i wspólna skala ogonów. Duża część obserwowanego „wzrostu korelacji” to po prostu skutek wyższej zmienności <0/>."
 msgstr "Nie ma osobnych macierzy korelacji dla kryzysu. Wzrost współruchu w kryzysie dają już wspólne przesunięcie średniej, wspólny mnożnik zmienności i wspólna skala ogonów. Duża część obserwowanego „wzrostu korelacji” to po prostu skutek wyższej zmienności <0/>."
 
@@ -1302,7 +1305,7 @@ msgstr "Nie możemy policzyć tego scenariusza"
 msgid "Nie możemy zapisać planu na tym urządzeniu (np. tryb prywatny). Aplikacja działa dalej, ale po zamknięciu karty plan zniknie. Pobierz kopię w Ustawieniach."
 msgstr "Nie możemy zapisać planu na tym urządzeniu (np. tryb prywatny). Aplikacja działa dalej, ale po zamknięciu karty plan zniknie. Pobierz kopię w Ustawieniach."
 
-#: src/features/plan/PersonCard.tsx:52
+#: src/features/plan/PersonCard.tsx:53
 msgid "Nie podano"
 msgstr "Nie podano"
 
@@ -1322,11 +1325,11 @@ msgstr "Nie udało się policzyć odpowiedzi. Spróbuj jeszcze raz."
 msgid "Nie udało się policzyć wyniku"
 msgstr "Nie udało się policzyć wyniku"
 
-#: src/features/settings/Settings.tsx:101
+#: src/features/settings/Settings.tsx:103
 msgid "Nie udało się wczytać pliku: nie można go odczytać. Twój plan zostaje bez zmian."
 msgstr "Nie udało się wczytać pliku: nie można go odczytać. Twój plan zostaje bez zmian."
 
-#: src/features/settings/Settings.tsx:108
+#: src/features/settings/Settings.tsx:110
 msgid "Nie udało się wczytać pliku: to nie jest poprawny plan z tej aplikacji. Twój plan zostaje bez zmian."
 msgstr "Nie udało się wczytać pliku: to nie jest poprawny plan z tej aplikacji. Twój plan zostaje bez zmian."
 
@@ -1348,15 +1351,23 @@ msgid "Niepewność oczekiwanego zwrotu (SE)"
 msgstr "Niepewność oczekiwanego zwrotu (SE)"
 
 #: src/features/methodology/Annex.tsx:92
-#: src/features/methodology/Methodology.tsx:214
+#: src/features/methodology/Methodology.tsx:219
 msgid "Niepewność parametrów"
 msgstr "Niepewność parametrów"
 
-#: src/features/methodology/Methodology.tsx:333
+#: src/features/methodology/Methodology.tsx:338
 msgid "Nieruchomość występuje w dwóch wariantach: „mieszkam” (liczy się tylko majątek netto) i „na wynajem” (cena jako aktywo ryzykowne w ujęciu realnym plus czynsz netto jako przychód). Jest niepłynna: nie bierze udziału w rebalansie ani częściowej sprzedaży, tylko w zdarzeniu „sprzedaż w roku X”."
 msgstr "Nieruchomość występuje w dwóch wariantach: „mieszkam” (liczy się tylko majątek netto) i „na wynajem” (cena jako aktywo ryzykowne w ujęciu realnym plus czynsz netto jako przychód). Jest niepłynna: nie bierze udziału w rebalansie ani częściowej sprzedaży, tylko w zdarzeniu „sprzedaż w roku X”."
 
-#: src/features/methodology/Methodology.tsx:216
+#: src/features/assumptions/ParamRow.tsx:52
+msgid "niezweryfikowane"
+msgstr "niezweryfikowane"
+
+#: src/features/assumptions/AssumptionsPanel.tsx:72
+msgid "niezweryfikowane: założenie albo liczba czekająca na kalibrację."
+msgstr "niezweryfikowane: założenie albo liczba czekająca na kalibrację."
+
+#: src/features/methodology/Methodology.tsx:221
 msgid "Nikt nie zna prawdziwego oczekiwanego zwrotu aktywa. Dlatego w każdej ścieżce losujemy małe stałe przesunięcie rocznego dryfu, z odchyleniem równym błędowi standardowemu (SE) danego aktywa. Przesunięcia są skorelowane między aktywami tak jak same aktywa: jeśli premia za ryzyko okaże się niższa, to dla wszystkich akcji naraz <0/> <1/>."
 msgstr "Nikt nie zna prawdziwego oczekiwanego zwrotu aktywa. Dlatego w każdej ścieżce losujemy małe stałe przesunięcie rocznego dryfu, z odchyleniem równym błędowi standardowemu (SE) danego aktywa. Przesunięcia są skorelowane między aktywami tak jak same aktywa: jeśli premia za ryzyko okaże się niższa, to dla wszystkich akcji naraz <0/> <1/>."
 
@@ -1365,11 +1376,11 @@ msgstr "Nikt nie zna prawdziwego oczekiwanego zwrotu aktywa. Dlatego w każdej �
 msgid "nominalnie"
 msgstr "nominalnie"
 
-#: src/features/settings/Settings.tsx:200
+#: src/features/settings/Settings.tsx:202
 msgid "O aplikacji"
 msgstr "O aplikacji"
 
-#: src/features/methodology/Methodology.tsx:506
+#: src/features/methodology/Methodology.tsx:511
 msgid "Obliczenia idą w puli Web Workerów, poza głównym wątkiem, więc strona nie zamarza. Pętla miesięczna działa na wcześniej przydzielonych tablicach, bez alokacji, a wyniki wracają bez kopiowania. Wynik nie zależy od liczby wątków."
 msgstr "Obliczenia idą w puli Web Workerów, poza głównym wątkiem, więc strona nie zamarza. Pętla miesięczna działa na wcześniej przydzielonych tablicach, bez alokacji, a wyniki wracają bez kopiowania. Wynik nie zależy od liczby wątków."
 
@@ -1381,7 +1392,7 @@ msgstr "Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie a
 msgid "Obligacje EDO"
 msgstr "Obligacje EDO"
 
-#: src/features/methodology/Methodology.tsx:305
+#: src/features/methodology/Methodology.tsx:310
 msgid "Obligacje EDO modelujemy partiami zakupu: w pierwszym roku stałe oprocentowanie, potem inflacja sprzed dwóch miesięcy plus marża, kapitalizacja roczna. Po 10 latach wykup z podatkiem od całych odsetek i reinwestycją. Przy wykupie przedterminowym płaci się opłatę (3 zł od obligacji za 100 zł, nie więcej niż narosłe odsetki), a wykupywane są najstarsze partie."
 msgstr "Obligacje EDO modelujemy partiami zakupu: w pierwszym roku stałe oprocentowanie, potem inflacja sprzed dwóch miesięcy plus marża, kapitalizacja roczna. Po 10 latach wykup z podatkiem od całych odsetek i reinwestycją. Przy wykupie przedterminowym płaci się opłatę (3 zł od obligacji za 100 zł, nie więcej niż narosłe odsetki), a wykupywane są najstarsze partie."
 
@@ -1401,7 +1412,7 @@ msgstr "Oczekiwany roczny wzrost"
 msgid "Oczekiwany zwrot roczny"
 msgstr "Oczekiwany zwrot roczny"
 
-#: src/features/methodology/Methodology.tsx:89
+#: src/features/methodology/Methodology.tsx:94
 msgid "Oczekiwany zwrot, który wpisujesz przy aktywie, to mediana długookresowego rocznego zwrotu (CAGR). Połowa przyszłości wypadnie lepiej, połowa gorzej. Zmienność to odchylenie standardowe rocznego logarytmicznego zwrotu przy ustalonych parametrach ścieżki."
 msgstr "Oczekiwany zwrot, który wpisujesz przy aktywie, to mediana długookresowego rocznego zwrotu (CAGR). Połowa przyszłości wypadnie lepiej, połowa gorzej. Zmienność to odchylenie standardowe rocznego logarytmicznego zwrotu przy ustalonych parametrach ścieżki."
 
@@ -1465,7 +1476,7 @@ msgstr "Opłata za wykup przed terminem (zł na 100 zł)"
 msgid "Oprocentowanie w pierwszym roku"
 msgstr "Oprocentowanie w pierwszym roku"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:51
+#: src/features/assumptions/AssumptionsPanel.tsx:52
 msgid "Optymistyczny"
 msgstr "Optymistyczny"
 
@@ -1509,7 +1520,7 @@ msgstr "p₀₁ = 0,04 (4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założe
 msgid "p₁₀ = 0,20 (4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założenie do kalibracji (zadanie 14)."
 msgstr "p₁₀ = 0,20 (4.4). Punkt odniesienia: Hardy 2001, NAAJ 5(2); założenie do kalibracji (zadanie 14)."
 
-#: src/features/methodology/Methodology.tsx:376
+#: src/features/methodology/Methodology.tsx:381
 msgid "Papiery wartościowe (akcje, ETF, ETP): 19% od rocznego dochodu, koszt nabycia metodą FIFO (najstarsze kupione jednostki sprzedawane są pierwsze), osobno dla każdego rachunku. Strata z papierów obniża dochód przez kolejnych pięć lat według reguły opisanej w uproszczeniach."
 msgstr "Papiery wartościowe (akcje, ETF, ETP): 19% od rocznego dochodu, koszt nabycia metodą FIFO (najstarsze kupione jednostki sprzedawane są pierwsze), osobno dla każdego rachunku. Strata z papierów obniża dochód przez kolejnych pięć lat według reguły opisanej w uproszczeniach."
 
@@ -1529,15 +1540,15 @@ msgstr "Parametr a nie wpływa na dryf (liczy się tylko nachylenie b), ale wyma
 msgid "Parametr b"
 msgstr "Parametr b"
 
-#: src/features/methodology/Methodology.tsx:546
+#: src/features/methodology/Methodology.tsx:551
 msgid "Parametry aktywów to prognozy instytucji (J.P. Morgan, Vanguard, AQR i inne), dane (tablice GUS, oferta obligacji skarbowych, zmienność zrealizowana BTC) i nasze założenia. Przy każdym parametrze w panelu „Założenia i źródła” widać, czym jest (dane, prognoza albo założenie) i czy został sprawdzony u źródła. Parametr niesprawdzony ma widoczną plakietkę. Parametry nieruchomości opierają się na długim szeregu historycznym <0/>, ale ich dokładne wartości są założeniami."
 msgstr "Parametry aktywów to prognozy instytucji (J.P. Morgan, Vanguard, AQR i inne), dane (tablice GUS, oferta obligacji skarbowych, zmienność zrealizowana BTC) i nasze założenia. Przy każdym parametrze w panelu „Założenia i źródła” widać, czym jest (dane, prognoza albo założenie) i czy został sprawdzony u źródła. Parametr niesprawdzony ma widoczną plakietkę. Parametry nieruchomości opierają się na długim szeregu historycznym <0/>, ale ich dokładne wartości są założeniami."
 
-#: src/features/methodology/Methodology.tsx:324
+#: src/features/methodology/Methodology.tsx:329
 msgid "Parametry dryfu BTC i ETH są założeniami, nie danymi. Zmienność zrealizowana jest zmierzona, ale historyczny wzrost cen zależy od punktów końcowych, więc nie służy do kalibracji. W trybie eksperta można włączyć opcjonalną nakładkę potęgową, domyślnie wyłączoną i oznaczoną jako model kontrowersyjny: regresja ceny na czasie jest podatna na regresję pozorną i nie ma podstaw ekonomicznych, a jej parametry wpisujesz sam."
 msgstr "Parametry dryfu BTC i ETH są założeniami, nie danymi. Zmienność zrealizowana jest zmierzona, ale historyczny wzrost cen zależy od punktów końcowych, więc nie służy do kalibracji. W trybie eksperta można włączyć opcjonalną nakładkę potęgową, domyślnie wyłączoną i oznaczoną jako model kontrowersyjny: regresja ceny na czasie jest podatna na regresję pozorną i nie ma podstaw ekonomicznych, a jej parametry wpisujesz sam."
 
-#: src/features/assumptions/AssumptionsPanel.tsx:142
+#: src/features/assumptions/AssumptionsPanel.tsx:152
 msgid "Parametry tego aktywa wpisałeś sam, więc nie mają źródeł ani wartości domyślnych."
 msgstr "Parametry tego aktywa wpisałeś sam, więc nie mają źródeł ani wartości domyślnych."
 
@@ -1558,7 +1569,7 @@ msgstr "Percentyl typu 7."
 msgid "Percentyle ceny bitcoina w roku {year}"
 msgstr "Percentyle ceny bitcoina w roku {year}"
 
-#: src/features/assumptions/AssumptionsPanel.tsx:49
+#: src/features/assumptions/AssumptionsPanel.tsx:50
 msgid "Pesymistyczny"
 msgstr "Pesymistyczny"
 
@@ -1577,11 +1588,11 @@ msgstr "Pierwsza wypłata to ten ułamek portfela w roku startu. Potem co stycze
 msgid "Plan"
 msgstr "Plan"
 
-#: src/features/settings/Settings.tsx:163
+#: src/features/settings/Settings.tsx:165
 msgid "Plan i portfel zostaną usunięte z tego urządzenia. Tej operacji nie można cofnąć, więc najpierw pobierz kopię, jeśli chcesz zachować plan."
 msgstr "Plan i portfel zostaną usunięte z tego urządzenia. Tej operacji nie można cofnąć, więc najpierw pobierz kopię, jeśli chcesz zachować plan."
 
-#: src/features/settings/Settings.tsx:135
+#: src/features/settings/Settings.tsx:137
 msgid "Plan jest zapisany tylko na tym urządzeniu. Możesz zrobić kopię w pliku albo wczytać wcześniejszą."
 msgstr "Plan jest zapisany tylko na tym urządzeniu. Możesz zrobić kopię w pliku albo wczytać wcześniejszą."
 
@@ -1594,7 +1605,7 @@ msgstr "Plan korzysta ze starszych danych rynkowych"
 msgid "Plan obejmuje {0} lat."
 msgstr "Plan obejmuje {0} lat."
 
-#: src/features/plan/PersonCard.tsx:43
+#: src/features/plan/PersonCard.tsx:44
 msgid "Płeć (opcjonalnie)"
 msgstr "Płeć (opcjonalnie)"
 
@@ -1614,7 +1625,7 @@ msgstr "Pobieram cenę…"
 msgid "Pobierz cenę"
 msgstr "Pobierz cenę"
 
-#: src/features/settings/Settings.tsx:141
+#: src/features/settings/Settings.tsx:143
 msgid "Pobierz kopię (JSON)"
 msgstr "Pobierz kopię (JSON)"
 
@@ -1627,15 +1638,15 @@ msgstr "Pobierz kopię danych"
 msgid "Podaj pełną liczbę lat od 1 do 60."
 msgstr "Podaj pełną liczbę lat od 1 do 60."
 
-#: src/features/assumptions/TaxRulesCard.tsx:31
+#: src/features/assumptions/TaxRulesCard.tsx:34
 msgid "Podatek od odsetek"
 msgstr "Podatek od odsetek"
 
-#: src/features/assumptions/TaxRulesCard.tsx:30
+#: src/features/assumptions/TaxRulesCard.tsx:33
 msgid "Podatek od zysków kapitałowych"
 msgstr "Podatek od zysków kapitałowych"
 
-#: src/features/methodology/Methodology.tsx:367
+#: src/features/methodology/Methodology.tsx:372
 msgid "Podatki (Polska)"
 msgstr "Podatki (Polska)"
 
@@ -1643,7 +1654,7 @@ msgstr "Podatki (Polska)"
 msgid "Podatki i księgowość"
 msgstr "Podatki i księgowość"
 
-#: src/features/assumptions/TaxRulesCard.tsx:25
+#: src/features/assumptions/TaxRulesCard.tsx:26
 msgid "Podatki i limity (Polska)"
 msgstr "Podatki i limity (Polska)"
 
@@ -1657,8 +1668,8 @@ msgstr "Podręcznikowy"
 
 #. placeholder {0}: yearsText(h * 12)
 #: src/features/results/Dashboard.tsx:221
-msgid "Pokaż {0}"
-msgstr "Pokaż {0}"
+#~ msgid "Pokaż {0}"
+#~ msgstr "Pokaż {0}"
 
 #: src/features/results/BtcCard.tsx:260
 msgid "Pokaż ceny w tabeli (USD i zł)"
@@ -1714,7 +1725,7 @@ msgstr "Ponad inflację, np. gdy zarobki rosną szybciej niż ceny."
 msgid "Porównanie"
 msgstr "Porównanie"
 
-#: src/features/methodology/Methodology.tsx:140
+#: src/features/methodology/Methodology.tsx:145
 msgid "Porównując dwa scenariusze, używamy tych samych liczb losowych („wspólne liczby losowe”), więc różnica między nimi pochodzi ze zmiany założeń, a nie z przypadku. Świadomie nie stosujemy zmiennych antytetycznych ani quasi-Monte Carlo, bo psułyby niezależność ścieżek, na której opierają się przedziały ufności."
 msgstr "Porównując dwa scenariusze, używamy tych samych liczb losowych („wspólne liczby losowe”), więc różnica między nimi pochodzi ze zmiany założeń, a nie z przypadku. Świadomie nie stosujemy zmiennych antytetycznych ani quasi-Monte Carlo, bo psułyby niezależność ścieżek, na której opierają się przedziały ufności."
 
@@ -1743,7 +1754,7 @@ msgstr "portfel traci ponad 30% od swojego szczytu (cały okres, ±{0} pp)"
 #~ msgid "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
 #~ msgstr "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
 
-#: src/features/methodology/Methodology.tsx:342
+#: src/features/methodology/Methodology.tsx:347
 msgid "Portfel, rebalans i koszty"
 msgstr "Portfel, rebalans i koszty"
 
@@ -1762,7 +1773,7 @@ msgstr "Pozycje"
 msgid "Prawdopodobieństwo wyczerpania środków za życia z krzywą przeżycia S."
 msgstr "Prawdopodobieństwo wyczerpania środków za życia z krzywą przeżycia S."
 
-#: src/features/methodology/Methodology.tsx:151
+#: src/features/methodology/Methodology.tsx:156
 msgid "Prawdziwe rynki miewają miesiące znacznie gorsze, niż pozwala zwykły rozkład normalny. Dlatego szok miesiąca mnożymy przez losową skalę, wspólną dla wszystkich czynników (aktywa, kursy, inflacja). W niektórych miesiącach wszystko drga mocniej naraz, co odtwarza współruch w kryzysach (por. McNeil, Frey i Embrechts <0/>)."
 msgstr "Prawdziwe rynki miewają miesiące znacznie gorsze, niż pozwala zwykły rozkład normalny. Dlatego szok miesiąca mnożymy przez losową skalę, wspólną dla wszystkich czynników (aktywa, kursy, inflacja). W niektórych miesiącach wszystko drga mocniej naraz, co odtwarza współruch w kryzysach (por. McNeil, Frey i Embrechts <0/>)."
 
@@ -1774,7 +1785,7 @@ msgstr "Próba"
 msgid "Procent na start"
 msgstr "Procent na start"
 
-#: src/features/methodology/Methodology.tsx:432
+#: src/features/methodology/Methodology.tsx:437
 msgid "Procent portfela, Guyton–Klinger i amortyzacja liczą się od majątku płynnego po podatku, bez niepłynnej nieruchomości, bo mieszkania nie da się wypłacać po kawałku. Gdyby doliczyć mieszkanie, stopa wypłat byłaby liczona od majątku, którego nie ma czym wypłacić, a reguły G-K ochrony i dobrobytu oceniałyby ją względem niewłaściwego portfela."
 msgstr "Procent portfela, Guyton–Klinger i amortyzacja liczą się od majątku płynnego po podatku, bez niepłynnej nieruchomości, bo mieszkania nie da się wypłacać po kawałku. Gdyby doliczyć mieszkanie, stopa wypłat byłaby liczona od majątku, którego nie ma czym wypłacić, a reguły G-K ochrony i dobrobytu oceniałyby ją względem niewłaściwego portfela."
 
@@ -1790,11 +1801,11 @@ msgstr "Proces inflacji trendu i indeks cen."
 msgid "Próg przychodu rocznego z najmu 100 000 zł. Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 msgstr "Próg przychodu rocznego z najmu 100 000 zł. Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 
-#: src/features/assumptions/TaxRulesCard.tsx:37
+#: src/features/assumptions/TaxRulesCard.tsx:40
 msgid "Próg przychodu z najmu (rocznie)"
 msgstr "Próg przychodu z najmu (rocznie)"
 
-#: src/features/assumptions/ParamRow.tsx:47
+#: src/features/assumptions/ParamRow.tsx:48
 msgid "prognoza instytucji"
 msgstr "prognoza instytucji"
 
@@ -1826,7 +1837,7 @@ msgstr "Przedział uwzględnia tylko błąd losowania symulacji rynku, nie niepe
 msgid "Przejdź do treści"
 msgstr "Przejdź do treści"
 
-#: src/features/assumptions/TaxRulesCard.tsx:27
+#: src/features/assumptions/TaxRulesCard.tsx:29
 msgid "Przepisy cytowane z pamięci, nie sprawdzone w ISAP (❌), mogą się różnić od obowiązujących; limity IKE i IKZE pochodzą ze źródeł wtórnych (◐). Traktuj wyniki po podatku jako orientacyjne. Wartości są wbudowane w obliczenia i nie podlegają edycji."
 msgstr "Przepisy cytowane z pamięci, nie sprawdzone w ISAP (❌), mogą się różnić od obowiązujących; limity IKE i IKZE pochodzą ze źródeł wtórnych (◐). Traktuj wyniki po podatku jako orientacyjne. Wartości są wbudowane w obliczenia i nie podlegają edycji."
 
@@ -1834,7 +1845,7 @@ msgstr "Przepisy cytowane z pamięci, nie sprawdzone w ISAP (❌), mogą się r�
 msgid "Przepisy cytowane z pamięci, niezweryfikowane w ISAP: ryczałt od najmu 8,5% i 12,5% (próg 100 000 zł rocznie), 19% od zysku ze sprzedaży, zwolnienie po 5 latach. Szczegóły w Założeniach."
 msgstr "Przepisy cytowane z pamięci, niezweryfikowane w ISAP: ryczałt od najmu 8,5% i 12,5% (próg 100 000 zł rocznie), 19% od zysku ze sprzedaży, zwolnienie po 5 latach. Szczegóły w Założeniach."
 
-#: src/features/methodology/Methodology.tsx:369
+#: src/features/methodology/Methodology.tsx:374
 msgid "Przepisy podatkowe w modelu są zapisane z pamięci i nie zostały sprawdzone w oficjalnym źródle (ISAP). To uproszczony model edukacyjny, nie porada podatkowa. Szczegóły w sekcji „Uproszczenia i ograniczenia”."
 msgstr "Przepisy podatkowe w modelu są zapisane z pamięci i nie zostały sprawdzone w oficjalnym źródle (ISAP). To uproszczony model edukacyjny, nie porada podatkowa. Szczegóły w sekcji „Uproszczenia i ograniczenia”."
 
@@ -1850,7 +1861,7 @@ msgstr "Przesunięcia reżimowe o zerowej średniej i ich wariancja."
 msgid "Przesunięcie dryfu w kryzysie (δ)"
 msgstr "Przesunięcie dryfu w kryzysie (δ)"
 
-#: src/features/methodology/Methodology.tsx:225
+#: src/features/methodology/Methodology.tsx:230
 msgid "Przesunięcie jest symetryczne w logarytmach, więc mediana wartości końcowej zostaje taka, jak wpisany CAGR. Za to średnia rośnie, bo rzadkie bardzo dobre scenariusze ją zawyżają. Dlatego wynikiem głównym są mediana i pasma, a średnia pojawia się tylko w trybie eksperta z odpowiednim opisem. Suwak „Jak pewny jesteś oczekiwanego zwrotu?” skaluje wszystkie SE (od 0 do 2 razy)."
 msgstr "Przesunięcie jest symetryczne w logarytmach, więc mediana wartości końcowej zostaje taka, jak wpisany CAGR. Za to średnia rośnie, bo rzadkie bardzo dobre scenariusze ją zawyżają. Dlatego wynikiem głównym są mediana i pasma, a średnia pojawia się tylko w trybie eksperta z odpowiednim opisem. Suwak „Jak pewny jesteś oczekiwanego zwrotu?” skaluje wszystkie SE (od 0 do 2 razy)."
 
@@ -1858,12 +1869,12 @@ msgstr "Przesunięcie jest symetryczne w logarytmach, więc mediana wartości ko
 msgid "Przy tym portfelu i horyzoncie nie da się niczego wypłacać z tak dużą pewnością."
 msgstr "Przy tym portfelu i horyzoncie nie da się niczego wypłacać z tak dużą pewnością."
 
-#: src/features/assumptions/ParamRow.tsx:156
+#: src/features/assumptions/ParamRow.tsx:167
 msgid "Przywróć domyślne"
 msgstr "Przywróć domyślne"
 
 #. placeholder {0}: spec.label
-#: src/features/assumptions/ParamRow.tsx:155
+#: src/features/assumptions/ParamRow.tsx:166
 msgid "Przywróć domyślne: {0}"
 msgstr "Przywróć domyślne: {0}"
 
@@ -1924,7 +1935,7 @@ msgstr "Realny roczny zwrot portfela ważony czasem (I to indeks portfela, T hor
 msgid "Realny wzrost wpłat rocznie"
 msgstr "Realny wzrost wpłat rocznie"
 
-#: src/features/methodology/Methodology.tsx:344
+#: src/features/methodology/Methodology.tsx:349
 msgid "Rebalans może być wyłączony, roczny (w styczniu), progowy (gdy udział aktywa wyjdzie poza pasmo o zadaną liczbę punktów procentowych) albo odbywać się tylko przez kierowanie wpłat. Każde aktywo ma koszt transakcji w punktach bazowych. Każda sprzedaż przechodzi przez moduł podatkowy."
 msgstr "Rebalans może być wyłączony, roczny (w styczniu), progowy (gdy udział aktywa wyjdzie poza pasmo o zadaną liczbę punktów procentowych) albo odbywać się tylko przez kierowanie wpłat. Każde aktywo ma koszt transakcji w punktach bazowych. Każda sprzedaż przechodzi przez moduł podatkowy."
 
@@ -1949,11 +1960,11 @@ msgid "Reszta straty: do 50% pierwotnej straty rocznie (R-3). Przepisy cytowane 
 msgstr "Reszta straty: do 50% pierwotnej straty rocznie (R-3). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 
 #: src/features/methodology/Annex.tsx:59
-#: src/features/methodology/Methodology.tsx:178
+#: src/features/methodology/Methodology.tsx:183
 msgid "Reżimy rynku"
 msgstr "Reżimy rynku"
 
-#: src/features/methodology/Methodology.tsx:190
+#: src/features/methodology/Methodology.tsx:195
 msgid "Reżimy są skalibrowane tak, żeby nie zmieniać tego, co wpisałeś: średnia roczna zwrotu, zmienność roczna i korelacje roczne wychodzą w symulacji tak, jak w formularzu. Reżimy tylko zmieniają kształt rozkładu (lewoskośność, kryzysy) bez zmiany tych liczb."
 msgstr "Reżimy są skalibrowane tak, żeby nie zmieniać tego, co wpisałeś: średnia roczna zwrotu, zmienność roczna i korelacje roczne wychodzą w symulacji tak, jak w formularzu. Reżimy tylko zmieniają kształt rozkładu (lewoskośność, kryzysy) bez zmiany tych liczb."
 
@@ -2055,7 +2066,7 @@ msgstr "Rozrzut prognoz instytucji i historyczny błąd takich prognoz (tabela 6
 msgid "Rozumiem"
 msgstr "Rozumiem"
 
-#: src/features/methodology/Methodology.tsx:114
+#: src/features/methodology/Methodology.tsx:119
 msgid "Ruina oznacza pierwszy miesiąc, w którym nie da się pokryć wypłaty z płynnych aktywów. Taka ścieżka zostaje w statystykach z wartością zero, a niedobory są sumowane. Ścieżek z ruiną nigdy nie wyrzucamy z wyników."
 msgstr "Ruina oznacza pierwszy miesiąc, w którym nie da się pokryć wypłaty z płynnych aktywów. Taka ścieżka zostaje w statystykach z wartością zero, a niedobory są sumowane. Ścieżek z ruiną nigdy nie wyrzucamy z wyników."
 
@@ -2071,15 +2082,15 @@ msgstr "Ryczałt najmu 12,5% powyżej progu. Przepisy cytowane z pamięci, do sp
 msgid "Ryczałt najmu 8,5% do progu. Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 msgstr "Ryczałt najmu 8,5% do progu. Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 
-#: src/features/assumptions/TaxRulesCard.tsx:35
+#: src/features/assumptions/TaxRulesCard.tsx:38
 msgid "Ryczałt od najmu do progu"
 msgstr "Ryczałt od najmu do progu"
 
-#: src/features/assumptions/TaxRulesCard.tsx:36
+#: src/features/assumptions/TaxRulesCard.tsx:39
 msgid "Ryczałt od najmu powyżej progu"
 msgstr "Ryczałt od najmu powyżej progu"
 
-#: src/features/methodology/Methodology.tsx:180
+#: src/features/methodology/Methodology.tsx:185
 msgid "Rynek przełącza się między dwoma stanami: spokojnym i kryzysowym (model Hamiltona <0/>w wersji do zwrotów długookresowych Hardy’ego <1/>). W kryzysie zmienność rośnie, a aktywa wrażliwe na kryzys tracą średnio więcej. Domyślnie kryzys zdarza się w około jednym miesiącu na sześć i zwykle trwa kilka miesięcy."
 msgstr "Rynek przełącza się między dwoma stanami: spokojnym i kryzysowym (model Hamiltona <0/>w wersji do zwrotów długookresowych Hardy’ego <1/>). W kryzysie zmienność rośnie, a aktywa wrażliwe na kryzys tracą średnio więcej. Domyślnie kryzys zdarza się w około jednym miesiącu na sześć i zwykle trwa kilka miesięcy."
 
@@ -2125,15 +2136,15 @@ msgstr "Scenariusze do porównania"
 msgid "SE ī = 0,5 pp (założenie)."
 msgstr "SE ī = 0,5 pp (założenie)."
 
-#: src/features/methodology/Methodology.tsx:524
+#: src/features/methodology/Methodology.tsx:529
 msgid "Silnik ma testy statystyczne: generatory sprawdzamy testem zgodności i momentami, wzory zamknięte (mediana GBM, zerowa zmienność, rata PMT) porównujemy z wartością dokładną, a kalibrację reżimów i ogonów z wpisanymi wartościami (średnia, wariancja i korelacje roczne w granicach czterech błędów standardowych). Testy księgowe sprawdzają na każdej ścieżce, że wartość końcowa zgadza się z początkową plus zyski, wpłaty, wypłaty, podatki i koszty. Ręcznie policzone przypadki podatkowe pokrywają FIFO, straty, krypto i EDO."
 msgstr "Silnik ma testy statystyczne: generatory sprawdzamy testem zgodności i momentami, wzory zamknięte (mediana GBM, zerowa zmienność, rata PMT) porównujemy z wartością dokładną, a kalibrację reżimów i ogonów z wpisanymi wartościami (średnia, wariancja i korelacje roczne w granicach czterech błędów standardowych). Testy księgowe sprawdzają na każdej ścieżce, że wartość końcowa zgadza się z początkową plus zyski, wpłaty, wypłaty, podatki i koszty. Ręcznie policzone przypadki podatkowe pokrywają FIFO, straty, krypto i EDO."
 
-#: src/features/methodology/Methodology.tsx:544
+#: src/features/methodology/Methodology.tsx:549
 msgid "Skąd są dane"
 msgstr "Skąd są dane"
 
-#: src/features/methodology/Methodology.tsx:160
+#: src/features/methodology/Methodology.tsx:165
 msgid "Skala pochodzi z tabeli 1024 wartości skonstruowanej z rozkładu t-Studenta, ale z ograniczonym zakresem. Surowy rozkład t ma nieskończoną wartość oczekiwaną wykładnika zwrotu, więc średnia wartość portfela formalnie by nie istniała <0/>. Ograniczona skala zachowuje grube ogony, a daje skończone średnie i dokładnie jednostkową wariancję. Domyślnie stopnie swobody wynoszą 5 i jest to założenie, nie wynik kalibracji."
 msgstr "Skala pochodzi z tabeli 1024 wartości skonstruowanej z rozkładu t-Studenta, ale z ograniczonym zakresem. Surowy rozkład t ma nieskończoną wartość oczekiwaną wykładnika zwrotu, więc średnia wartość portfela formalnie by nie istniała <0/>. Ograniczona skala zachowuje grube ogony, a daje skończone średnie i dokładnie jednostkową wariancję. Domyślnie stopnie swobody wynoszą 5 i jest to założenie, nie wynik kalibracji."
 
@@ -2145,11 +2156,11 @@ msgstr "Skorelowane przesunięcia dryfu na ścieżkę; mediana bez zmian, średn
 msgid "Słabszy scenariusz (10%)"
 msgstr "Słabszy scenariusz (10%)"
 
-#: src/features/methodology/Methodology.tsx:447
+#: src/features/methodology/Methodology.tsx:452
 msgid "Śmiertelność"
 msgstr "Śmiertelność"
 
-#: src/features/methodology/Methodology.tsx:486
+#: src/features/methodology/Methodology.tsx:491
 msgid "Solvery odpowiadają na pytania „ile mogę bezpiecznie wypłacać” i „ile muszę wpłacać”. Szukają kwoty bisekcją na wspólnych liczbach losowych. W ogólnym przypadku prawdopodobieństwo sukcesu jako funkcja kwoty jest schodkowa i tylko prawie monotoniczna (większa wypłata może uruchomić rebalans, który akurat pomoże), więc zwracamy mniej korzystny koniec znalezionego przedziału: niższą wypłatę, wyższą wpłatę. Solver używa 4 000 ścieżek; wynik warto potwierdzić pełnym przebiegiem."
 msgstr "Solvery odpowiadają na pytania „ile mogę bezpiecznie wypłacać” i „ile muszę wpłacać”. Szukają kwoty bisekcją na wspólnych liczbach losowych. W ogólnym przypadku prawdopodobieństwo sukcesu jako funkcja kwoty jest schodkowa i tylko prawie monotoniczna (większa wypłata może uruchomić rebalans, który akurat pomoże), więc zwracamy mniej korzystny koniec znalezionego przedziału: niższą wypłatę, wyższą wpłatę. Solver używa 4 000 ścieżek; wynik warto potwierdzić pełnym przebiegiem."
 
@@ -2185,7 +2196,7 @@ msgstr "Spread oprocentowania względem inflacji"
 msgid "Sprzedaż po upływie 5 lat od końca roku zakupu jest zwolniona z podatku od zysku."
 msgstr "Sprzedaż po upływie 5 lat od końca roku zakupu jest zwolniona z podatku od zysku."
 
-#: src/features/methodology/Methodology.tsx:106
+#: src/features/methodology/Methodology.tsx:111
 msgid "Sprzedaż z zyskiem zwiększa zobowiązanie podatkowe płatne w kwietniu następnego roku. Dlatego pokazujemy wartość „po podatku”: aktywa minus naliczony podatek, a także minus podatek, który zapłaciłbyś, sprzedając wszystko od razu. To kwota, którą realnie możesz wydać, więc ten widok jest domyślny."
 msgstr "Sprzedaż z zyskiem zwiększa zobowiązanie podatkowe płatne w kwietniu następnego roku. Dlatego pokazujemy wartość „po podatku”: aktywa minus naliczony podatek, a także minus podatek, który zapłaciłbyś, sprzedając wszystko od razu. To kwota, którą realnie możesz wydać, więc ten widok jest domyślny."
 
@@ -2237,11 +2248,23 @@ msgstr "Stała miesięczna wypłata (w dzisiejszych zł), przy której pieniądz
 msgid "Stały procent portfela"
 msgstr "Stały procent portfela"
 
+#: src/components/ui/Status.tsx:29
+msgid "status: niezweryfikowane"
+msgstr "status: niezweryfikowane"
+
+#: src/components/ui/Status.tsx:29
+msgid "status: źródło wtórne"
+msgstr "status: źródło wtórne"
+
+#: src/components/ui/Status.tsx:29
+msgid "status: zweryfikowane"
+msgstr "status: zweryfikowane"
+
 #: src/features/methodology/Annex.tsx:184
 msgid "Statystyki"
 msgstr "Statystyki"
 
-#: src/features/methodology/Methodology.tsx:465
+#: src/features/methodology/Methodology.tsx:470
 msgid "Statystyki i solvery"
 msgstr "Statystyki i solvery"
 
@@ -2261,15 +2284,15 @@ msgstr "Strata przekracza 5 mln zł; model upraszcza zasady odliczania strat w p
 msgid "Strata przy upadku"
 msgstr "Strata przy upadku"
 
-#: src/features/assumptions/TaxRulesCard.tsx:33
+#: src/features/assumptions/TaxRulesCard.tsx:36
 msgid "Straty kapitałowe: jednorazowe odliczenie do"
 msgstr "Straty kapitałowe: jednorazowe odliczenie do"
 
-#: src/features/assumptions/TaxRulesCard.tsx:32
+#: src/features/assumptions/TaxRulesCard.tsx:35
 msgid "Straty kapitałowe: lata rozliczenia"
 msgstr "Straty kapitałowe: lata rozliczenia"
 
-#: src/features/assumptions/TaxRulesCard.tsx:34
+#: src/features/assumptions/TaxRulesCard.tsx:37
 msgid "Straty kapitałowe: roczny udział reszty"
 msgstr "Straty kapitałowe: roczny udział reszty"
 
@@ -2293,7 +2316,7 @@ msgstr "Symulacja"
 msgid "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 
-#: src/features/methodology/Methodology.tsx:81
+#: src/features/methodology/Methodology.tsx:86
 msgid "Symulacja idzie miesiąc po miesiącu, nawet do 80 lat. Każda z tysięcy możliwych przyszłości („ścieżka”) jest liczona osobno, od dziś do końca horyzontu. Liczymy logarytmiczne stopy zwrotu, więc cena nigdy nie spada poniżej zera, a niczego nie obcinamy sztucznie."
 msgstr "Symulacja idzie miesiąc po miesiącu, nawet do 80 lat. Każda z tysięcy możliwych przyszłości („ścieżka”) jest liczona osobno, od dziś do końca horyzontu. Liczymy logarytmiczne stopy zwrotu, więc cena nigdy nie spada poniżej zera, a niczego nie obcinamy sztucznie."
 
@@ -2358,7 +2381,7 @@ msgstr "Szybkość dostosowania oprocentowania (na miesiąc)"
 msgid "Ta strona nie mogła się wyświetlić, najpewniej przez uszkodzony lub niespójny zapis planu. Możesz pobrać kopię danych albo zacząć od nowa."
 msgstr "Ta strona nie mogła się wyświetlić, najpewniej przez uszkodzony lub niespójny zapis planu. Możesz pobrać kopię danych albo zacząć od nowa."
 
-#: src/features/methodology/Methodology.tsx:64
+#: src/features/methodology/Methodology.tsx:69
 msgid "Ta strona wyjaśnia prostym językiem, jak działa symulacja i czego nie potrafi. Wzory są w aneksie na końcu. Pełny opis techniczny jest też w pliku docs/METHODOLOGY.md w repozytorium."
 msgstr "Ta strona wyjaśnia prostym językiem, jak działa symulacja i czego nie potrafi. Wzory są w aneksie na końcu. Pełny opis techniczny jest też w pliku docs/METHODOLOGY.md w repozytorium."
 
@@ -2366,7 +2389,7 @@ msgstr "Ta strona wyjaśnia prostym językiem, jak działa symulacja i czego nie
 msgid "Tabela skali z kwantyli rozkładu chi-kwadrat, znormalizowana do jednostkowej wariancji."
 msgstr "Tabela skali z kwantyli rozkładu chi-kwadrat, znormalizowana do jednostkowej wariancji."
 
-#: src/features/plan/PersonCard.tsx:43
+#: src/features/plan/PersonCard.tsx:44
 msgid "Tablice GUS różnią się dla kobiet i mężczyzn. Dostępne po podaniu wieku."
 msgstr "Tablice GUS różnią się dla kobiet i mężczyzn. Dostępne po podaniu wieku."
 
@@ -2378,7 +2401,7 @@ msgstr "Tablice okresowe mogą zaniżać długość życia; opcję „+2 lata”
 msgid "Tablice okresowe zaniżają długość życia kohort; opcja „+2 lata” przesuwa ryzyko zgonu o 2 lata wieku (założenie, spec 4.12)."
 msgstr "Tablice okresowe zaniżają długość życia kohort; opcja „+2 lata” przesuwa ryzyko zgonu o 2 lata wieku (założenie, spec 4.12)."
 
-#: src/features/methodology/Methodology.tsx:457
+#: src/features/methodology/Methodology.tsx:462
 msgid "Tablice okresowe zaniżają długość życia kolejnych roczników, bo medycyna się poprawia. Dlatego jest opcja „+2 lata” (założenie, w Planie, domyślnie wyłączona). Przedział ufności tego wyniku uwzględnia tylko błąd losowania symulacji rynku, a nie niepewność tablic."
 msgstr "Tablice okresowe zaniżają długość życia kolejnych roczników, bo medycyna się poprawia. Dlatego jest opcja „+2 lata” (założenie, w Planie, domyślnie wyłączona). Przedział ufności tego wyniku uwzględnia tylko błąd losowania symulacji rynku, a nie niepewność tablic."
 
@@ -2386,15 +2409,15 @@ msgstr "Tablice okresowe zaniżają długość życia kolejnych roczników, bo m
 #~ msgid "Tablice okresowe zaniżają długość życia kolejnych roczników, bo medycyna się poprawia. Dlatego jest opcja „+2 lata” (założenie). Przedział ufności tego wyniku uwzględnia tylko błąd losowania symulacji rynku, a nie niepewność tablic."
 #~ msgstr "Tablice okresowe zaniżają długość życia kolejnych roczników, bo medycyna się poprawia. Dlatego jest opcja „+2 lata” (założenie). Przedział ufności tego wyniku uwzględnia tylko błąd losowania symulacji rynku, a nie niepewność tablic."
 
-#: src/features/plan/PersonCard.tsx:60
+#: src/features/plan/PersonCard.tsx:62
 msgid "Tablice okresowe zaniżają długość życia kolejnych roczników; opcja „+2 lata” przesuwa ryzyko zgonu o 2 lata wieku. To założenie, niezweryfikowane (❌)."
 msgstr "Tablice okresowe zaniżają długość życia kolejnych roczników; opcja „+2 lata” przesuwa ryzyko zgonu o 2 lata wieku. To założenie, niezweryfikowane (❌)."
 
-#: src/features/methodology/Methodology.tsx:234
+#: src/features/methodology/Methodology.tsx:239
 msgid "Tak samo losujemy długookresową inflację: różnica między 2,5% a 3,5% rocznie przez 30 lat zmienia wartość realną o około jedną czwartą. Niepewności samej zmienności nie modelujemy, bo wariancję szacuje się z danych o rząd wielkości dokładniej niż średnią <0/>."
 msgstr "Tak samo losujemy długookresową inflację: różnica między 2,5% a 3,5% rocznie przez 30 lat zmienia wartość realną o około jedną czwartą. Niepewności samej zmienności nie modelujemy, bo wariancję szacuje się z danych o rząd wielkości dokładniej niż średnią <0/>."
 
-#: src/features/settings/Settings.tsx:174
+#: src/features/settings/Settings.tsx:176
 msgid "Tak, usuń moje dane"
 msgstr "Tak, usuń moje dane"
 
@@ -2402,7 +2425,7 @@ msgstr "Tak, usuń moje dane"
 msgid "Ten rok wypada po końcu horyzontu, więc wypłaty zaczniemy w ostatnim roku planu."
 msgstr "Ten rok wypada po końcu horyzontu, więc wypłaty zaczniemy w ostatnim roku planu."
 
-#: src/features/assumptions/AssumptionsPanel.tsx:93
+#: src/features/assumptions/AssumptionsPanel.tsx:103
 msgid "Teraz: {scaleText}× domyślnej niepewności. Im wyżej, tym szerzej rozrzucone są możliwe przyszłe zwroty; 0 oznacza, że traktujesz zakładane zwroty jako pewne."
 msgstr "Teraz: {scaleText}× domyślnej niepewności. Im wyżej, tym szerzej rozrzucone są możliwe przyszłe zwroty; 0 oznacza, że traktujesz zakładane zwroty jako pewne."
 
@@ -2439,15 +2462,15 @@ msgstr "Twój portfel i plan są zapisane na tym urządzeniu."
 msgid "Twój wiek"
 msgstr "Twój wiek"
 
-#: src/features/plan/PersonCard.tsx:32
+#: src/features/plan/PersonCard.tsx:33
 msgid "Twój wiek (opcjonalnie)"
 msgstr "Twój wiek (opcjonalnie)"
 
-#: src/features/plan/PersonCard.tsx:32
+#: src/features/plan/PersonCard.tsx:33
 msgid "Twój wiek (wymagany przy IKE i IKZE)"
 msgstr "Twój wiek (wymagany przy IKE i IKZE)"
 
-#: src/features/settings/Settings.tsx:133
+#: src/features/settings/Settings.tsx:135
 msgid "Twoje dane"
 msgstr "Twoje dane"
 
@@ -2477,7 +2500,7 @@ msgstr "Typowy wynik za {years} ({0})"
 #~ msgstr "Typowy wynik za {years} ({basis})"
 
 #: src/features/methodology/Annex.tsx:139
-#: src/features/methodology/Methodology.tsx:294
+#: src/features/methodology/Methodology.tsx:299
 msgid "Typy aktywów"
 msgstr "Typy aktywów"
 
@@ -2506,7 +2529,7 @@ msgstr "Ujemna docelowa waga jest traktowana jak 0 (bez krótkiej sprzedaży)."
 msgid "Upadek: strata części L wartości i prawdopodobieństwo upadku do roku T."
 msgstr "Upadek: strata części L wartości i prawdopodobieństwo upadku do roku T."
 
-#: src/features/methodology/Methodology.tsx:565
+#: src/features/methodology/Methodology.tsx:570
 msgid "Uproszczenia i ograniczenia"
 msgstr "Uproszczenia i ograniczenia"
 
@@ -2537,7 +2560,7 @@ msgstr "Usuń {name}"
 msgid "Usuń scenariusz {0}"
 msgstr "Usuń scenariusz {0}"
 
-#: src/features/settings/Settings.tsx:162
+#: src/features/settings/Settings.tsx:164
 msgid "Usunąć wszystkie dane?"
 msgstr "Usunąć wszystkie dane?"
 
@@ -2595,7 +2618,7 @@ msgstr "W dzisiejszych pieniądzach."
 msgid "w każdej przyszłości"
 msgstr "w każdej przyszłości"
 
-#: src/features/methodology/Methodology.tsx:97
+#: src/features/methodology/Methodology.tsx:102
 msgid "W każdym miesiącu zdarzenia następują w stałej kolejności: najpierw kalendarz (w styczniu ustalenie rocznej wypłaty i limitów IKE i IKZE, w kwietniu zapłata podatku za poprzedni rok), potem przychody do gotówki (odsetki, kupony, wykupy), potem Twoje wpłaty i wypłaty, potem rebalans, a na końcu zwrot rynku za miesiąc z kosztem funduszu (TER). Wpłaty i wypłaty następują więc z góry, na początku miesiąca."
 msgstr "W każdym miesiącu zdarzenia następują w stałej kolejności: najpierw kalendarz (w styczniu ustalenie rocznej wypłaty i limitów IKE i IKZE, w kwietniu zapłata podatku za poprzedni rok), potem przychody do gotówki (odsetki, kupony, wykupy), potem Twoje wpłaty i wypłaty, potem rebalans, a na końcu zwrot rynku za miesiąc z kosztem funduszu (TER). Wpłaty i wypłaty następują więc z góry, na początku miesiąca."
 
@@ -2611,7 +2634,7 @@ msgstr "W nawiasie przedział ufności 95% różnicy, liczony na parach tych sam
 msgid "w ponad 99 na 100 przyszłości"
 msgstr "w ponad 99 na 100 przyszłości"
 
-#: src/features/methodology/Methodology.tsx:205
+#: src/features/methodology/Methodology.tsx:210
 msgid "W trybie eksperta możesz wybrać model podręcznikowy (ruch Browna z geometrycznym wzrostem, bez reżimów i bez grubych ogonów). W takim modelu mediana wartości końcowej jest dokładnie równa wpisanemu CAGR. W modelu realistycznym mediana jest nieco wyższa, bo rozkład jest lekko lewoskośny; zachowana jest dokładnie średnia logarytmów zwrotu."
 msgstr "W trybie eksperta możesz wybrać model podręcznikowy (ruch Browna z geometrycznym wzrostem, bez reżimów i bez grubych ogonów). W takim modelu mediana wartości końcowej jest dokładnie równa wpisanemu CAGR. W modelu realistycznym mediana jest nieco wyższa, bo rozkład jest lekko lewoskośny; zachowana jest dokładnie średnia logarytmów zwrotu."
 
@@ -2637,7 +2660,7 @@ msgstr "Wachlarz możliwych przyszłości ({0})"
 msgid "Wachlarz możliwych wartości portfela ({0})"
 msgstr "Wachlarz możliwych wartości portfela ({0})"
 
-#: src/features/methodology/Methodology.tsx:467
+#: src/features/methodology/Methodology.tsx:472
 msgid "Wachlarz pokazuje percentyle 5, 10, 25, 50, 75, 90 i 95 wartości portfela w kolejnych latach, w złotych realnych albo nominalnych. Percentyle liczymy metodą typu 7 <0/>, tą samą co w Excelu i NumPy. Prawdopodobieństwa mają przedziały ufności Wilsona <1/>, a percentyle: przedziały nieparametryczne z rozkładu dwumianowego."
 msgstr "Wachlarz pokazuje percentyle 5, 10, 25, 50, 75, 90 i 95 wartości portfela w kolejnych latach, w złotych realnych albo nominalnych. Percentyle liczymy metodą typu 7 <0/>, tą samą co w Excelu i NumPy. Prawdopodobieństwa mają przedziały ufności Wilsona <1/>, a percentyle: przedziały nieparametryczne z rozkładu dwumianowego."
 
@@ -2647,7 +2670,7 @@ msgid "Waluta"
 msgstr "Waluta"
 
 #: src/features/methodology/Annex.tsx:121
-#: src/features/methodology/Methodology.tsx:268
+#: src/features/methodology/Methodology.tsx:273
 msgid "Waluty"
 msgstr "Waluty"
 
@@ -2669,12 +2692,12 @@ msgid "Wartość"
 msgstr "Wartość"
 
 #. placeholder {0}: fmt(min, unit)
-#: src/features/assumptions/ParamRow.tsx:118
+#: src/features/assumptions/ParamRow.tsx:126
 msgid "Wartość nie może być mniejsza niż {0}."
 msgstr "Wartość nie może być mniejsza niż {0}."
 
 #. placeholder {0}: fmt(max, unit)
-#: src/features/assumptions/ParamRow.tsx:120
+#: src/features/assumptions/ParamRow.tsx:128
 msgid "Wartość nie może być większa niż {0}."
 msgstr "Wartość nie może być większa niż {0}."
 
@@ -2725,15 +2748,15 @@ msgstr "Wartość tymczasowa: syntetyczny indeks (poziom 0 = 100, r/r 3,5%). Pra
 msgid "Wartość za {0}"
 msgstr "Wartość za {0}"
 
-#: src/features/settings/Settings.tsx:146
+#: src/features/settings/Settings.tsx:148
 msgid "Wczytaj plik JSON"
 msgstr "Wczytaj plik JSON"
 
-#: src/features/settings/Settings.tsx:156
+#: src/features/settings/Settings.tsx:158
 msgid "Wczytanie zastępuje bieżący plan."
 msgstr "Wczytanie zastępuje bieżący plan."
 
-#: src/features/settings/Settings.tsx:117
+#: src/features/settings/Settings.tsx:119
 msgid "Wczytano plan z pliku."
 msgstr "Wczytano plan z pliku."
 
@@ -2753,16 +2776,16 @@ msgstr "Wiek docelowy"
 msgid "Wiek docelowy musi być większy niż Twój obecny wiek."
 msgstr "Wiek docelowy musi być większy niż Twój obecny wiek."
 
-#: src/features/plan/PersonCard.tsx:29
+#: src/features/plan/PersonCard.tsx:30
 msgid "Wiek i płeć (opcjonalnie)"
 msgstr "Wiek i płeć (opcjonalnie)"
 
-#: src/features/plan/PersonCard.tsx:26
+#: src/features/plan/PersonCard.tsx:27
 #: src/features/portfolio/PortfolioEditor.tsx:86
 msgid "Wiek jest wymagany przy IKE i IKZE."
 msgstr "Wiek jest wymagany przy IKE i IKZE."
 
-#: src/features/plan/PersonCard.tsx:26
+#: src/features/plan/PersonCard.tsx:27
 #: src/features/portfolio/PortfolioEditor.tsx:86
 #: src/features/portfolio/PortfolioEditor.tsx:114
 msgid "Wiek: pełne lata od 0 do 120."
@@ -2776,7 +2799,7 @@ msgstr "Witaj ponownie"
 msgid "Wkład aktywów w ryzyko"
 msgstr "Wkład aktywów w ryzyko"
 
-#: src/features/methodology/Methodology.tsx:496
+#: src/features/methodology/Methodology.tsx:501
 msgid "Wkład aktywów w ryzyko liczymy dla wag początkowych na kowariancji rocznych zwrotów. Porównanie scenariuszy pokazuje różnicę mediany i dolnego percentyla z przedziałem ufności z bootstrapu parami ścieżek."
 msgstr "Wkład aktywów w ryzyko liczymy dla wag początkowych na kowariancji rocznych zwrotów. Porównanie scenariuszy pokazuje różnicę mediany i dolnego percentyla z przedziałem ufności z bootstrapu parami ścieżek."
 
@@ -2813,11 +2836,11 @@ msgstr "Wpłata miesięczna"
 msgid "Wpłaty"
 msgstr "Wpłaty"
 
-#: src/features/methodology/Methodology.tsx:410
+#: src/features/methodology/Methodology.tsx:415
 msgid "Wpłaty i wypłaty"
 msgstr "Wpłaty i wypłaty"
 
-#: src/features/methodology/Methodology.tsx:412
+#: src/features/methodology/Methodology.tsx:417
 msgid "Wpłaty miesięczne mają kwotę, rok końca i indeksację: brak, inflacja albo inflacja plus realny wzrost. Wypłaty zaczynają się od wybranego roku i mogą mieć jedną z kilku reguł: stała kwota realna (rośnie z symulowaną inflacją), stały procent portfela (ustalany w styczniu, wypłacany w 12 ratach, więc portfel nigdy się nie wyczerpuje), amortyzacja albo reguły Guytona i Klingera."
 msgstr "Wpłaty miesięczne mają kwotę, rok końca i indeksację: brak, inflacja albo inflacja plus realny wzrost. Wypłaty zaczynają się od wybranego roku i mogą mieć jedną z kilku reguł: stała kwota realna (rośnie z symulowaną inflacją), stały procent portfela (ustalany w styczniu, wypłacany w 12 ratach, więc portfel nigdy się nie wyczerpuje), amortyzacja albo reguły Guytona i Klingera."
 
@@ -2854,11 +2877,11 @@ msgstr "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzen
 msgid "Wybierz coś z menu na górze."
 msgstr "Wybierz coś z menu na górze."
 
-#: src/features/methodology/Methodology.tsx:504
+#: src/features/methodology/Methodology.tsx:509
 msgid "Wydajność i pamięć"
 msgstr "Wydajność i pamięć"
 
-#: src/features/settings/Settings.tsx:71
+#: src/features/settings/Settings.tsx:73
 msgid "Wygląd"
 msgstr "Wygląd"
 
@@ -2876,7 +2899,7 @@ msgstr "Wynik po {years} latach (w dzisiejszych zł, po podatku)"
 msgid "Wyniki scenariuszy"
 msgstr "Wyniki scenariuszy"
 
-#: src/features/methodology/Methodology.tsx:513
+#: src/features/methodology/Methodology.tsx:518
 msgid "Wyniki zapisujemy na siatce czasu: miesięcznej do 10 lat, kwartalnej do 40 lat i półrocznej powyżej, aby zmieścić się w budżecie pamięci 64 MB. Limit ścieżek to 10 000 na telefonie i 25 000 na komputerze. Zmiana parametrów anuluje trwające liczenie (po 250 ms bezczynności), a wyniki pojawiają się stopniowo, po każdym etapie."
 msgstr "Wyniki zapisujemy na siatce czasu: miesięcznej do 10 lat, kwartalnej do 40 lat i półrocznej powyżej, aby zmieścić się w budżecie pamięci 64 MB. Limit ścieżek to 10 000 na telefonie i 25 000 na komputerze. Zmiana parametrów anuluje trwające liczenie (po 250 ms bezczynności), a wyniki pojawiają się stopniowo, po każdym etapie."
 
@@ -2914,7 +2937,7 @@ msgstr "Wypłaty"
 msgid "Wypłaty muszą zacząć się przed końcem horyzontu."
 msgstr "Wypłaty muszą zacząć się przed końcem horyzontu."
 
-#: src/features/methodology/Methodology.tsx:352
+#: src/features/methodology/Methodology.tsx:357
 msgid "Wypłaty pokrywamy w stałej kolejności: gotówka i lokaty, potem aktywa przeważone względem celu, na końcu EDO (wykup przedterminowy). Nieruchomość i EDO nie uczestniczą w rebalansie."
 msgstr "Wypłaty pokrywamy w stałej kolejności: gotówka i lokaty, potem aktywa przeważone względem celu, na końcu EDO (wykup przedterminowy). Nieruchomość i EDO nie uczestniczą w rebalansie."
 
@@ -2938,7 +2961,7 @@ msgstr "Wzór matematyczny (przewijany poziomo)"
 msgid "Wzrost ceny ponad inflację (rocznie)"
 msgstr "Wzrost ceny ponad inflację (rocznie)"
 
-#: src/features/plan/PersonCard.tsx:40
+#: src/features/plan/PersonCard.tsx:41
 msgid "Z wiekiem i płcią pokażemy w Wynikach szansę, że środki wyczerpią się, gdy jeszcze żyjesz (tablice trwania życia GUS). Puste: bez krzywej przeżycia, liczymy tylko szansę wyczerpania w całym okresie."
 msgstr "Z wiekiem i płcią pokażemy w Wynikach szansę, że środki wyczerpią się, gdy jeszcze żyjesz (tablice trwania życia GUS). Puste: bez krzywej przeżycia, liczymy tylko szansę wyczerpania w całym okresie."
 
@@ -2981,7 +3004,7 @@ msgstr "Zakładany typowy zwrot realny portfela: {0}% rocznie (mediana z symulac
 
 #. placeholder {0}: fmt(param.range[0], unit)
 #. placeholder {1}: fmt(param.range[1], unit)
-#: src/features/assumptions/ParamRow.tsx:162
+#: src/features/assumptions/ParamRow.tsx:173
 msgid "Zakres w źródłach: {0} – {1}"
 msgstr "Zakres w źródłach: {0} – {1}"
 
@@ -3014,7 +3037,7 @@ msgstr "Założenia"
 msgid "Założenia i źródła"
 msgstr "Założenia i źródła"
 
-#: src/features/assumptions/ParamRow.tsx:47
+#: src/features/assumptions/ParamRow.tsx:48
 msgid "założenie"
 msgstr "założenie"
 
@@ -3098,7 +3121,7 @@ msgstr "Zapisano go ze zbiorem danych {version}, a aplikacja ma już {CURRENT_DA
 msgid "Zapisz bieżący plan jako migawkę, zmień coś (np. udział bitcoina) i zapisz kolejną. Wszystkie scenariusze liczą się na tych samych losowych przyszłościach, więc różnice nie zależą od szczęścia w losowaniu."
 msgstr "Zapisz bieżący plan jako migawkę, zmień coś (np. udział bitcoina) i zapisz kolejną. Wszystkie scenariusze liczą się na tych samych losowych przyszłościach, więc różnice nie zależą od szczęścia w losowaniu."
 
-#: src/features/assumptions/TaxRulesCard.tsx:45
+#: src/features/assumptions/TaxRulesCard.tsx:48
 msgid "Zasady wypłat z IKE i IKZE"
 msgstr "Zasady wypłat z IKE i IKZE"
 
@@ -3106,15 +3129,15 @@ msgstr "Zasady wypłat z IKE i IKZE"
 msgid "Zastępuje oczekiwany zwrot Bitcoina pochodną trendu ln P = a + b·ln(dni od 2009-01-03). Zastrzeżenie: regresja ceny na czasie jest podatna na regresję pozorną i nie ma podstaw ekonomicznych. Parametry a i b są niezweryfikowane. Zmienność i upadek pozostają bez zmian."
 msgstr "Zastępuje oczekiwany zwrot Bitcoina pochodną trendu ln P = a + b·ln(dni od 2009-01-03). Zastrzeżenie: regresja ceny na czasie jest podatna na regresję pozorną i nie ma podstaw ekonomicznych. Parametry a i b są niezweryfikowane. Zmienność i upadek pozostają bez zmian."
 
-#: src/features/settings/Settings.tsx:202
+#: src/features/settings/Settings.tsx:204
 msgid "Zbiór danych {CURRENT_DATASET_VERSION}. Aplikacja działa offline; nowa wersja pojawia się po Twojej zgodzie."
 msgstr "Zbiór danych {CURRENT_DATASET_VERSION}. Aplikacja działa offline; nowa wersja pojawia się po Twojej zgodzie."
 
-#: src/features/assumptions/AssumptionsPanel.tsx:121
+#: src/features/assumptions/AssumptionsPanel.tsx:131
 msgid "Zestaw podmienia zwrot, zmienność i ryzyko upadku Bitcoina. Własne zmiany tych parametrów są wtedy zastępowane wartościami zestawu."
 msgstr "Zestaw podmienia zwrot, zmienność i ryzyko upadku Bitcoina. Własne zmiany tych parametrów są wtedy zastępowane wartościami zestawu."
 
-#: src/features/assumptions/AssumptionsPanel.tsx:101
+#: src/features/assumptions/AssumptionsPanel.tsx:111
 msgid "Zestaw założeń dla Bitcoina"
 msgstr "Zestaw założeń dla Bitcoina"
 
@@ -3138,7 +3161,7 @@ msgstr "Złoto"
 msgid "Złoto fizyczne po upływie pół roku od końca miesiąca nabycia nie podlega PIT (art. 10 ust. 1 pkt 8 lit. d, Z-18). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 msgstr "Złoto fizyczne po upływie pół roku od końca miesiąca nabycia nie podlega PIT (art. 10 ust. 1 pkt 8 lit. d, Z-18). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 
-#: src/features/methodology/Methodology.tsx:393
+#: src/features/methodology/Methodology.tsx:398
 msgid "Złoto fizyczne sprzedane po upływie pół roku od końca miesiąca zakupu nie podlega PIT, a fundusz na złoto (ETC) to papier wartościowy. Odsetki lokat i obligacji: 19% u źródła, bez kompensaty ze stratami. EDO: podatek od sumy odsetek przy wykupie. Najem: ryczałt 8,5% do 100 000 zł przychodu rocznie i 12,5% powyżej. Podatek za dany rok płacimy w kwietniu następnego roku, z gotówki, a gdy jej brakuje, ze sprzedaży aktywów."
 msgstr "Złoto fizyczne sprzedane po upływie pół roku od końca miesiąca zakupu nie podlega PIT, a fundusz na złoto (ETC) to papier wartościowy. Odsetki lokat i obligacji: 19% u źródła, bez kompensaty ze stratami. EDO: podatek od sumy odsetek przy wykupie. Najem: ryczałt 8,5% do 100 000 zł przychodu rocznie i 12,5% powyżej. Podatek za dany rok płacimy w kwietniu następnego roku, z gotówki, a gdy jej brakuje, ze sprzedaży aktywów."
 
@@ -3146,7 +3169,7 @@ msgstr "Złoto fizyczne sprzedane po upływie pół roku od końca miesiąca zak
 msgid "Złoty słabnie w kryzysie (4.4); założenie."
 msgstr "Złoty słabnie w kryzysie (4.4); założenie."
 
-#: src/features/assumptions/ParamRow.tsx:153
+#: src/features/assumptions/ParamRow.tsx:164
 msgid "zmienione przez Ciebie"
 msgstr "zmienione przez Ciebie"
 
@@ -3154,7 +3177,7 @@ msgstr "zmienione przez Ciebie"
 msgid "Zmienność inflacji r/r"
 msgstr "Zmienność inflacji r/r"
 
-#: src/features/methodology/Methodology.tsx:279
+#: src/features/methodology/Methodology.tsx:284
 msgid "Zmienność kursu w tabelach to odchylenie rocznej zmiany logarytmu realnego kursu, bo to się mierzy w danych. Z niej wyliczamy zmienność miesięczną procesu. Panel „Kontrola modelu” pokazuje łączną zmienność aktywa w złotych, uwzględniającą kurs i jego korelację z aktywem."
 msgstr "Zmienność kursu w tabelach to odchylenie rocznej zmiany logarytmu realnego kursu, bo to się mierzy w danych. Z niej wyliczamy zmienność miesięczną procesu. Panel „Kontrola modelu” pokazuje łączną zmienność aktywa w złotych, uwzględniającą kurs i jego korelację z aktywem."
 
@@ -3182,19 +3205,35 @@ msgstr "Zobacz wynik"
 msgid "Zostaw bez zmian"
 msgstr "Zostaw bez zmian"
 
-#: src/features/settings/Settings.tsx:168
+#: src/features/settings/Settings.tsx:170
 msgid "Zresetuj dane"
 msgstr "Zresetuj dane"
 
-#: src/features/assumptions/ParamRow.tsx:60
+#: src/features/assumptions/ParamRow.tsx:61
 msgid "Źródła"
 msgstr "Źródła"
+
+#: src/features/assumptions/ParamRow.tsx:51
+msgid "źródło wtórne"
+msgstr "źródło wtórne"
+
+#: src/features/assumptions/AssumptionsPanel.tsx:68
+msgid "źródło wtórne: liczba pochodzi z omówienia, nie z oryginału."
+msgstr "źródło wtórne: liczba pochodzi z omówienia, nie z oryginału."
+
+#: src/features/assumptions/ParamRow.tsx:50
+msgid "zweryfikowane"
+msgstr "zweryfikowane"
+
+#: src/features/assumptions/AssumptionsPanel.tsx:64
+msgid "zweryfikowane: liczba odczytana ze źródła i sprawdzona."
+msgstr "zweryfikowane: liczba odczytana ze źródła i sprawdzona."
 
 #: src/features/assumptions/datasetNotes.ts:96
 msgid "Zwolnienie po 5 latach podatkowych (4.8). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 msgstr "Zwolnienie po 5 latach podatkowych (4.8). Przepisy cytowane z pamięci, do sprawdzenia w ISAP (❌)."
 
-#: src/features/assumptions/TaxRulesCard.tsx:38
+#: src/features/assumptions/TaxRulesCard.tsx:41
 msgid "Zwolnienie sprzedaży mieszkania po latach od zakupu"
 msgstr "Zwolnienie sprzedaży mieszkania po latach od zakupu"
 

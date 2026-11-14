@@ -1,8 +1,9 @@
-import { Trans, useLingui } from '@lingui/react/macro';
+import { useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Field, inputClass } from '../../components/ui/Field';
 import { MoneyInput } from '../../components/ui/MoneyInput';
+import { StatusText } from '../../components/ui/Status';
 import { Toggle } from '../../components/ui/Toggle';
 import { knownAge, useScenarioStore } from '../../state/scenarioStore';
 
@@ -57,9 +58,9 @@ export function PersonCard() {
         </Field>
         <Toggle label={t`Dłuższe życie kolejnych roczników (+2 lata, założenie)`} checked={bonus} onCheckedChange={setCohortBonus} disabled={!hasPerson || sex === ''} />
         <p className="m-0 text-sm text-muted">
-          <Trans>
-            Tablice okresowe zaniżają długość życia kolejnych roczników; opcja „+2 lata” przesuwa ryzyko zgonu o 2 lata wieku. To założenie, niezweryfikowane (❌).
-          </Trans>
+          <StatusText
+            text={t`Tablice okresowe zaniżają długość życia kolejnych roczników; opcja „+2 lata” przesuwa ryzyko zgonu o 2 lata wieku. To założenie, niezweryfikowane (❌).`}
+          />
         </p>
       </div>
     </Card>

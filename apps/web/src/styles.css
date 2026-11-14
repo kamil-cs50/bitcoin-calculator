@@ -317,23 +317,24 @@ body {
 }
 
 /* Suwak roku w nagłówku wachlarza: cienka świecąca ścieżka zamiast domyślnego suwaka systemu. */
-input[type="range"].fv-range {
+@layer base {
+input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
   height: 24px;
 }
-.fv-range::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
   height: 5px;
   border-radius: 999px;
-  background: var(--soft);
+  background: color-mix(in srgb, var(--fg) 16%, transparent);
 }
-.fv-range::-moz-range-track {
+input[type="range"]::-moz-range-track {
   height: 5px;
   border-radius: 999px;
-  background: var(--soft);
+  background: color-mix(in srgb, var(--fg) 16%, transparent);
 }
-.fv-range::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   margin-top: -5px;
@@ -344,13 +345,77 @@ input[type="range"].fv-range {
   background: radial-gradient(circle at 36% 30%, #fff 0%, #e4ecff 28%, #8fb0ff 70%, #3358e6 100%);
   box-shadow: 0 0 14px var(--glow);
 }
-.fv-range::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   width: 15px;
   height: 15px;
   border-radius: 50%;
   border: 0;
   background: radial-gradient(circle at 36% 30%, #fff 0%, #e4ecff 28%, #8fb0ff 70%, #3358e6 100%);
   box-shadow: 0 0 14px var(--glow);
+}
+
+input[type="range"] {
+  cursor: pointer;
+  accent-color: auto;
+}
+
+/*
+ * Kontrolki formularzy w stylu v3 (bez wyglądu systemowego): radio i checkbox jako szklane kółka
+ * ze świecącą kropką, lista rozwijana jak pole tekstowe ze strzałką rysowaną gradientem (bez obrazków,
+ * żeby nie poszerzać CSP). Fokus zostaje widoczny dzięki globalnemu :focus-visible.
+ */
+input[type="radio"]:not(.sr-only),
+input[type="checkbox"]:not(.sr-only) {
+  -webkit-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--field);
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+input[type="checkbox"]:not(.sr-only) {
+  border-radius: 6px;
+}
+input[type="radio"]:not(.sr-only):checked,
+input[type="checkbox"]:not(.sr-only):checked {
+  border-color: rgba(157, 185, 255, 0.6);
+  background: radial-gradient(circle, var(--accent-text) 0 3.5px, transparent 4px), rgba(42, 85, 255, 0.18);
+  box-shadow: 0 0 12px -2px var(--glow);
+}
+input[type="radio"]:disabled,
+input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.5rem !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 50%,
+    calc(100% - 15px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+select option {
+  background: var(--surface);
+  color: var(--fg);
+}
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
 }
 
 /* Animacje wejścia arkusza i podpowiedzi; wyłączane przy prefers-reduced-motion. */
