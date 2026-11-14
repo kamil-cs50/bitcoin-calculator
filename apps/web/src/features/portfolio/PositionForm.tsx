@@ -11,6 +11,8 @@ import { useScenarioStore } from '../../state/scenarioStore';
 import { rebuildMarket } from '../../state/defaults';
 import { fetchCryptoQuote } from './prices';
 import { TILE_PRESET, useAssetNames, type TileKind } from './tiles';
+import { numberLocale } from '../../i18n';
+import { currencyWord } from '../results/basis';
 
 type FetchState = 'idle' | 'loading' | 'error' | 'ok';
 
@@ -212,10 +214,10 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
 
         {byUnits ? (
           <>
-            <MoneyInput label={t`Liczba BTC`} suffix="BTC" value={units} onChange={setUnits} placeholder="0,35" />
+            <MoneyInput label={t`Liczba BTC`} suffix="BTC" value={units} onChange={setUnits} placeholder={numberLocale() === 'en-GB' ? '0.35' : '0,35'} />
             <MoneyInput
               label={t`Cena 1 BTC (zł), wymagana`}
-              suffix="zł"
+              suffix={currencyWord('PLN')}
               required
               value={price}
               onChange={(v) => {
@@ -254,7 +256,7 @@ export function PositionForm({ kind, onDone, onCancel }: PositionFormProps) {
         ) : (
           <MoneyInput
             label={t`Kwota`}
-            suffix="zł"
+            suffix={currencyWord('PLN')}
             value={amount}
             onChange={setAmount}
             hint={

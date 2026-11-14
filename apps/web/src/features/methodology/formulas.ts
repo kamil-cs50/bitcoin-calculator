@@ -1,4 +1,5 @@
 /** Wzory z aneksu (TeX). Opisy słowne są w komponencie Annex (przez Lingui); tu tylko zapis matematyczny. */
+import { numberLocale } from '../../i18n';
 export const FORMULAS = {
   drift: String.raw`\mu = \frac{\ln(1+g)}{12}, \qquad V \leftarrow V\,e^{r}\,(1-\mathrm{TER})^{1/12}`,
   seed: String.raw`\mathrm{seed}_{p,k} = \operatorname{fmix32}\!\bigl(\operatorname{fmix32}(\mathrm{seed}\oplus 0\mathrm{x}9\mathrm{E}3779\mathrm{B}9\,(p+1))\oplus 0\mathrm{x}85\mathrm{EBCA}6\mathrm{B}\,(k+1)\bigr)`,
@@ -42,3 +43,20 @@ export const FORMULAS = {
 
 export type FormulaId = keyof typeof FORMULAS;
 export const FORMULA_IDS = Object.keys(FORMULAS) as FormulaId[];
+
+/** Słowne człony wzorów po angielsku (reszta to symbole); pozostałe wzory różnią się tylko separatorem dziesiętnym. */
+const FORMULAS_EN: Partial<Record<FormulaId, string>> = {
+  uncertainty: String.raw`\Delta\mu^{(p)} = D\,L_\rho\,z,\quad D = \operatorname{diag}(\mathrm{SE}_i),\qquad \operatorname{median}(W_T) = W_0(1+g)^T,\quad \frac{E[W_T]}{W_0(1+g)^T} \approx e^{\mathrm{SE}^2 T^2/2}`,
+  collapse: String.raw`V \leftarrow V\,(1-L),\qquad P(\text{collapse by year } T) = 1 - e^{-hT}`,
+  taxSecurities: String.raw`\text{tax} = 0.19\cdot\max\bigl(0,\; P - K - O\bigr)`,
+  taxCrypto: String.raw`\text{income}_{\text{year}} = P_{\text{year}} - \bigl(W_{\text{year}} + C_{\text{previous years}}\bigr)`,
+  accounting: String.raw`W_{\mathrm{end}} = W_{\mathrm{start}} + G_{\mathrm{market}} - F_{\mathrm{out}} + F_{\mathrm{in}} - T_{\mathrm{taxes}} - O_{\mathrm{fees}} - K_{\mathrm{costs}}`,
+  ruinAlive: String.raw`P = \sum_{t} \hat P(\text{ruin in month } t)\,S(t)`,
+  bootstrap: String.raw`P(\text{new block}) = \frac1L,\qquad E[\text{block length}] = L`,
+};
+
+/** Zapis TeX wzoru w bieżącym języku (polski przecinek dziesiętny `{,}` po angielsku to kropka). */
+export function formulaTex(id: FormulaId): string {
+  if (numberLocale() !== 'en-GB') return FORMULAS[id];
+  return (FORMULAS_EN[id] ?? FORMULAS[id]).replaceAll('{,}', '.');
+}

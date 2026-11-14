@@ -4,6 +4,7 @@ import type { Position, Wrapper } from '@sim/engine';
 import { Button } from '../../components/ui/Button';
 import { MoneyInput } from '../../components/ui/MoneyInput';
 import { Field, inputClass } from '../../components/ui/Field';
+import { currencyWord } from '../results/basis';
 
 export interface AssetTileProps {
   name: string;
@@ -27,7 +28,7 @@ export function AssetTile({ name, position, onValue, onWrapper, onRemove }: Asse
       <h3 className="text-base font-semibold">{name}</h3>
       <MoneyInput
         label={t`Wartość`}
-        suffix="zł"
+        suffix={currencyWord('PLN')}
         value={draft}
         error={draft === null ? t`Wpisz kwotę.` : null}
         onChange={(v) => {

@@ -1,7 +1,6 @@
 import { t } from '@lingui/core/macro';
 import type { Currency } from '@sim/data';
-
-const LOCALE = 'pl-PL';
+import { numberLocale } from '../i18n';
 
 /** Zaokrągla do n cyfr znaczących (bez fałszywej precyzji). */
 export function roundSig(x: number, n: number): number {
@@ -9,17 +8,19 @@ export function roundSig(x: number, n: number): number {
   return Number(x.toPrecision(n));
 }
 
-const moneyFmt = new Map<Currency, Intl.NumberFormat>();
+const moneyFmt = new Map<string, Intl.NumberFormat>();
 function money(currency: Currency): Intl.NumberFormat {
-  let f = moneyFmt.get(currency);
+  const locale = numberLocale();
+  const key = `${locale}:${currency}`;
+  let f = moneyFmt.get(key);
   if (!f) {
-    f = new Intl.NumberFormat(LOCALE, {
+    f = new Intl.NumberFormat(locale, {
       style: 'currency',
       currency,
       maximumFractionDigits: 0,
       minimumFractionDigits: 0,
     });
-    moneyFmt.set(currency, f);
+    moneyFmt.set(key, f);
   }
   return f;
 }
@@ -36,19 +37,24 @@ function symbolOf(currency: Currency): string {
 export function formatMoney(value: number, currency: Currency, o: { sigDigits?: number } = {}): string {
   const v = o.sigDigits ? roundSig(value, o.sigDigits) : value;
   const abs = Math.abs(v);
-  const scale = abs >= 1e9 ? { div: 1e9, word: 'mld' } : abs >= 1e6 ? { div: 1e6, word: 'mln' } : null;
+  const en = numberLocale() === 'en-GB';
+  const scale =
+    abs >= 1e9 ? { div: 1e9, word: en ? 'bn' : 'mld' } : abs >= 1e6 ? { div: 1e6, word: en ? 'm' : 'mln' } : null;
   if (scale && o.sigDigits) {
-    const num = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: Math.max(0, o.sigDigits - 1) }).format(
+    const num = new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: Math.max(0, o.sigDigits - 1) }).format(
       v / scale.div,
     );
-    return `${num} ${scale.word} ${symbolOf(currency)}`;
+    const sym = symbolOf(currency);
+    // po angielsku skrót skali stoi przy liczbie, a symbol przed nią („£2.5bn”, „PLN 1.2m”)
+    if (en) return `${sym}${/^[A-Za-z]/.test(sym) ? ' ' : ''}${num}${scale.word}`;
+    return `${num} ${scale.word} ${sym}`;
   }
   return money(currency).format(v);
 }
 
 /** Procent z ułamka: 0,123 -> „12,3%”. */
 export function formatPercent(p: number, digits = 0): string {
-  return new Intl.NumberFormat(LOCALE, {
+  return new Intl.NumberFormat(numberLocale(), {
     style: 'percent',
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,

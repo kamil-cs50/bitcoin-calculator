@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
+import { initLocale } from './state/localeStore';
 import { startAutosave, useScenarioStore } from './state/scenarioStore';
 import { applyTheme, useThemeStore } from './state/themeStore';
 import { useUpdateStore } from './state/updateStore';
@@ -17,9 +18,8 @@ const updateSW = registerSW({
 
 // Najpierw wczytujemy zapis z IndexedDB (bez błyskania pustym planem), potem włączamy autozapis.
 // loadSaved sam łapie błędy IndexedDB (ustawia storageError), więc render nigdy nie czeka w nieskończoność.
-void useScenarioStore
-  .getState()
-  .loadSaved()
+// Język zapisany w Ustawieniach (np. angielski, ładowany leniwie) jest aktywny przed pierwszym renderem.
+void Promise.all([useScenarioStore.getState().loadSaved(), initLocale().catch(() => undefined)])
   .finally(() => {
     startAutosave();
     createRoot(document.getElementById('root')!).render(

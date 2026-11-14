@@ -8,6 +8,7 @@ import { formatMoney } from '../../lib/format';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { AssetPicker } from '../portfolio/PortfolioEditor';
 import { useAssetNames } from '../portfolio/tiles';
+import { currencyWord } from '../results/basis';
 
 const MONTHS_PER_YEAR = 12;
 
@@ -123,14 +124,14 @@ export function Onboarding() {
             />
             <MoneyInput
               label={t`Wpłata miesięczna`}
-              suffix="zł"
+              suffix={currencyWord('PLN')}
               value={monthly}
               onChange={setMonthly}
               hint={t`Możesz zostawić puste, jeśli nie dopłacasz.`}
             />
             <MoneyInput
               label={t`Wypłata miesięczna (w dzisiejszych zł)`}
-              suffix="zł"
+              suffix={currencyWord('PLN')}
               value={withdraw}
               onChange={setWithdraw}
               hint={t`Opcjonalnie. Domyślnie zaczyna się od razu; rok startu podasz poniżej.`}
@@ -147,7 +148,7 @@ export function Onboarding() {
             )}
             <MoneyInput
               label={t`Cel (w dzisiejszych zł)`}
-              suffix="zł"
+              suffix={currencyWord('PLN')}
               value={goal}
               onChange={setGoal}
               hint={t`Opcjonalnie: kwota, którą chcesz mieć na końcu horyzontu.`}

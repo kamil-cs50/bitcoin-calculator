@@ -2,7 +2,7 @@ import { useLingui } from '@lingui/react/macro';
 import { useEffect, useState, type ReactNode } from 'react';
 import { loadKatex } from './loadKatex';
 import type { FormulaId } from './formulas';
-import { FORMULAS } from './formulas';
+import { formulaTex } from './formulas';
 
 /**
  * Jeden wzór z opisem. Do czasu załadowania KaTeX (albo przy błędzie ładowania, np. offline bez
@@ -10,7 +10,7 @@ import { FORMULAS } from './formulas';
  */
 export function Formula({ id, children }: { id: FormulaId; children: ReactNode }) {
   const { t } = useLingui();
-  const tex = FORMULAS[id];
+  const tex = formulaTex(id);
   const [html, setHtml] = useState<string | null>(null);
 
   useEffect(() => {

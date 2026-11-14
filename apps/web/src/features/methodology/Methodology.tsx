@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import type { ReactNode } from 'react';
 import { Card } from '../../components/ui/Card';
@@ -47,7 +48,7 @@ function referenceText(b: Reference): string {
     case 'book':
       return `${authors} (${b.year}). ${b.title}${b.edition ? ` (${b.edition})` : ''}. ${b.publisher}.`;
     case 'dataset':
-      return `${authors} (${b.year}). ${b.title}. ${b.url} (dostęp: ${b.accessed}).`;
+      return `${authors} (${b.year}). ${b.title}. ${b.url} (${t`dostęp: ${b.accessed}`}).`;
   }
 }
 

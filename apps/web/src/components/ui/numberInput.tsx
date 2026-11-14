@@ -1,9 +1,16 @@
 import { useState } from 'react';
+import { numberLocale } from '../../i18n';
 import { Field, inputClass } from './Field';
 
-/** „12 500,50” / „12500.5” -> 12500.5; pusty lub niepełny zapis -> null. */
+const isEn = (): boolean => numberLocale() === 'en-GB';
+
+/**
+ * „12 500,50” / „12500.5” -> 12500.5; pusty lub niepełny zapis -> null.
+ * Po angielsku przecinek jest separatorem tysięcy („12,500.50”), po polsku dziesiętnym.
+ */
 export function parseDecimal(text: string): number | null {
-  const clean = text.replace(/[\s\u00a0\u202f]/g, '').replace(',', '.');
+  const noSpace = text.replace(/[\s\u00a0\u202f]/g, '');
+  const clean = isEn() ? noSpace.replace(/,/g, '') : noSpace.replace(',', '.');
   if (clean === '' || clean === '.') return null;
   const n = Number(clean);
   return Number.isFinite(n) ? n : null;
@@ -12,6 +19,8 @@ export function parseDecimal(text: string): number | null {
 /** Dozwolone znaki wpisu: cyfry, spacje, jeden separator dziesiętny (przecinek lub kropka). */
 const ALLOWED = /^[\d\s\u00a0\u202f]*[,.]?[\d]*$/;
 const ALLOWED_NEGATIVE = /^-?[\d\s\u00a0\u202f]*[,.]?[\d]*$/;
+const ALLOWED_EN = /^[\d\s,]*\.?\d*$/;
+const ALLOWED_EN_NEGATIVE = /^-?[\d\s,]*\.?\d*$/;
 
 export interface DecimalInputProps {
   label: string;
@@ -34,7 +43,8 @@ export interface DecimalInputProps {
 
 function show(v: number | null, scale: number): string {
   if (v === null) return '';
-  return String(Math.round(v * scale * 1e8) / 1e8).replace('.', ',');
+  const t = String(Math.round(v * scale * 1e8) / 1e8);
+  return isEn() ? t : t.replace('.', ',');
 }
 
 /** Wspólna baza MoneyInput i PercentInput: tekst z polskim zapisem, bez liter. */
@@ -74,7 +84,8 @@ export function DecimalInput({
             className={`${inputClass} ${suffix ? 'pr-14' : ''}`}
             onChange={(e) => {
               const next = e.target.value;
-              if (!(allowNegative ? ALLOWED_NEGATIVE : ALLOWED).test(next)) return;
+              const allowed = isEn() ? (allowNegative ? ALLOWED_EN_NEGATIVE : ALLOWED_EN) : allowNegative ? ALLOWED_NEGATIVE : ALLOWED;
+              if (!allowed.test(next)) return;
               setText(next);
               const parsed = parseDecimal(next);
               const out = parsed === null ? null : parsed / scale;

@@ -8,6 +8,7 @@ import { MoneyInput } from '../../components/ui/MoneyInput';
 import { PercentInput } from '../../components/ui/PercentInput';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { RadioOption, WithdrawalForm } from './WithdrawalForm';
+import { currencyWord } from '../results/basis';
 
 const MONTHS_PER_YEAR = 12;
 const monthsOf = (years: number): number => Math.round(years * MONTHS_PER_YEAR);
@@ -176,7 +177,7 @@ export function PlanEditor() {
         <div className="flex flex-col gap-3">
           <MoneyInput
             label={t`Wpłata miesięczna`}
-            suffix="zł"
+            suffix={currencyWord('PLN')}
             value={flows.monthly}
             onChange={(v) => patch({ monthly: v })}
             hint={t`Ile odkładasz co miesiąc. Puste albo 0 oznacza brak wpłat.`}
@@ -227,7 +228,7 @@ export function PlanEditor() {
         <div className="flex flex-col gap-3">
           <MoneyInput
             label={t`Kwota celu`}
-            suffix="zł"
+            suffix={currencyWord('PLN')}
             value={flows.goalAmount}
             onChange={(v) => patch({ goalAmount: v })}
             hint={t`W dzisiejszych pieniądzach, np. 1 000 000 zł. Puste oznacza brak celu.`}

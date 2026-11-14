@@ -6,6 +6,8 @@ import { MoneyInput } from '../../components/ui/MoneyInput';
 import { PercentInput } from '../../components/ui/PercentInput';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { estimateRealReturn } from './estimate';
+import { numberLocale } from '../../i18n';
+import { currencyWord } from '../results/basis';
 
 type Kind = 'none' | Withdrawal['kind'];
 
@@ -189,7 +191,7 @@ export function WithdrawalForm() {
         {kind === 'fixedReal' && (
           <MoneyInput
             label={t`Kwota miesięczna`}
-            suffix="zł"
+            suffix={currencyWord('PLN')}
             value={monthly}
             onChange={setMonthly}
             hint={t`W dzisiejszych pieniądzach.`}
@@ -218,21 +220,21 @@ export function WithdrawalForm() {
               {estState === 'error' && <Trans>Nie udało się oszacować zwrotu portfela.</Trans>}
               {estState === 'idle' && est !== null && (
                 <Trans>
-                  Zakładany typowy zwrot realny portfela: {(est * 100).toLocaleString('pl-PL', { maximumFractionDigits: 1 })}% rocznie
+                  Zakładany typowy zwrot realny portfela: {(est * 100).toLocaleString(numberLocale(), { maximumFractionDigits: 1 })}% rocznie
                   (mediana z symulacji, po kosztach).
                 </Trans>
               )}
             </div>
             <MoneyInput
               label={t`Podłoga (zł miesięcznie, opcjonalnie)`}
-              suffix="zł"
+              suffix={currencyWord('PLN')}
               value={floor}
               onChange={setFloor}
               hint={t`Wypłata nie spadnie poniżej tej kwoty (w dzisiejszych pieniądzach).`}
             />
             <MoneyInput
               label={t`Sufit (zł miesięcznie, opcjonalnie)`}
-              suffix="zł"
+              suffix={currencyWord('PLN')}
               value={cap}
               onChange={setCap}
               hint={t`Wypłata nie wzrośnie powyżej tej kwoty (w dzisiejszych pieniądzach).`}

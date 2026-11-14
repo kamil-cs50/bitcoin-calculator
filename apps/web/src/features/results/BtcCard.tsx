@@ -11,6 +11,7 @@ import { runTask } from '../../workers/pool';
 import type { SimWorker } from '../../workers/pool';
 import { SIM_SEED } from './useSimulation';
 import { calendarYear } from './values';
+import { currencyWord } from './basis';
 
 export interface BtcCardProps {
   scenario: Scenario;
@@ -142,7 +143,7 @@ export function BtcCard({ scenario, dataset, month, priceUsd, pricePln, createWo
     <Card title={t`Bitcoin: rozkład ceny w roku ${year}`}>
       <div className="grid gap-3 sm:grid-cols-2">
         <MoneyInput label={t`Dzisiejsza cena 1 BTC (USD)`} suffix="USD" value={prices.usd} onChange={(v) => setPrices((p) => ({ ...p, usd: v }))} />
-        <MoneyInput label={t`Dzisiejsza cena 1 BTC (zł)`} suffix="zł" value={prices.pln} onChange={(v) => setPrices((p) => ({ ...p, pln: v }))} />
+        <MoneyInput label={t`Dzisiejsza cena 1 BTC (zł)`} suffix={currencyWord('PLN')} value={prices.pln} onChange={(v) => setPrices((p) => ({ ...p, pln: v }))} />
       </div>
       {prices.usd || prices.pln ? (
         <div className="mt-3">

@@ -6,6 +6,7 @@ import { Card } from '../../components/ui/Card';
 import { formatMoney, naturalFrequency } from '../../lib/format';
 import { currencyWord, useBasis } from './basis';
 import { capitalize, yearsText } from './periods';
+import { numberLocale } from '../../i18n';
 
 export interface KpiTilesProps {
   result: RunResult;
@@ -39,7 +40,7 @@ export function KpiTiles({ result, scenario, month, real, afterTax, expert }: Kp
   const b = useBasis(cur, real, afterTax);
   const basis = b.full;
   const unit = currencyWord(cur);
-  const half = (ci: [number, number]) => new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 1 }).format(((ci[1] - ci[0]) / 2) * 100);
+  const half = (ci: [number, number]) => new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 1 }).format(((ci[1] - ci[0]) / 2) * 100);
   const goalPp = s.probGoal ? half(s.probGoal.ci) : '';
   const deepPp = half(deep.ci);
   const lossPp = half(s.probRealLoss.ci);

@@ -4,40 +4,74 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Sheet } from '../../components/ui/Sheet';
 import { Gate } from '../../entitlements/Gate';
+import type { Locale } from '../../i18n';
 import { db } from '../../state/db';
 import { CURRENT_DATASET_VERSION } from '../../state/defaults';
+import { useLocaleStore } from '../../state/localeStore';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useThemeStore, type Theme } from '../../state/themeStore';
 import { downloadText, exportScenario, parseImport } from './exportImport';
 import { UpdateBanner } from './UpdateBanner';
 
-function ThemeCard() {
-  const { t } = useLingui();
-  const theme = useThemeStore((s) => s.theme);
-  const setTheme = useThemeStore((s) => s.setTheme);
+/** Grupa przycisków radiowych w stylu karty ustawień (motyw, język). */
+function RadioChoice<T extends string>({
+  name,
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  name: string;
+  label: string;
+  value: T;
+  options: { id: T; label: string; lang?: string }[];
+  onChange: (v: T) => void;
+}) {
   const labelId = useId();
-  const options: { id: Theme; label: string }[] = [
-    { id: 'system', label: t`Jak w systemie` },
-    { id: 'light', label: t`Jasny` },
-    { id: 'dark', label: t`Ciemny` },
-  ];
   return (
-    <Card title={t`Wygląd`}>
+    <div>
       <p id={labelId} className="mb-2 mt-0 text-sm font-medium">
-        <Trans>Motyw</Trans>
+        {label}
       </p>
       <div role="radiogroup" aria-labelledby={labelId} className="flex flex-wrap gap-2">
         {options.map((o) => (
           <label
             key={o.id}
+            lang={o.lang}
             className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-4 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus ${
-              theme === o.id ? 'border-accent bg-accent-soft font-semibold text-accent-soft-fg' : 'border-border-strong bg-surface'
+              value === o.id ? 'border-accent bg-accent-soft font-semibold text-accent-soft-fg' : 'border-border-strong bg-surface'
             }`}
           >
-            <input type="radio" name="theme" className="sr-only" checked={theme === o.id} onChange={() => setTheme(o.id)} />
+            <input type="radio" name={name} className="sr-only" checked={value === o.id} onChange={() => onChange(o.id)} />
             {o.label}
           </label>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function ThemeCard() {
+  const { t } = useLingui();
+  const theme = useThemeStore((s) => s.theme);
+  const setTheme = useThemeStore((s) => s.setTheme);
+  const locale = useLocaleStore((s) => s.locale);
+  const setLocale = useLocaleStore((s) => s.setLocale);
+  const themes: { id: Theme; label: string }[] = [
+    { id: 'system', label: t`Jak w systemie` },
+    { id: 'light', label: t`Jasny` },
+    { id: 'dark', label: t`Ciemny` },
+  ];
+  // nazwy języków zawsze we własnym języku (z atrybutem lang dla czytników ekranu)
+  const languages: { id: Locale; label: string; lang: string }[] = [
+    { id: 'pl', label: 'Polski', lang: 'pl' },
+    { id: 'en', label: 'English', lang: 'en' },
+  ];
+  return (
+    <Card title={t`Wygląd`}>
+      <div className="flex flex-col gap-4">
+        <RadioChoice name="theme" label={t`Motyw`} value={theme} options={themes} onChange={setTheme} />
+        <RadioChoice name="locale" label={t`Język`} value={locale} options={languages} onChange={(l) => void setLocale(l)} />
       </div>
     </Card>
   );

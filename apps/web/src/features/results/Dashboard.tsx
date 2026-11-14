@@ -23,8 +23,9 @@ import { RiskCard } from './RiskCard';
 import { QualityBadge } from './QualityBadge';
 import { SIM_SEED, useSimulation, type SimOptions } from './useSimulation';
 import { calendarYear, gridIndex, valuesAt, winsorize } from './values';
+import { numberLocale } from '../../i18n';
 
-const fmtCorr = (v: number): string => new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
+const fmtCorr = (v: number): string => new Intl.NumberFormat(numberLocale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 
 function CorrMatrix({ data }: { data: unknown }) {
   const { t } = useLingui();
@@ -163,7 +164,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
     );
   }
   if (!result || !fan || !histValues) {
-    const n = new Intl.NumberFormat('pl-PL').format(maxPaths);
+    const n = new Intl.NumberFormat(numberLocale()).format(maxPaths);
     return (
       <p role="status" className="rounded-card border border-border bg-surface p-6 text-center text-muted">
         <Trans>Liczymy {n} możliwych przyszłości…</Trans>

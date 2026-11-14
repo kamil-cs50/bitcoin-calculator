@@ -10,6 +10,7 @@ import { useAssetNames } from '../portfolio/tiles';
 import { ExpertControls } from './ExpertControls';
 import { ParamRow } from './ParamRow';
 import { useParamRows } from './useParamRows';
+import { numberLocale } from '../../i18n';
 
 export const BTC_SETS = ['btcPessimistic', 'btcBase', 'btcOptimistic'] as const;
 type BtcSet = (typeof BTC_SETS)[number];
@@ -42,7 +43,7 @@ export function AssumptionsPanel() {
   const names = useAssetNames();
   const btc = scenario.assets.find((a) => (BTC_SETS as readonly string[]).includes(presetIdOf(a.id)));
   const scale = scenario.market.uncertaintyScale;
-  const scaleText = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(scale);
+  const scaleText = new Intl.NumberFormat(numberLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(scale);
   const setLabel: Record<BtcSet, string> = {
     btcPessimistic: t`Pesymistyczny`,
     btcBase: t`Bazowy`,

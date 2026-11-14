@@ -4,6 +4,7 @@ import { DataTable } from '../../charts/DataTable';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
 import { formatPercent } from '../../lib/format';
+import { numberLocale } from '../../i18n';
 
 export interface ModelCheckPanelProps {
   rows: ModelCheckRow[];
@@ -22,7 +23,7 @@ export function ModelCheckPanel({ rows, labelOf = (id) => id }: ModelCheckPanelP
     crisisShare: t`Udział miesięcy kryzysowych`,
   };
   const num = (r: ModelCheckRow, v: number) =>
-    r.metric === 'corr' ? new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v) : formatPercent(v, 1);
+    r.metric === 'corr' ? new Intl.NumberFormat(numberLocale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v) : formatPercent(v, 1);
   const bad = rows.filter((r) => !r.ok).length;
   return (
     <Card

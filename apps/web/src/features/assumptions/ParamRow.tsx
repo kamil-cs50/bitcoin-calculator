@@ -1,9 +1,13 @@
+import { t } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import type { Param } from '@sim/data';
 import { useState } from 'react';
 import { Badge, type BadgeTone } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { DecimalInput } from '../../components/ui/numberInput';
+import { i18n, numberLocale } from '../../i18n';
+import { DATASET_NOTES } from './datasetNotes';
+import { currencyWord } from '../results/basis';
 
 export type ParamUnit = 'percent' | 'number' | 'years' | 'pln';
 
@@ -21,13 +25,19 @@ export interface RowSpec {
   set: (v: number) => void;
 }
 
-const SUFFIX: Record<ParamUnit, string | undefined> = { percent: '%', number: undefined, years: 'lat', pln: 'zł' };
+const suffixOf = (unit: ParamUnit): string | undefined =>
+  ({ percent: '%', number: undefined, years: t`lat`, pln: currencyWord('PLN') })[unit];
+/** Notatka parametru ze zbioru danych (po polsku) w bieżącym języku; nieznana notatka zostaje w oryginale. */
+export const noteText = (note: string): string => {
+  const d = DATASET_NOTES[note];
+  return d ? i18n._(d) : note;
+};
 const EPS = 1e-9;
 
 export const isChanged = (value: number, param: Param): boolean => Math.abs(value - param.value) > EPS;
 
 const fmt = (v: number, unit: ParamUnit): string =>
-  new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 4 }).format(unit === 'percent' ? v * 100 : v) +
+  new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 4 }).format(unit === 'percent' ? v * 100 : v) +
   (unit === 'percent' ? '%' : '');
 
 /** Wiersz parametru: wartość do edycji, rodzaj, status weryfikacji (tekstem), źródła, „przywróć domyślne”. */
@@ -84,7 +94,7 @@ export function ParamRow({ spec }: { spec: RowSpec }) {
         value={draft}
         onChange={onChange}
         scale={unit === 'percent' ? 100 : 1}
-        suffix={SUFFIX[unit]}
+        suffix={suffixOf(unit)}
         error={error}
         allowNegative={min === undefined || min < 0}
       />
@@ -103,7 +113,7 @@ export function ParamRow({ spec }: { spec: RowSpec }) {
           {t`Zakres w źródłach: ${fmt(param.range[0], unit)} – ${fmt(param.range[1], unit)}`}
         </p>
       )}
-      {param.note && <p className="m-0 text-sm text-muted">{param.note}</p>}
+      {param.note && <p className="m-0 text-sm text-muted">{noteText(param.note)}</p>}
       {param.sources.length > 0 ? (
         <ul aria-label={t`Źródła`} className="m-0 flex list-none flex-col gap-1 p-0 text-sm">
           {param.sources.map((s) => (

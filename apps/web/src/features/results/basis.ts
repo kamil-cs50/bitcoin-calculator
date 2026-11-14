@@ -1,8 +1,9 @@
 import { useLingui } from '@lingui/react/macro';
 import type { Currency } from '@sim/data';
+import { numberLocale } from '../../i18n';
 
 /** Skrót waluty w tekstach („zł”, „USD”, „EUR”). */
-export const currencyWord = (cur: Currency): string => (cur === 'PLN' ? 'zł' : cur);
+export const currencyWord = (cur: Currency): string => (cur === 'PLN' && numberLocale() === 'pl-PL' ? 'zł' : cur);
 
 /**
  * Podstawa liczb na wynikach: realnie albo nominalnie, po podatku albo przed. Jedno źródło tekstu dla

@@ -3,6 +3,7 @@ import type { RunResult, Scenario } from '@sim/engine';
 import { summarize } from '@sim/engine';
 import { useMemo } from 'react';
 import { Badge } from '../../components/ui/Badge';
+import { numberLocale } from '../../i18n';
 
 export interface QualityBadgeProps {
   result: RunResult;
@@ -24,8 +25,8 @@ export function QualityBadge({ result, scenario, running, calibrated }: QualityB
     const { ci } = s.probGoal ?? s.probRealLoss;
     return ((ci[1] - ci[0]) / 2) * 100;
   }, [result, scenario]);
-  const n = new Intl.NumberFormat('pl-PL').format(result.paths);
-  const pp = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(half);
+  const n = new Intl.NumberFormat(numberLocale()).format(result.paths);
+  const pp = new Intl.NumberFormat(numberLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(half);
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span data-testid="quality" className="text-sm font-medium tabular-nums">
