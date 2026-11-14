@@ -1,7 +1,7 @@
 import { loadDataset, type Dataset } from '@sim/data';
 import type { Position, Scenario, Wrapper } from '@sim/engine';
 import { create } from 'zustand';
-import { CURRENT_ID, db } from './db';
+import { COMPARE_ID, CURRENT_ID, db } from './db';
 import {
   assetFromPreset,
   CURRENT_DATASET_VERSION,
@@ -9,6 +9,15 @@ import {
   rebuildMarket,
 } from './defaults';
 import { migrate } from './migrations';
+
+/** Najwyżej tyle scenariuszy naraz w porównaniu (spec 4.15). */
+export const MAX_COMPARE = 3;
+
+export interface CompareEntry {
+  id: string;
+  name: string;
+  scenario: Scenario;
+}
 
 export type LoadStatus = 'idle' | 'ready' | 'invalid';
 
@@ -33,6 +42,11 @@ export interface ScenarioState {
   datasetOutdated: boolean;
   /** Błąd samego zapisu lokalnego (np. IndexedDB niedostępne); aplikacja działa dalej. */
   storageError: string | null;
+  /** Migawki scenariuszy do porównania na wspólnych liczbach losowych (maks. `MAX_COMPARE`). */
+  compareList: CompareEntry[];
+  /** Dodaje migawkę bieżącego scenariusza; `false`, gdy lista jest pełna. */
+  addToCompare: (name: string) => boolean;
+  removeFromCompare: (id: string) => void;
   setScenario: (s: Scenario) => void;
   addPosition: (p: NewPosition) => void;
   updatePosition: (index: number, patch: Partial<Position>) => void;
@@ -50,6 +64,23 @@ const dataset = loadDataset(CURRENT_DATASET_VERSION);
 /** Surowy zapis z nieudanego wczytania (dla kopii); poza stanem, bo nie jest renderowany. */
 let rawBackup: unknown = null;
 
+let compareSeq = 0;
+const newCompareId = (): string => `cmp-${Date.now().toString(36)}-${compareSeq++}`;
+
+/** Wpis porównań z bazy: każdy scenariusz przechodzi migrate(); uszkodzone są pomijane. */
+function parseCompare(data: unknown): CompareEntry[] {
+  const raw = (data as { entries?: unknown } | null)?.entries;
+  if (!Array.isArray(raw)) return [];
+  const out: CompareEntry[] = [];
+  for (const e of raw) {
+    const r = migrate((e as { scenario?: unknown } | null)?.scenario);
+    const id = (e as { id?: unknown } | null)?.id;
+    const name = (e as { name?: unknown } | null)?.name;
+    if (r.ok && typeof id === 'string' && typeof name === 'string') out.push({ id, name, scenario: r.scenario });
+  }
+  return out.slice(0, MAX_COMPARE);
+}
+
 const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
 /** Usuwa aktywa bez pozycji i odbudowuje czynniki/kursy/korelacje rynku. */
@@ -66,6 +97,16 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
   loadError: null,
   datasetOutdated: false,
   storageError: null,
+
+  compareList: [],
+
+  addToCompare: (name) => {
+    if (get().compareList.length >= MAX_COMPARE) return false;
+    set((st) => ({ compareList: [...st.compareList, { id: newCompareId(), name, scenario: st.scenario }] }));
+    return true;
+  },
+
+  removeFromCompare: (id) => set((st) => ({ compareList: st.compareList.filter((e) => e.id !== id) })),
 
   setScenario: (scenario) => set({ scenario }),
 
@@ -113,6 +154,12 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
   },
 
   loadSaved: async () => {
+    try {
+      const cmp = await db.scenarios.get(COMPARE_ID);
+      set({ compareList: cmp ? parseCompare(cmp.data) : [] });
+    } catch {
+      // brak IndexedDB: obsłuży to poniższe wczytanie bieżącego scenariusza
+    }
     let row;
     try {
       row = await db.scenarios.get(CURRENT_ID);
@@ -151,6 +198,12 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
         updatedAt: Date.now(),
         data: get().scenario,
       });
+      const cmp = get().compareList;
+      if (cmp.length > 0) {
+        await db.scenarios.put({ id: COMPARE_ID, name: 'Porównanie', updatedAt: Date.now(), data: { entries: cmp } });
+      } else {
+        await db.scenarios.delete(COMPARE_ID);
+      }
       set({ storageError: null });
     } catch (e) {
       set({ storageError: errMsg(e) });
@@ -167,7 +220,7 @@ export const useScenarioStore = create<ScenarioState>()((set, get) => ({
 export function startAutosave(delayMs = 500): () => void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const unsub = useScenarioStore.subscribe((state, prev) => {
-    if (state.scenario === prev.scenario) return;
+    if (state.scenario === prev.scenario && state.compareList === prev.compareList) return;
     clearTimeout(timer);
     timer = setTimeout(() => void useScenarioStore.getState().saveNow(), delayMs);
   });

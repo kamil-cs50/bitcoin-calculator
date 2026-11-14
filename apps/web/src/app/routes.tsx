@@ -2,6 +2,7 @@ import type { RouteObject } from 'react-router';
 import { Layout } from './Layout';
 import {
   AssumptionsPage,
+  ComparePage,
   HomePage,
   NotFoundPage,
   PlanPage,
@@ -19,6 +20,7 @@ export const routes: RouteObject[] = [
       { path: 'portfel', element: <PortfolioPage /> },
       { path: 'plan', element: <PlanPage /> },
       { path: 'wynik', element: <ResultPage /> },
+      { path: 'porownanie', element: <ComparePage /> },
       { path: 'zalozenia', element: <AssumptionsPage /> },
       { path: 'ustawienia', element: <SettingsPage /> },
       { path: '*', element: <NotFoundPage /> },

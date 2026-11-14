@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro';
 import type { ReactNode } from 'react';
 import { Card } from '../components/ui/Card';
 import { AssumptionsPanel } from '../features/assumptions/AssumptionsPanel';
+import { Compare } from '../features/compare/Compare';
 import { Dashboard } from '../features/results/Dashboard';
 import { Onboarding } from '../features/onboarding/Onboarding';
 import { PlanEditor } from '../features/plan/PlanEditor';
@@ -62,4 +63,7 @@ export function NotFoundPage() {
       </p>
     </Page>
   );
+}
+export function ComparePage() {
+  return <Page title={<Trans>Porównanie</Trans>}><Compare /></Page>;
 }

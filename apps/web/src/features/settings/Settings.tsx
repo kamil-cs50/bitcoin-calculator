@@ -90,6 +90,7 @@ function DataCard() {
       // IndexedDB niedostępne: nie ma czego czyścić, resetujemy sam stan
     }
     useScenarioStore.getState().resetScenario();
+    useScenarioStore.setState({ compareList: [] });
     setConfirmOpen(false);
     setNotice({ kind: 'ok', text: t`Dane usunięte. Zaczynasz od nowa.` });
   };

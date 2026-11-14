@@ -11,6 +11,7 @@ export function Layout() {
     { to: '/portfel', label: t`Portfel` },
     { to: '/plan', label: t`Plan` },
     { to: '/wynik', label: t`Wynik` },
+    { to: '/porownanie', label: t`Porównanie` },
     { to: '/zalozenia', label: t`Założenia` },
     { to: '/ustawienia', label: t`Ustawienia` },
   ];

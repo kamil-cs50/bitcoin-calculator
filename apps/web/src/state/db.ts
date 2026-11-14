@@ -22,3 +22,5 @@ export const db: Dexie & { scenarios: Table<ScenarioRow, string> } = new SimDb()
 
 /** Id wpisu z bieżącym scenariuszem (jeden aktywny plan; porównania dojdą z własnymi id). */
 export const CURRENT_ID = 'current';
+/** Wpis z listą scenariuszy do porównania (do 3 migawek). */
+export const COMPARE_ID = 'compare';

@@ -103,7 +103,7 @@ msgstr "Amortyzacja (ABW)"
 
 #: src/features/portfolio/PositionForm.tsx:254
 #: src/features/results/Solvers.tsx:98
-#: src/features/settings/Settings.tsx:142
+#: src/features/settings/Settings.tsx:143
 msgid "Anuluj"
 msgstr "Anuluj"
 
@@ -230,7 +230,7 @@ msgstr "Dalej"
 msgid "dane"
 msgstr "dane"
 
-#: src/features/settings/Settings.tsx:94
+#: src/features/settings/Settings.tsx:95
 msgid "Dane usunięte. Zaczynasz od nowa."
 msgstr "Dane usunięte. Zaczynasz od nowa."
 
@@ -250,6 +250,10 @@ msgstr "Docelowa zmienność roczna"
 msgid "Docelowy zwrot roczny (po latach)"
 msgstr "Docelowy zwrot roczny (po latach)"
 
+#: src/features/compare/Compare.tsx:97
+msgid "Dodaj bieżący scenariusz"
+msgstr "Dodaj bieżący scenariusz"
+
 #: src/features/portfolio/PositionForm.tsx:251
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
@@ -257,6 +261,10 @@ msgstr "Dodaj do portfela"
 #: src/features/results/Dashboard.tsx:175
 msgid "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 msgstr "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
+
+#: src/features/compare/Compare.tsx:109
+msgid "Dodaj drugi scenariusz, aby zobaczyć różnice."
+msgstr "Dodaj drugi scenariusz, aby zobaczyć różnice."
 
 #: src/features/onboarding/Onboarding.tsx:83
 msgid "Dodaj otwartą pozycję albo kliknij „Anuluj”, żeby przejść dalej."
@@ -321,7 +329,7 @@ msgstr "Gdzie trzymasz bitcoina?"
 msgid "Giełda lub własny portfel"
 msgstr "Giełda lub własny portfel"
 
-#: src/app/Layout.tsx:29
+#: src/app/Layout.tsx:30
 msgid "Główna nawigacja"
 msgstr "Główna nawigacja"
 
@@ -499,6 +507,10 @@ msgstr "Liczymy 10 000 możliwych przyszłości…"
 msgid "Liczymy odpowiedź"
 msgstr "Liczymy odpowiedź"
 
+#: src/features/compare/Compare.tsx:114
+msgid "Liczymy porównanie…"
+msgstr "Liczymy porównanie…"
+
 #: src/features/results/Solvers.tsx:108
 msgid "Liczymy… to potrwa kilka sekund. Możesz w tym czasie oglądać wyniki."
 msgstr "Liczymy… to potrwa kilka sekund. Możesz w tym czasie oglądać wyniki."
@@ -573,6 +585,10 @@ msgstr "Motyw"
 msgid "Możesz zostawić puste, jeśli nie dopłacasz."
 msgstr "Możesz zostawić puste, jeśli nie dopłacasz."
 
+#: src/features/compare/Compare.tsx:101
+msgid "Można porównać najwyżej {MAX_COMPARE} scenariusze. Usuń jeden, aby dodać kolejny."
+msgstr "Można porównać najwyżej {MAX_COMPARE} scenariusze. Usuń jeden, aby dodać kolejny."
+
 #: src/features/results/KpiTiles.tsx:68
 msgid "Najgorsze 5% przyszłości: średnio"
 msgstr "Najgorsze 5% przyszłości: średnio"
@@ -590,7 +606,7 @@ msgstr "Nakładka potęgowa"
 msgid "Nazwa"
 msgstr "Nazwa"
 
-#: src/app/pages.tsx:59
+#: src/app/pages.tsx:60
 msgid "Nie ma takiej strony"
 msgstr "Nie ma takiej strony"
 
@@ -638,7 +654,7 @@ msgstr "Niepewność oczekiwanego zwrotu (SE)"
 msgid "nominalnie"
 msgstr "nominalnie"
 
-#: src/features/settings/Settings.tsx:165
+#: src/features/settings/Settings.tsx:166
 msgid "O aplikacji"
 msgstr "O aplikacji"
 
@@ -735,16 +751,16 @@ msgid "pieniądze kończą się przed wybranym rokiem"
 msgstr "pieniądze kończą się przed wybranym rokiem"
 
 #: src/app/Layout.tsx:12
-#: src/app/pages.tsx:42
+#: src/app/pages.tsx:43
 #: src/features/onboarding/Onboarding.tsx:91
 msgid "Plan"
 msgstr "Plan"
 
-#: src/features/settings/Settings.tsx:128
+#: src/features/settings/Settings.tsx:129
 msgid "Plan i portfel zostaną usunięte z tego urządzenia. Tej operacji nie można cofnąć, więc najpierw pobierz kopię, jeśli chcesz zachować plan."
 msgstr "Plan i portfel zostaną usunięte z tego urządzenia. Tej operacji nie można cofnąć, więc najpierw pobierz kopię, jeśli chcesz zachować plan."
 
-#: src/features/settings/Settings.tsx:100
+#: src/features/settings/Settings.tsx:101
 msgid "Plan jest zapisany tylko na tym urządzeniu. Możesz zrobić kopię w pliku albo wczytać wcześniejszą."
 msgstr "Plan jest zapisany tylko na tym urządzeniu. Możesz zrobić kopię w pliku albo wczytać wcześniejszą."
 
@@ -765,7 +781,7 @@ msgstr "Pobieram cenę…"
 msgid "Pobierz cenę"
 msgstr "Pobierz cenę"
 
-#: src/features/settings/Settings.tsx:106
+#: src/features/settings/Settings.tsx:107
 msgid "Pobierz kopię (JSON)"
 msgstr "Pobierz kopię (JSON)"
 
@@ -814,8 +830,13 @@ msgstr "Półokres powrotu kursu {0} do średniej (lata)"
 msgid "Ponad inflację, np. gdy zarobki rosną szybciej niż ceny."
 msgstr "Ponad inflację, np. gdy zarobki rosną szybciej niż ceny."
 
+#: src/app/Layout.tsx:14
+#: src/app/pages.tsx:68
+msgid "Porównanie"
+msgstr "Porównanie"
+
 #: src/app/Layout.tsx:11
-#: src/app/pages.tsx:36
+#: src/app/pages.tsx:37
 msgid "Portfel"
 msgstr "Portfel"
 
@@ -850,7 +871,7 @@ msgstr "Przedział"
 msgid "Przedział od 10. do 90. percentyla"
 msgstr "Przedział od 10. do 90. percentyla"
 
-#: src/app/Layout.tsx:23
+#: src/app/Layout.tsx:24
 msgid "Przejdź do treści"
 msgstr "Przejdź do treści"
 
@@ -930,6 +951,19 @@ msgstr "Rozkład wartości portfela"
 msgid "Rozkład wartości za {0}"
 msgstr "Rozkład wartości za {0}"
 
+#: src/features/compare/Compare.tsx:129
+msgid "Różnica słabszego scenariusza (10%)"
+msgstr "Różnica słabszego scenariusza (10%)"
+
+#: src/features/compare/Compare.tsx:129
+msgid "Różnica typowego wyniku"
+msgstr "Różnica typowego wyniku"
+
+#. placeholder {0}: rows.base
+#: src/features/compare/Compare.tsx:127
+msgid "Różnice względem „{0}”"
+msgstr "Różnice względem „{0}”"
+
 #: src/features/portfolio/PortfolioEditor.tsx:21
 msgid "Rozumiem"
 msgstr "Rozumiem"
@@ -942,7 +976,25 @@ msgstr "Ryzyko spadku o ponad 30%"
 msgid "S&P 500"
 msgstr "S&P 500"
 
-#: src/app/pages.tsx:27
+#: src/features/compare/Compare.tsx:122
+#: src/features/compare/Compare.tsx:128
+msgid "Scenariusz"
+msgstr "Scenariusz"
+
+#. placeholder {0}: list.length + 1
+#: src/features/compare/Compare.tsx:96
+msgid "Scenariusz {0}"
+msgstr "Scenariusz {0}"
+
+#: src/features/compare/Compare.tsx:78
+msgid "Scenariusze do porównania"
+msgstr "Scenariusze do porównania"
+
+#: src/features/compare/Compare.tsx:123
+msgid "Słabszy scenariusz (10%)"
+msgstr "Słabszy scenariusz (10%)"
+
+#: src/app/pages.tsx:28
 msgid "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
 msgstr "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
 
@@ -990,7 +1042,7 @@ msgstr "Sufit (zł miesięcznie, opcjonalnie)"
 msgid "Symulacja"
 msgstr "Symulacja"
 
-#: src/app/Layout.tsx:54
+#: src/app/Layout.tsx:55
 msgid "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 
@@ -1030,7 +1082,7 @@ msgstr "Szansa wyjścia z kryzysu (na miesiąc)"
 msgid "Szybkość dostosowania oprocentowania (na miesiąc)"
 msgstr "Szybkość dostosowania oprocentowania (na miesiąc)"
 
-#: src/features/settings/Settings.tsx:139
+#: src/features/settings/Settings.tsx:140
 msgid "Tak, usuń moje dane"
 msgstr "Tak, usuń moje dane"
 
@@ -1050,7 +1102,7 @@ msgstr "Tryb eksperta"
 msgid "Twój portfel"
 msgstr "Twój portfel"
 
-#: src/features/settings/Settings.tsx:98
+#: src/features/settings/Settings.tsx:99
 msgid "Twoje dane"
 msgstr "Twoje dane"
 
@@ -1061,6 +1113,10 @@ msgstr "Tylko oszczędzasz i patrzysz, ile urośnie portfel."
 #: src/features/portfolio/PositionForm.tsx:192
 msgid "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
 msgstr "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
+
+#: src/features/compare/Compare.tsx:123
+msgid "Typowy wynik"
+msgstr "Typowy wynik"
 
 #: src/features/results/KpiTiles.tsx:46
 msgid "Typowy wynik za {years} ({basis})"
@@ -1078,11 +1134,12 @@ msgstr "Ustalany w styczniu od wartości portfela, wypłacany w 12 ratach."
 msgid "Ustaw cel w planie, a policzymy, ile trzeba miesięcznie wpłacać."
 msgstr "Ustaw cel w planie, a policzymy, ile trzeba miesięcznie wpłacać."
 
-#: src/app/Layout.tsx:15
-#: src/app/pages.tsx:55
+#: src/app/Layout.tsx:16
+#: src/app/pages.tsx:56
 msgid "Ustawienia"
 msgstr "Ustawienia"
 
+#: src/features/compare/Compare.tsx:90
 #: src/features/portfolio/AssetTile.tsx:53
 msgid "Usuń"
 msgstr "Usuń"
@@ -1091,7 +1148,12 @@ msgstr "Usuń"
 msgid "Usuń {name}"
 msgstr "Usuń {name}"
 
-#: src/features/settings/Settings.tsx:127
+#. placeholder {0}: e.name
+#: src/features/compare/Compare.tsx:89
+msgid "Usuń scenariusz {0}"
+msgstr "Usuń scenariusz {0}"
+
+#: src/features/settings/Settings.tsx:128
 msgid "Usunąć wszystkie dane?"
 msgstr "Usunąć wszystkie dane?"
 
@@ -1137,6 +1199,10 @@ msgstr "w każdej przyszłości"
 msgid "w mniej niż 1 na 100 przyszłości"
 msgstr "w mniej niż 1 na 100 przyszłości"
 
+#: src/features/compare/Compare.tsx:133
+msgid "W nawiasie przedział ufności 95% różnicy, liczony na parach tych samych przyszłości (zmiana „na wspólnych liczbach losowych”), więc jest wąski nawet przy dużej niepewności samych wyników."
+msgstr "W nawiasie przedział ufności 95% różnicy, liczony na parach tych samych przyszłości (zmiana „na wspólnych liczbach losowych”), więc jest wąski nawet przy dużej niepewności samych wyników."
+
 #: src/lib/format.ts:66
 msgid "w ponad 99 na 100 przyszłości"
 msgstr "w ponad 99 na 100 przyszłości"
@@ -1180,11 +1246,11 @@ msgstr "Wartość pozycji: {0} zł"
 msgid "Wartość Twoich obligacji EDO dziś."
 msgstr "Wartość Twoich obligacji EDO dziś."
 
-#: src/features/settings/Settings.tsx:111
+#: src/features/settings/Settings.tsx:112
 msgid "Wczytaj plik JSON"
 msgstr "Wczytaj plik JSON"
 
-#: src/features/settings/Settings.tsx:121
+#: src/features/settings/Settings.tsx:122
 msgid "Wczytanie zastępuje bieżący plan."
 msgstr "Wczytanie zastępuje bieżący plan."
 
@@ -1250,7 +1316,7 @@ msgstr "Wstecz"
 msgid "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
 msgstr "Wybierz aktywa i wpisz kwotę w złotych. Dane zostają na tym urządzeniu. Aplikacja nie pobiera żadnych cen, dopóki sam o to nie poprosisz."
 
-#: src/app/pages.tsx:61
+#: src/app/pages.tsx:62
 msgid "Wybierz coś z menu na górze."
 msgstr "Wybierz coś z menu na górze."
 
@@ -1259,9 +1325,17 @@ msgid "Wygląd"
 msgstr "Wygląd"
 
 #: src/app/Layout.tsx:13
-#: src/app/pages.tsx:47
+#: src/app/pages.tsx:48
 msgid "Wynik"
 msgstr "Wynik"
+
+#: src/features/compare/Compare.tsx:118
+msgid "Wynik po {years} latach (w dzisiejszych zł, po podatku)"
+msgstr "Wynik po {years} latach (w dzisiejszych zł, po podatku)"
+
+#: src/features/compare/Compare.tsx:121
+msgid "Wyniki scenariuszy"
+msgstr "Wyniki scenariuszy"
 
 #: src/features/plan/WithdrawalForm.tsx:213
 msgid "Wypłacaj od roku"
@@ -1319,11 +1393,11 @@ msgstr "Zakres w źródłach: {0} – {1}"
 msgid "Zakres wyników"
 msgstr "Zakres wyników"
 
-#: src/app/Layout.tsx:14
+#: src/app/Layout.tsx:15
 msgid "Założenia"
 msgstr "Założenia"
 
-#: src/app/pages.tsx:52
+#: src/app/pages.tsx:53
 msgid "Założenia i źródła"
 msgstr "Założenia i źródła"
 
@@ -1339,7 +1413,11 @@ msgstr "Zamknij"
 msgid "Zapis na tym urządzeniu jest uszkodzony lub pochodzi z nieznanej wersji. Możesz pobrać jego kopię albo zacząć od nowa; dopóki nie wybierzesz, nic go nie nadpisze."
 msgstr "Zapis na tym urządzeniu jest uszkodzony lub pochodzi z nieznanej wersji. Możesz pobrać jego kopię albo zacząć od nowa; dopóki nie wybierzesz, nic go nie nadpisze."
 
-#: src/features/settings/Settings.tsx:167
+#: src/features/compare/Compare.tsx:80
+msgid "Zapisz bieżący plan jako migawkę, zmień coś (np. udział bitcoina) i zapisz kolejną. Wszystkie scenariusze liczą się na tych samych losowych przyszłościach, więc różnice nie zależą od szczęścia w losowaniu."
+msgstr "Zapisz bieżący plan jako migawkę, zmień coś (np. udział bitcoina) i zapisz kolejną. Wszystkie scenariusze liczą się na tych samych losowych przyszłościach, więc różnice nie zależą od szczęścia w losowaniu."
+
+#: src/features/settings/Settings.tsx:168
 msgid "Zbiór danych {CURRENT_DATASET_VERSION}. Aplikacja działa offline; nowa wersja pojawia się po Twojej zgodzie."
 msgstr "Zbiór danych {CURRENT_DATASET_VERSION}. Aplikacja działa offline; nowa wersja pojawia się po Twojej zgodzie."
 
@@ -1381,7 +1459,7 @@ msgstr "Zmienność realnego kursu {0}"
 msgid "Zmienność roczna"
 msgstr "Zmienność roczna"
 
-#: src/features/settings/Settings.tsx:133
+#: src/features/settings/Settings.tsx:134
 msgid "Zresetuj dane"
 msgstr "Zresetuj dane"
 
