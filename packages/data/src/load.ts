@@ -2,16 +2,6 @@ import { DatasetSchema, type Dataset } from './schema';
 
 // Pliki JSON są importowane przez import.meta.glob (Vite i Vitest), więc działają
 // w bundlu przeglądarkowym bez fs. Gdy plików jeszcze nie ma, glob jest pusty.
-// Typ ImportMeta.glob deklarujemy lokalnie (pakiet nie zależy od vite/client).
-declare global {
-  interface ImportMeta {
-    glob<T = unknown>(
-      pattern: string,
-      options: { eager: true; import: 'default' },
-    ): Record<string, T>;
-  }
-}
-
 const FILES = import.meta.glob('../datasets/*/*.json', { eager: true, import: 'default' });
 
 const PARTS = ['assets', 'crypto', 'market', 'inflation', 'fx', 'edo', 'taxPL'] as const;
