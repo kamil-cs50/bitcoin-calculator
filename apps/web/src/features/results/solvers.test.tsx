@@ -8,8 +8,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as features from '../../entitlements/features';
 import { i18n } from '../../i18n';
 import { formatMoney } from '../../lib/format';
+import { syncWorker } from '../../workers/syncWorker';
 import type { SimWorker } from '../../workers/pool';
-import { runBatch } from '@sim/engine';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { Dashboard } from './Dashboard';
 import { SIM_SEED } from './useSimulation';
@@ -24,7 +24,7 @@ const nb = (s: string | null) => (s ?? '').replace(/[\s\u00a0\u202f]/g, ' ');
 const res = (amount: number, prob = 0.91): SolverResult => ({ amount, prob, ci: [prob - 0.01, prob + 0.01], iterations: 7 });
 
 function worker(solve: SimWorker['solve']): () => SimWorker {
-  return () => ({ run: async () => { throw new Error('nie dotyczy'); }, solve, terminate: vi.fn() });
+  return () => syncWorker({ solve, terminate: vi.fn() });
 }
 const wrap = (s: Scenario, createWorker: () => SimWorker) =>
   render(
@@ -60,7 +60,7 @@ describe('Solvers: „Ile mogę bezpiecznie wydawać?”', () => {
   it('błąd workera pokazuje komunikat, anulowanie ucina liczenie', async () => {
     const solve = vi.fn().mockRejectedValueOnce(new Error('boom')).mockImplementation(() => new Promise(() => undefined));
     const terminate = vi.fn();
-    wrap(plain, () => ({ run: async () => { throw new Error('x'); }, solve, terminate }));
+    wrap(plain, () => syncWorker({ solve, terminate }));
     await userEvent.click(screen.getByRole('button', { name: 'Policz bezpieczną wypłatę' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Nie udało się policzyć');
     await userEvent.click(screen.getByRole('button', { name: 'Policz bezpieczną wypłatę' }));
@@ -118,7 +118,7 @@ describe('Dashboard', () => {
   it('pokazuje sekcje solverów pod wynikami', async () => {
     useScenarioStore.getState().resetScenario();
     useScenarioStore.getState().addPosition({ presetId: 'globalEquity', value: 50_000 });
-    const w = (): SimWorker => ({ run: async (s, o) => runBatch(s, o), solve: async () => res(1000), terminate: () => undefined });
+    const w = (): SimWorker => syncWorker({ solve: async () => res(1000) });
     render(
       <I18nProvider i18n={i18n}>
         <MemoryRouter>

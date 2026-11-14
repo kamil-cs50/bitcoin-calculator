@@ -54,19 +54,28 @@ function q7(sorted: Float64Array, p: number): number {
  * Dla identycznych przebiegów różnica i przedział to dokładnie 0.
  */
 export function pairedDifference(a: RunResult, b: RunResult, o: DiffOptions): PairedDifference {
+  const { va, vb, month } = pairedValues(a, b, o);
+  return { ...pairedFromValues(va, vb, o.reps), month };
+}
+
+/** Wartości sparowanych ścieżek w miesiącu porównania (tanie; ciężki bootstrap robi `pairedFromValues`). */
+export function pairedValues(a: RunResult, b: RunResult, o: DiffOptions): { va: Float64Array; vb: Float64Array; month: number } {
   const n = Math.min(a.paths, b.paths);
   const horizon = Math.min(a.grid[a.grid.length - 1]!, b.grid[b.grid.length - 1]!);
   const target = o.month === undefined ? horizon : Math.min(o.month, horizon);
-  const ja = gridIndex(a.grid, target);
-  const jb = gridIndex(b.grid, target);
-  const va = valuesAt(a, ja, o).subarray(0, n);
-  const vb = valuesAt(b, jb, o).subarray(0, n);
+  const va = valuesAt(a, gridIndex(a.grid, target), o).subarray(0, n);
+  const vb = valuesAt(b, gridIndex(b.grid, target), o).subarray(0, n);
+  return { va: Float64Array.from(va), vb: Float64Array.from(vb), month: target };
+}
+
+/** Różnica kwantyli i bootstrap na parach (czysta funkcja na wartościach; uruchamiana w workerze). */
+export function pairedFromValues(va: Float64Array, vb: Float64Array, reps = 300): Omit<PairedDifference, 'month'> {
+  const n = Math.min(va.length, vb.length);
 
   const point = (p: number): number => q7(Float64Array.from(vb).sort(), p) - q7(Float64Array.from(va).sort(), p);
   const med = point(0.5);
   const p10 = point(0.1);
 
-  const reps = o.reps ?? 300;
   const rnd = mulberry32(0x5eed1234);
   const ra = new Float64Array(n);
   const rb = new Float64Array(n);
@@ -90,6 +99,5 @@ export function pairedDifference(a: RunResult, b: RunResult, o: DiffOptions): Pa
     median: { diff: med, ci: ci(meds, med) },
     p10: { diff: p10, ci: ci(p10s, p10) },
     paths: n,
-    month: target,
   };
 }

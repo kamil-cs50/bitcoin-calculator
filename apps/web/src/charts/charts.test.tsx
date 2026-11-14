@@ -45,6 +45,11 @@ describe('FanChart', () => {
     expect(nb(tip.textContent)).toContain(`w 1 na 10 przyszłości więcej niż ${nb(fmt(fan.values[5 * G + j]!))}`);
   });
 
+  it('odczyt przy wskaźniku nie jest regionem aria-live (nie zalewa czytnika przy każdym ruchu)', () => {
+    wrap(<FanChart fan={fan} month={60} formatValue={fmt} label="Wachlarz" />);
+    expect(screen.getByTestId('fan-readout')).not.toHaveAttribute('aria-live');
+  });
+
   it('DataTable daje te same liczby co wykres (alternatywa dla czytników ekranu)', () => {
     wrap(<FanChart fan={fan} month={60} formatValue={fmt} label="Wachlarz" />);
     const table = screen.getByRole('table', { name: /Wachlarz/ });

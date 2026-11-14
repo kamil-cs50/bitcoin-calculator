@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router';
 import { StorageNotice } from '../features/settings/StorageNotice';
 import { UpdateBanner } from '../features/settings/UpdateBanner';
 import { APP_NAME } from './appConfig';
+import { ErrorBoundary } from './ErrorBoundary';
 
 export function Layout() {
   const { t } = useLingui();
@@ -49,7 +50,9 @@ export function Layout() {
       <StorageNotice />
       {pathname !== '/ustawienia' && <UpdateBanner />}
       <main id="tresc" tabIndex={-1} className="flex-1 pb-8 pt-2 outline-none">
-        <Outlet />
+        <ErrorBoundary resetKey={pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <footer className="border-t border-border py-4 text-sm text-muted">
         <Trans>Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej</Trans>

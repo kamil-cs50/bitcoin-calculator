@@ -1,13 +1,14 @@
 import { useLingui } from '@lingui/react/macro';
 import type { Dataset } from '@sim/data';
-import { runBatch, summarize } from '@sim/engine';
 import type { RiskyAssetParams, Scenario } from '@sim/engine';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DataTable } from '../../charts/DataTable';
 import { Card } from '../../components/ui/Card';
 import { MoneyInput } from '../../components/ui/MoneyInput';
 import { formatMoney } from '../../lib/format';
 import { rebuildMarket } from '../../state/defaults';
+import { runTask } from '../../workers/pool';
+import type { SimWorker } from '../../workers/pool';
 import { SIM_SEED } from './useSimulation';
 import { calendarYear } from './values';
 
@@ -18,6 +19,8 @@ export interface BtcCardProps {
   /** Dzisiejsza cena 1 BTC; bez niej karta pokazuje tylko szansę upadku. */
   priceUsd?: number;
   pricePln?: number;
+  /** Fabryka workerów (testy podstawiają wersję synchroniczną). */
+  createWorker?: () => SimWorker;
 }
 
 const PRICE_KEY = 'btc-ref-price';
@@ -36,34 +39,68 @@ function loadPrices(): { usd: number | null; pln: number | null } {
   return { usd: null, pln: null };
 }
 
-/** Kwantyle (10/50/90%) mnożnika ceny BTC po `month` miesiącach, liczone osobnym przebiegiem samego BTC. */
-function priceMultiples(s: Scenario, asset: RiskyAssetParams, dataset: Dataset, base: 'USD' | 'PLN', month: number): [number, number, number] | null {
-  try {
-    // cena nie zawiera kosztów funduszu ani podatku: 1 jednostka, bez przepływów
-    const a: RiskyAssetParams = { ...asset, ter: 0, costBps: 0, taxForm: 'none' };
-    const sc: Scenario = {
-      ...s,
-      baseCurrency: base,
-      assets: [a],
-      positions: [{ assetId: a.id, wrapper: 'taxable', value: 1, costBasis: 1, targetWeight: 1 }],
-      market: rebuildMarket(dataset, s.market, [a], base),
-      contribution: undefined,
-      withdrawal: undefined,
-      events: [],
-      rebalance: { kind: 'none' },
-      tax: { kind: 'none' },
-      goal: undefined,
+/** Scenariusz samego BTC (1 jednostka, bez kosztów, podatku i przepływów) w walucie `base`. */
+function btcOnlyScenario(s: Scenario, asset: RiskyAssetParams, dataset: Dataset, base: 'USD' | 'PLN'): Scenario {
+  // cena nie zawiera kosztów funduszu ani podatku: 1 jednostka, bez przepływów
+  const a: RiskyAssetParams = { ...asset, ter: 0, costBps: 0, taxForm: 'none' };
+  return {
+    ...s,
+    baseCurrency: base,
+    assets: [a],
+    positions: [{ assetId: a.id, wrapper: 'taxable', value: 1, costBasis: 1, targetWeight: 1 }],
+    market: rebuildMarket(dataset, s.market, [a], base),
+    contribution: undefined,
+    withdrawal: undefined,
+    events: [],
+    rebalance: { kind: 'none' },
+    tax: { kind: 'none' },
+    goal: undefined,
+  };
+}
+
+const DEBOUNCE_MS = 120;
+
+/**
+ * Kwantyle (10/50/90%) mnożnika ceny BTC po `month` miesiącach, liczone w workerze osobnym przebiegiem
+ * samego BTC (nie blokuje głównego wątku; przy szybkich zmianach suwaka liczy dopiero po krótkiej pauzie).
+ */
+function usePriceMultiples(
+  s: Scenario,
+  asset: RiskyAssetParams | undefined,
+  dataset: Dataset,
+  base: 'USD' | 'PLN',
+  month: number,
+  createWorker?: () => SimWorker,
+): [number, number, number] | null {
+  const [q, setQ] = useState<[number, number, number] | null>(null);
+  useEffect(() => {
+    if (!asset) return;
+    let alive = true;
+    let handle: ReturnType<typeof runTask<unknown>> | undefined;
+    const timer = setTimeout(() => {
+      try {
+        const sc = btcOnlyScenario(s, asset, dataset, base);
+        const h = runTask((w) => w.summary(sc, { seed: SIM_SEED, paths: PATHS }, { month, real: false, afterTax: false }), createWorker);
+        handle = h;
+        h.done.then(
+          (r) => alive && setQ([r.p10, r.median, r.p90]),
+          () => alive && setQ(null),
+        );
+      } catch {
+        setQ(null);
+      }
+    }, DEBOUNCE_MS);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+      handle?.cancel();
     };
-    const r = runBatch(sc, { seed: SIM_SEED, paths: PATHS });
-    const q = summarize(r, sc, { month, real: false, afterTax: false });
-    return [q.p10, q.median, q.p90];
-  } catch {
-    return null;
-  }
+  }, [s, asset, dataset, base, month, createWorker]);
+  return q;
 }
 
 /** Karta „Bitcoin: rozkład ceny w roku X” (spec 5.1); widoczna tylko, gdy w portfelu jest BTC. */
-export function BtcCard({ scenario, dataset, month, priceUsd, pricePln }: BtcCardProps) {
+export function BtcCard({ scenario, dataset, month, priceUsd, pricePln, createWorker }: BtcCardProps) {
   const { t } = useLingui();
   const asset = scenario.assets.find(
     (a): a is RiskyAssetParams => a.kind === 'risky' && /^btc/.test(a.id) && scenario.positions.some((p) => p.assetId === a.id),
@@ -80,8 +117,8 @@ export function BtcCard({ scenario, dataset, month, priceUsd, pricePln }: BtcCar
     }
   }, [prices]);
 
-  const usd = useMemo(() => (asset ? priceMultiples(scenario, asset, dataset, 'USD', month) : null), [scenario, asset, dataset, month]);
-  const pln = useMemo(() => (asset ? priceMultiples(scenario, asset, dataset, 'PLN', month) : null), [scenario, asset, dataset, month]);
+  const usd = usePriceMultiples(scenario, asset, dataset, 'USD', month, createWorker);
+  const pln = usePriceMultiples(scenario, asset, dataset, 'PLN', month, createWorker);
   if (!asset) return null;
 
   const year = calendarYear(scenario.startYear, scenario.startMonth, month);

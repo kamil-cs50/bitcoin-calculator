@@ -128,7 +128,7 @@ export function FanChart({ fan, month, onMonthChange, formatValue, label }: FanC
           <circle key={l} cx={px} cy={y(at(l, j))} r={4} fill="var(--chart-mark)" stroke="var(--surface)" strokeWidth={1.5} />
         ))}
       </svg>
-      <ul data-testid="fan-readout" className="m-0 list-none p-0 text-sm" aria-live="polite">
+      <ul data-testid="fan-readout" className="m-0 list-none p-0 text-sm">
         {lines.map(({ l, k }) => {
           const v = formatValue(at(l, j));
           return <li key={l}>{t`w ${k} na 10 przyszłości więcej niż ${v}`}</li>;

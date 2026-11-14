@@ -1,3 +1,4 @@
+import { validateScenario } from '@sim/engine';
 import type { Scenario } from '@sim/engine';
 import { ScenarioSchema } from './scenarioSchema';
 
@@ -16,7 +17,7 @@ const STEPS: Record<number, (raw: Record<string, unknown>) => Record<string, unk
 
 /**
  * Wczytuje surowy zapis do Scenario. Nigdy nie rzuca: każdy błąd wraca jako `ok: false`
- * z powodem, żeby UI mogło pokazać propozycję resetu zamiast białego ekranu. Starszy
+ * z powodem (także dla zapisu spójnego kształtem, ale nie semantycznie), żeby UI mogło pokazać propozycję resetu zamiast białego ekranu. Starszy
  * `datasetVersion` nie jest błędem (zapis zachowuje własne parametry); flagę
  * „zbiór danych nieaktualny” ustawia store.
  */
@@ -41,6 +42,13 @@ export function migrate(raw: unknown): MigrationResult {
       const issue = parsed.error.issues[0];
       const path = issue?.path.join('.') ?? '';
       return { ok: false, reason: `invalid-data: ${path ? `${path}: ` : ''}${issue?.message ?? ''}` };
+    }
+    // Zod sprawdza kształt; spójność (znane aktywa, czynniki zgodne z korelacją itd.) sprawdza silnik.
+    // Bez tego zapis poprawny kształtem, ale niespójny, wywalałby render poza Dashboardem.
+    const check = validateScenario(parsed.data);
+    if (!check.ok) {
+      const e = check.errors[0]!;
+      return { ok: false, reason: `invalid-scenario: ${e.path}: ${e.message}` };
     }
     return { ok: true, scenario: parsed.data };
   } catch (e) {

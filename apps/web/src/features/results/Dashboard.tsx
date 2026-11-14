@@ -1,5 +1,5 @@
 import { Trans, useLingui } from '@lingui/react/macro';
-import { fanChart, modelCheck } from '@sim/engine';
+import { fanChart } from '@sim/engine';
 import type { ModelCheckRow, Scenario, Warning } from '@sim/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { DataTable } from '../../charts/DataTable';
@@ -8,10 +8,13 @@ import { Histogram } from '../../charts/Histogram';
 import { Card } from '../../components/ui/Card';
 import { Toggle } from '../../components/ui/Toggle';
 import { formatMoney } from '../../lib/format';
+import { useAssetNames } from '../portfolio/tiles';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useUiStore } from '../../state/uiStore';
-import { defaultMaxPaths } from '../../workers/pool';
+import { defaultMaxPaths, runTask } from '../../workers/pool';
+import { currencyWord, useBasis } from './basis';
 import { BtcCard } from './BtcCard';
+import { labelCheckId } from './labels';
 import { KpiTiles } from './KpiTiles';
 import { ModelCheckPanel } from './ModelCheckPanel';
 import { yearsText } from './periods';
@@ -38,14 +41,42 @@ function CorrMatrix({ data }: { data: unknown }) {
   );
 }
 
+/** Tekst ostrzeżenia silnika po `code` (Lingui); surowy `message` silnika nie trafia do interfejsu. */
+function useWarningText(): (w: Warning) => string {
+  const { t } = useLingui();
+  const names = useAssetNames();
+  return (w) => {
+    switch (w.code) {
+      case 'CORR_PROJECTED':
+        return t`Założone korelacje nie tworzyły poprawnej macierzy, więc do symulacji użyliśmy najbliższej poprawnej macierzy korelacji (pokazanej poniżej).`;
+      case 'ALPHA_CLAMPED': {
+        const id = (w.data as { id?: unknown } | undefined)?.id;
+        if (typeof id === 'string' && id.startsWith('fx:')) {
+          const cur = id.slice(3);
+          return t`Wrażliwość na kryzysy kursu ${cur} została przycięta, żeby kryzys nie tłumaczył ponad 80% jego zmienności.`;
+        }
+        const name = typeof id === 'string' ? names.asset(id) : '';
+        return t`Wrażliwość na kryzysy aktywa „${name}” została przycięta, żeby kryzys nie tłumaczył ponad 80% jego zmienności.`;
+      }
+      case 'LOSS_OVER_5M':
+        return t`Strata przekracza 5 mln zł; model upraszcza zasady odliczania strat w podatku od zysków kapitałowych.`;
+      case 'EMPTY_PORTFOLIO':
+        return t`Suma docelowych wag aktywów płynnych wynosi 0, więc rebalansowanie nie wykona żadnych transakcji.`;
+      case 'NEGATIVE_TARGET_WEIGHT':
+        return t`Ujemna docelowa waga jest traktowana jak 0 (bez krótkiej sprzedaży).`;
+    }
+  };
+}
+
 /** Banery ostrzeżeń z silnika; CORR_PROJECTED pokazuje macierz po korekcie (spec 4.4). */
 export function WarningBanners({ warnings }: { warnings: Warning[] }) {
+  const text = useWarningText();
   if (warnings.length === 0) return null;
   return (
     <div className="flex flex-col gap-3">
       {warnings.map((w, i) => (
         <div key={`${w.code}-${i}`} role="alert" className="rounded-card border border-accent bg-accent-soft p-4 text-accent-soft-fg">
-          <p className="m-0 font-medium">{w.message}</p>
+          <p className="m-0 font-medium">{text(w)}</p>
           {w.code === 'CORR_PROJECTED' && (
             <div className="mt-3 text-fg">
               <CorrMatrix data={w.data} />
@@ -59,6 +90,7 @@ export function WarningBanners({ warnings }: { warnings: Warning[] }) {
 
 function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const { t } = useLingui();
+  const assetNames = useAssetNames();
   const dataset = useScenarioStore((s) => s.dataset);
   const expert = useUiStore((s) => s.expert);
   const setExpert = useUiStore((s) => s.setExpert);
@@ -78,54 +110,75 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const j = result ? gridIndex(result.grid, month) : 0;
   const histValues = useMemo(() => (result ? winsorize(valuesAt(result, j, { real, afterTax }), 0.99) : null), [result, j, real, afterTax]);
 
-  // kontrola modelu po zakończeniu liczenia (osobny, tańszy przebieg samego rynku)
+  // kontrola modelu po zakończeniu liczenia (osobny, tańszy przebieg samego rynku) w workerze
   const finished = result !== undefined && !state.running;
+  const { createWorker } = sim;
   useEffect(() => {
     if (!finished) return;
-    const id = setTimeout(() => {
-      try {
-        setCheckRows(modelCheck(scenario, { seed: SIM_SEED, paths: 2000 }));
-      } catch {
-        setCheckRows(null);
-      }
-    }, 0);
-    return () => clearTimeout(id);
-  }, [finished, scenario]);
+    let alive = true;
+    const h = runTask((w) => w.modelCheck(scenario, { seed: SIM_SEED, paths: 2000 }), createWorker);
+    h.done.then(
+      (rows) => alive && setCheckRows(rows),
+      () => alive && setCheckRows(null),
+    );
+    return () => {
+      alive = false;
+      h.cancel();
+    };
+  }, [finished, scenario, createWorker]);
 
-  const names = useMemo(() => {
-    const nameOf = (id: string): string => dataset.crypto[id]?.name ?? dataset.assets[id]?.name ?? id;
-    return (id: string): string => id.split('~').map((x) => nameOf(x.replace(/ \(roczna\)$/, '')) + (x.endsWith(' (roczna)') ? ' (roczna)' : '')).join(' ~ ');
-  }, [dataset]);
+  const known = scenario.assets.map((x) => x.id);
+  const nameOf = (id: string): string => (id === 'cpi' ? t`Inflacja` : id.startsWith('fx:') ? t`Kurs ${id.slice(3)}` : assetNames.asset(id));
+  const annual = t`(roczna)`;
+  const checkLabel = (id: string): string => labelCheckId(id, known, nameOf, annual);
+  const maxPaths = sim.maxPaths ?? (expert ? defaultMaxPaths() : 10_000);
+  const basis = useBasis(cur, real, afterTax);
+  const unit = currencyWord(cur);
 
   if (state.errors.length > 0) {
     return (
       <div role="alert" className="rounded-card border border-danger bg-danger-soft p-4 text-danger">
         <p className="m-0 font-semibold">{t`Nie możemy policzyć tego scenariusza`}</p>
-        <ul className="mb-0 mt-2">
-          {state.errors.map((e) => (
-            <li key={e.path}>{e.message}</li>
-          ))}
-        </ul>
+        <p className="mb-0 mt-2 text-fg">{t`Dane planu są niepoprawne albo niekompletne. Popraw portfel i plan albo zacznij od nowa w Ustawieniach.`}</p>
+        <details className="mt-2 text-sm text-fg">
+          <summary className="min-h-11 cursor-pointer py-2">{t`Szczegóły techniczne`}</summary>
+          <ul className="m-0">
+            {state.errors.map((e) => (
+              <li key={`${e.path}-${e.message}`}>
+                <code>{e.path}</code>: {e.message}
+              </li>
+            ))}
+          </ul>
+        </details>
+      </div>
+    );
+  }
+  if (state.failed) {
+    return (
+      <div role="alert" className="rounded-card border border-danger bg-danger-soft p-4 text-danger">
+        <p className="m-0 font-semibold">{t`Nie udało się policzyć wyniku`}</p>
+        <p className="mb-0 mt-2 text-fg">{t`Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie albo odśwież stronę, żeby spróbować ponownie.`}</p>
       </div>
     );
   }
   if (!result || !fan || !histValues) {
+    const n = new Intl.NumberFormat('pl-PL').format(maxPaths);
     return (
       <p role="status" className="rounded-card border border-border bg-surface p-6 text-center text-muted">
-        <Trans>Liczymy 10 000 możliwych przyszłości…</Trans>
+        <Trans>Liczymy {n} możliwych przyszłości…</Trans>
       </p>
     );
   }
 
   const calibrated = checkRows ? checkRows.every((r) => r.ok) : undefined;
   const year = calendarYear(scenario.startYear, scenario.startMonth, month);
-  const label = t`Wachlarz możliwych wartości portfela`;
+  const label = t`Wachlarz możliwych wartości portfela (${basis.full})`;
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8">
-          <Toggle label={t`Realnie (w dzisiejszych zł)`} checked={real} onCheckedChange={setReal} />
+          <Toggle label={t`Realnie (w dzisiejszych ${unit})`} checked={real} onCheckedChange={setReal} />
           <Toggle label={t`Po podatku`} checked={afterTax} onCheckedChange={setAfterTax} />
           <Toggle label={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
         </div>
@@ -135,7 +188,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
       </Card>
       <WarningBanners warnings={state.warnings} />
       <KpiTiles result={result} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
-      <Card title={t`Wachlarz możliwych przyszłości`}>
+      <Card title={t`Wachlarz możliwych przyszłości (${basis.full})`}>
         <label className="mb-3 flex flex-col gap-1 text-sm font-medium">
           <span>{t`Rok na wykresie: za ${yearsText(month)} (${year})`}</span>
           <input
@@ -152,15 +205,15 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
         </label>
         <FanChart fan={fan} month={month} onMonthChange={setPickedMonth} formatValue={money} label={label} />
       </Card>
-      <Card title={t`Rozkład wartości za ${yearsText(month)}`}>
+      <Card title={t`Rozkład wartości za ${yearsText(month)} (${basis.full})`}>
         <p className="mb-2 mt-0 text-sm text-muted">{t`Najwyższe 1% przyszłości połączono w ostatnim słupku.`}</p>
-        <Histogram values={histValues} formatValue={money} label={t`Rozkład wartości portfela`} />
+        <Histogram values={histValues} formatValue={money} label={t`Rozkład wartości portfela (${basis.full})`} />
       </Card>
-      {/* Karta BTC liczy dwa dodatkowe przebiegi na głównym wątku: pokazujemy ją po zakończeniu etapów,
-          żeby nie opóźniać pierwszego wyniku (budżet < 1 s do pierwszego etapu). */}
-      {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} />}
+      {/* Karta BTC liczy dwa dodatkowe przebiegi w workerach: pokazujemy ją po zakończeniu etapów,
+          żeby nie konkurować z nimi o rdzenie (budżet < 1 s do pierwszego etapu). */}
+      {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} createWorker={createWorker} />}
       <Solvers scenario={scenario} createWorker={sim.createWorker} />
-      {expert && checkRows && <ModelCheckPanel rows={checkRows} labelOf={names} />}
+      {expert && checkRows && <ModelCheckPanel rows={checkRows} labelOf={checkLabel} />}
     </div>
   );
 }

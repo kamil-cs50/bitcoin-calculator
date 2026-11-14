@@ -11,7 +11,7 @@ import * as features from '../../entitlements/features';
 import { i18n } from '../../i18n';
 import { db } from '../../state/db';
 import { MAX_COMPARE, useScenarioStore } from '../../state/scenarioStore';
-import type { SimWorker } from '../../workers/pool';
+import { syncWorker } from '../../workers/syncWorker';
 import { formatMoney } from '../../lib/format';
 import { SIM_SEED } from '../results/useSimulation';
 import { valuesAt } from '../results/values';
@@ -23,13 +23,6 @@ vi.mock('../../entitlements/features', async (orig) => {
   return { ...actual, useEntitlement: vi.fn(actual.useEntitlement) };
 });
 
-const syncWorker = (): SimWorker => ({
-  run: async (s, o) => runBatch(s, o),
-  solve: async () => {
-    throw new Error('nie dotyczy');
-  },
-  terminate: () => undefined,
-});
 const N = 1000;
 const OPT = { month: 120, real: true, afterTax: true };
 const nb = (s: string | null) => (s ?? '').replace(/[\s\u00a0\u202f]/g, ' ');
@@ -177,6 +170,30 @@ describe('Compare', () => {
     expect(text).toContain(nb(formatMoney(Math.abs(d.median.diff), 'PLN', { sigDigits: 2 })));
     expect(d.median.ci[0]).toBeLessThanOrEqual(d.median.diff);
     expect(screen.getAllByText(/przedział/i).length).toBeGreaterThan(0);
+  }, 30_000);
+
+  it('bootstrap różnicy idzie do workera (nie na głównym wątku)', async () => {
+    const pairedDiff = vi.fn(async () => ({
+      median: { diff: 5, ci: [1, 9] as [number, number] },
+      p10: { diff: 2, ci: [0, 4] as [number, number] },
+      paths: N,
+    }));
+    useScenarioStore.setState({
+      compareList: [
+        { id: 'a', name: 'A', scenario: withBtc(0) },
+        { id: 'b', name: 'B', scenario: withBtc(10_000) },
+      ],
+    });
+    render(
+      <I18nProvider i18n={i18n}>
+        <MemoryRouter>
+          <Compare createWorker={() => syncWorker({ pairedDiff })} maxPaths={N} workers={1} />
+        </MemoryRouter>
+      </I18nProvider>,
+    );
+    const table = await screen.findByRole('table', { name: /Różnice względem/ }, { timeout: 20_000 });
+    expect(pairedDiff).toHaveBeenCalledTimes(1);
+    expect(nb(table.querySelector('tbody tr')!.textContent)).toContain('(+');
   }, 30_000);
 
   it('czwarty scenariusz jest blokowany z komunikatem', async () => {

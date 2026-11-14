@@ -23,12 +23,14 @@ export interface SimState {
   /** Liczba ścieżek ostatniego ukończonego etapu (0 przed pierwszym etapem). */
   stage: number;
   running: boolean;
+  /** Błąd workera (nie anulowanie): liczenie się zatrzymało, UI pokazuje komunikat; zmiana scenariusza ponawia. */
+  failed: boolean;
   warnings: Warning[];
   /** Błędy walidacji scenariusza; przy błędach symulacja się nie uruchamia. */
   errors: { path: string; message: string }[];
 }
 
-const EMPTY: SimState = { stage: 0, running: false, warnings: [], errors: [] };
+const EMPTY: SimState = { stage: 0, running: false, failed: false, warnings: [], errors: [] };
 
 /**
  * Symulacja progresywna dla scenariusza: debounce, anulowanie poprzedniego przebiegu przy zmianie
@@ -48,21 +50,26 @@ export function useSimulation(scenario: Scenario, opts: SimOptions = {}): SimSta
     }
     let alive = true;
     let handle: ReturnType<typeof runProgressive> | undefined;
-    setState((s) => ({ ...s, running: true, errors: [], warnings: v.warnings }));
+    setState((s) => ({ ...s, running: true, failed: false, errors: [], warnings: v.warnings }));
     const timer = setTimeout(() => {
       handle = runProgressive(scenario, seed, {
         maxPaths,
         workers,
         createWorker: factory.current,
         onStage: (result, stage) => {
-          if (alive) setState({ result, stage, running: true, warnings: result.warnings, errors: [] });
+          if (alive) setState({ result, stage, running: true, failed: false, warnings: result.warnings, errors: [] });
         },
       });
       handle.done.then(
         () => {
           if (alive) setState((s) => ({ ...s, running: false }));
         },
-        () => undefined, // anulowanie lub błąd workera: stan zostaje z ostatniego etapu
+        (e: unknown) => {
+          // anulowanie (zmiana scenariusza, odmontowanie) jest normalne; każdy inny błąd kończy liczenie
+          if (alive && (e as { name?: string } | null)?.name !== 'AbortError') {
+            setState((s) => ({ ...s, running: false, failed: true }));
+          }
+        },
       );
     }, debounceMs);
     return () => {

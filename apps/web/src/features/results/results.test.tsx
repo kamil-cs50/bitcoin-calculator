@@ -12,7 +12,7 @@ import { i18n } from '../../i18n';
 import { formatMoney } from '../../lib/format';
 import { useScenarioStore } from '../../state/scenarioStore';
 import { useUiStore } from '../../state/uiStore';
-import type { SimWorker } from '../../workers/pool';
+import { syncWorker } from '../../workers/syncWorker';
 import * as pool from '../../workers/pool';
 import { BtcCard } from './BtcCard';
 import { Dashboard, WarningBanners } from './Dashboard';
@@ -26,7 +26,6 @@ vi.mock('../../workers/pool', async (orig) => {
   return { ...actual, runProgressive: vi.fn(actual.runProgressive) };
 });
 
-const syncWorker = (): SimWorker => ({ run: async (s, o) => runBatch(s, o), solve: async () => { throw new Error('nie dotyczy'); }, terminate: () => undefined });
 const SIM = { createWorker: syncWorker, debounceMs: 0, maxPaths: 1000, workers: 1 };
 const shell = (ui: React.ReactNode) => (
   <I18nProvider i18n={i18n}>
@@ -54,7 +53,7 @@ describe('KpiTiles', () => {
   it('typowy wynik = mediana realna po podatku (2 cyfry znaczące) i przedział p10-p90', () => {
     wrap(kpi());
     const s = summarize(result, goalScenario, { month: 120, real: true, afterTax: true });
-    expect(screen.getByText('Typowy wynik za 10 lat (w dzisiejszych zł)')).toBeInTheDocument();
+    expect(screen.getByText('Typowy wynik za 10 lat (w dzisiejszych zł, po podatku)')).toBeInTheDocument();
     expect(nb(screen.getByTestId('kpi-median').textContent)).toBe(nb(money2(s.median)));
     expect(nb(screen.getByTestId('kpi-range').textContent)).toBe(nb(`W 8 na 10 przyszłości między ${money2(s.p10)} a ${money2(s.p90)}`));
   });
@@ -63,7 +62,7 @@ describe('KpiTiles', () => {
     const { rerender } = wrap(kpi());
     const base = screen.getByTestId('kpi-median').textContent;
     rerender(shell(kpi({ real: false })));
-    expect(screen.getByText('Typowy wynik za 10 lat (nominalnie)')).toBeInTheDocument();
+    expect(screen.getByText('Typowy wynik za 10 lat (nominalnie, po podatku)')).toBeInTheDocument();
     const nominal = screen.getByTestId('kpi-median').textContent;
     expect(nominal).toBe(money2(summarize(result, goalScenario, { month: 120, real: false, afterTax: true }).median));
     expect(nominal).not.toBe(base);
@@ -126,20 +125,22 @@ describe('BtcCard', () => {
   };
 
   it('niewidoczna bez BTC w portfelu', () => {
-    const { container } = wrap(<BtcCard scenario={goalScenario} dataset={dataset} month={60} />);
+    const { container } = wrap(<BtcCard scenario={goalScenario} dataset={dataset} month={60} createWorker={syncWorker} />);
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('percentyle ceny w USD i PLN oraz szansa upadku do roku X', () => {
+  it('percentyle ceny w USD i PLN oraz szansa upadku do roku X', async () => {
     const s = btcScenario();
     const a = s.assets.find((x) => x.id === 'btcBase')!;
     if (a.kind !== 'risky' || !a.collapse) throw new Error('fixture');
-    wrap(<BtcCard scenario={s} dataset={dataset} month={120} priceUsd={100_000} pricePln={400_000} />);
+    wrap(<BtcCard scenario={s} dataset={dataset} month={120} priceUsd={100_000} pricePln={400_000} createWorker={syncWorker} />);
     const year = s.startYear + 10;
     expect(screen.getByRole('region', { name: `Bitcoin: rozkład ceny w roku ${year}` })).toBeInTheDocument();
     const n = Math.round(100 * (1 - Math.exp(-a.collapse.hazard * 10)));
     expect(screen.getByText(`Szansa upadku do roku ${year}: ${n} na 100`)).toBeInTheDocument();
-    const rows = within(screen.getByRole('table')).getAllByRole('row').slice(1);
+    const table = await screen.findByRole('table');
+    await waitFor(() => expect(within(table).getAllByRole('row')[1]!.textContent).not.toContain('–'));
+    const rows = within(table).getAllByRole('row').slice(1);
     expect(rows).toHaveLength(3);
     const cells = rows.map((r) => within(r).getAllByRole('cell').map((c) => nb(c.textContent)));
     expect(cells.every((c) => /\$|USD/.test(c[0]!) && /zł/.test(c[1]!))).toBe(true);
@@ -150,9 +151,33 @@ describe('BtcCard', () => {
 
   it('bez wpisanej ceny prosi o cenę, ale pokazuje szansę upadku', () => {
     const s = btcScenario();
-    wrap(<BtcCard scenario={s} dataset={dataset} month={120} />);
+    wrap(<BtcCard scenario={s} dataset={dataset} month={120} createWorker={syncWorker} />);
     expect(screen.getByText(/Wpisz dzisiejszą cenę 1 BTC/)).toBeInTheDocument();
     expect(screen.getByText(/Szansa upadku do roku/)).toBeInTheDocument();
+  });
+});
+
+describe('liczenie poza głównym wątkiem', () => {
+  const dataset = loadDataset('2026.11');
+  it('BtcCard liczy rozkład ceny w workerze (2 zadania: USD i PLN, po 1000 ścieżek), nie na głównym wątku', async () => {
+    useScenarioStore.getState().addPosition({ presetId: 'btcBase', value: 10_000 });
+    const s = useScenarioStore.getState().scenario;
+    const summary = vi.fn(async () => ({ p10: 1, median: 2, p90: 3 }) as never);
+    wrap(<BtcCard scenario={s} dataset={dataset} month={120} priceUsd={100} pricePln={400} createWorker={() => syncWorker({ summary })} />);
+    await waitFor(() => expect(summary).toHaveBeenCalledTimes(2));
+    expect(summary.mock.calls.every((c) => (c as unknown as [unknown, { paths: number }])[1].paths === 1000)).toBe(true);
+    const table = await screen.findByRole('table');
+    await waitFor(() => expect(nb(within(table).getAllByRole('row')[1]!.textContent)).toMatch(/\$|USD/));
+  });
+
+  it('Dashboard: kontrola modelu idzie do workera (tryb eksperta pokazuje jej wynik)', async () => {
+    useScenarioStore.getState().setScenario(goalScenario);
+    useUiStore.setState({ expert: true });
+    const rows: ModelCheckRow[] = [{ id: 'x', metric: 'vol', input: 0.16, simulated: 0.161, se: 0.002, ok: true }];
+    const modelCheck = vi.fn(async () => rows);
+    wrap(<Dashboard sim={{ ...SIM, createWorker: () => syncWorker({ modelCheck }) }} />);
+    await waitFor(() => expect(modelCheck).toHaveBeenCalledTimes(1));
+    expect(await screen.findByRole('table', { name: /Kontrola modelu/ })).toBeInTheDocument();
   });
 });
 
@@ -160,10 +185,27 @@ describe('WarningBanners', () => {
   it('CORR_PROJECTED: baner z macierzą po korekcie', () => {
     const w: Warning = { code: 'CORR_PROJECTED', message: 'Użyto najbliższej macierzy', data: { factorIds: ['a', 'b'], matrix: [1, 0.55, 0.55, 1] } };
     wrap(<WarningBanners warnings={[w]} />);
-    expect(screen.getByRole('alert')).toHaveTextContent('Użyto najbliższej macierzy');
+    expect(screen.getByRole('alert')).toHaveTextContent(/najbliższej poprawnej macierzy korelacji/);
     const table = screen.getByRole('table', { name: /Macierz korelacji po korekcie/ });
     expect(within(table).getAllByRole('row')).toHaveLength(3);
     expect(within(table).getAllByText('0,55')).toHaveLength(2);
+  });
+});
+
+describe('WarningBanners: teksty przez Lingui (mapowanie po code)', () => {
+  const raw = 'SUROWY-TEKST-SILNIKA';
+  it.each([
+    [{ code: 'EMPTY_PORTFOLIO', message: raw }, /Suma docelowych wag/],
+    [{ code: 'NEGATIVE_TARGET_WEIGHT', message: raw }, /Ujemna docelowa waga/],
+    [{ code: 'LOSS_OVER_5M', message: raw, data: { year: 2040, loss: 6e6 } }, /5 mln zł/],
+    [{ code: 'ALPHA_CLAMPED', message: raw, data: { id: 'btcBase', from: 1, to: 0.5 } }, /Bitcoin/],
+    [{ code: 'ALPHA_CLAMPED', message: raw, data: { id: 'fx:USD', from: 1, to: 0.5 } }, /kursu USD/],
+    [{ code: 'CORR_PROJECTED', message: raw }, /najbliższej poprawnej macierzy/],
+  ] as [Warning, RegExp][])('%j', (w, re) => {
+    wrap(<WarningBanners warnings={[w]} />);
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent(re);
+    expect(alert).not.toHaveTextContent(raw);
   });
 });
 
@@ -207,6 +249,13 @@ describe('useSimulation', () => {
     }
   });
 
+  it('błąd workera: running wraca na false i jest stan błędu (anulowanie go nie ustawia)', async () => {
+    vi.mocked(pool.runProgressive).mockImplementation(() => ({ cancel: vi.fn(), done: Promise.reject(new Error('worker padł')) }));
+    const { result: r } = renderHook(() => useSimulation(sc, SIM));
+    await waitFor(() => expect(r.current.failed).toBe(true));
+    expect(r.current.running).toBe(false);
+  });
+
   it('niepoprawny scenariusz nie uruchamia symulacji i zwraca błędy', async () => {
     const bad = { ...sc, horizonMonths: 0 };
     const { result: r } = renderHook(() => useSimulation(bad, SIM));
@@ -245,7 +294,7 @@ describe('Dashboard', () => {
     const fanBefore = screen.getByRole('img', { name: /Wachlarz/ }).innerHTML;
     await userEvent.click(realSwitch);
     expect(nb(screen.getByTestId('kpi-median').textContent)).toBe(nb(exp(false, true)));
-    expect(screen.getByText(/Typowy wynik za 10 lat \(nominalnie\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Typowy wynik za 10 lat \(nominalnie, po podatku\)/)).toBeInTheDocument();
     await userEvent.click(taxSwitch);
     expect(nb(screen.getByTestId('kpi-median').textContent)).toBe(nb(exp(false, false)));
     expect(screen.getByRole('img', { name: /Wachlarz/ }).innerHTML).not.toBe(fanBefore);
@@ -268,6 +317,41 @@ describe('Dashboard', () => {
     await userEvent.click(screen.getByRole('switch', { name: /Tryb eksperta/ }));
     expect(screen.getByRole('region', { name: /Średnia/ })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole('table', { name: /Kontrola modelu/ })).toBeInTheDocument());
+  });
+
+  it('błąd workera: komunikat o błędzie zamiast wiecznego „liczę dalej”', async () => {
+    vi.mocked(pool.runProgressive).mockImplementation((_s, _seed, o) => {
+      o.onStage(runBatch(goalScenario, { seed: SIM_SEED, paths: 1000 }), 1000);
+      return { cancel: vi.fn(), done: Promise.reject(new Error('worker padł')) };
+    });
+    wrap(<Dashboard sim={SIM} />);
+    expect(await screen.findByText(/Nie udało się policzyć wyniku/)).toBeInTheDocument();
+    expect(screen.queryByText(/liczę dalej/)).not.toBeInTheDocument();
+  });
+
+  it('podstawa (realnie/nominalnie, po podatku) jest w kafelkach, tytułach kart i opisie wykresu', async () => {
+    wrap(<Dashboard sim={SIM} />);
+    await ready();
+    const basis = 'w dzisiejszych zł, po podatku';
+    for (const title of ['Zakres wyników', 'Najgorsze 5% przyszłości: średnio']) {
+      expect(screen.getByRole('region', { name: new RegExp(`^${title}.*\\(${basis}\\)`) })).toBeInTheDocument();
+    }
+    // strata realna jest zawsze realna, więc podstawa to tylko podatek
+    expect(screen.getByRole('region', { name: 'Szansa straty realnej (po podatku)' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: new RegExp(`Wachlarz możliwych przyszłości.*${basis}`) })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: new RegExp(`Wachlarz.*${basis}`) })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: new RegExp(`Rozkład wartości.*${basis}`) })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('switch', { name: /Realnie/ }));
+    await userEvent.click(screen.getByRole('switch', { name: /Po podatku/ }));
+    expect(screen.getByRole('region', { name: /^Zakres wyników.*\(nominalnie, przed podatkiem\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /Wachlarz.*nominalnie, przed podatkiem/ })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Szansa straty realnej (przed podatkiem)' })).toBeInTheDocument();
+  });
+
+  it('tytuł ładowania podaje faktyczną liczbę ścieżek (nie sztywne 10 000)', async () => {
+    vi.mocked(pool.runProgressive).mockImplementation(() => ({ cancel: vi.fn(), done: new Promise<RunResult>(() => undefined) }));
+    wrap(<Dashboard sim={SIM} />);
+    expect(await screen.findByText(/Liczymy 1\s?000 możliwych przyszłości/)).toBeInTheDocument();
   });
 
   it('pusty scenariusz pokazuje komunikat zamiast wyniku', async () => {

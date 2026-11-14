@@ -126,6 +126,23 @@ describe('zapis lokalny (Dexie)', () => {
     expect(ScenarioSchema.safeParse((await db.scenarios.get('current'))?.data).success).toBe(true);
   });
 
+  it('zapis poprawny kształtem, ale niespójny semantycznie (nieznane aktywo): status invalid, kopia surowa, bez nadpisania', async () => {
+    const bad = {
+      ...defaultScenario(d),
+      positions: [{ assetId: 'nieistnieje', wrapper: 'taxable', value: 1000, costBasis: 1000, targetWeight: 1000 }],
+    };
+    expect(ScenarioSchema.safeParse(bad).success).toBe(true); // kształt jest poprawny
+    await db.scenarios.put({ id: 'current', name: 'x', updatedAt: 1, data: bad });
+    await useScenarioStore.getState().loadSaved();
+    const st = useScenarioStore.getState();
+    expect(st.loadStatus).toBe('invalid');
+    expect(st.loadError).toMatch(/nieistnieje/);
+    expect(st.scenario.positions).toEqual([]); // nie wpuszczamy tego do aplikacji
+    expect(st.exportRawBackup()).toContain('nieistnieje');
+    await st.saveNow();
+    expect((await db.scenarios.get('current'))?.data).toEqual(bad);
+  });
+
   it('stary zbiór danych: ok, a store ustawia datasetOutdated', async () => {
     const old = { ...defaultScenario(d), datasetVersion: '2025.01' };
     await db.scenarios.put({ id: 'current', name: 'x', updatedAt: 1, data: old });
@@ -170,6 +187,13 @@ describe('migrate', () => {
     const bad = structuredClone(good);
     bad.horizonMonths = Number.NaN;
     expect(migrate(bad).ok).toBe(false);
+  });
+
+  it('semantycznie niespójny scenariusz (validateScenario) to ok:false z powodem', () => {
+    const bad = { ...good, positions: [{ assetId: 'x', wrapper: 'taxable', value: 1, costBasis: 1, targetWeight: 1 }] };
+    const r = migrate(bad);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toMatch(/^invalid-scenario: .*positions\[0\]\.assetId/);
   });
 
   it('stary datasetVersion nie blokuje migracji', () => {

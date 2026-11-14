@@ -7,11 +7,11 @@ import { Card } from '../../components/ui/Card';
 import { Gate } from '../../entitlements/Gate';
 import { formatMoney } from '../../lib/format';
 import { MAX_COMPARE, useScenarioStore, type CompareEntry } from '../../state/scenarioStore';
-import { runProgressive } from '../../workers/pool';
+import { runProgressive, runTask } from '../../workers/pool';
 import type { SimWorker } from '../../workers/pool';
 import { SIM_SEED } from '../results/useSimulation';
 import { gridIndex, valuesAt } from '../results/values';
-import { pairedDifference } from './diff';
+import { pairedValues, type PairedDifference } from './diff';
 
 export interface CompareProps {
   /** Fabryka workerów (testy podstawiają wersję synchroniczną). */
@@ -41,6 +41,36 @@ function useRuns(list: CompareEntry[], o: CompareProps): Record<string, RunResul
   return runs;
 }
 
+/** Bootstrap różnic względem pierwszego scenariusza w workerach (null, dopóki nie jest gotowy). */
+function useDiffs(
+  list: CompareEntry[],
+  runs: Record<string, RunResult | undefined>,
+  ready: boolean,
+  createWorker?: () => SimWorker,
+): PairedDifference[] | null {
+  const [out, setOut] = useState<{ list: CompareEntry[]; runs: typeof runs; diffs: PairedDifference[] } | null>(null);
+  useEffect(() => {
+    if (!ready || list.length < 2) return;
+    const base = list[0]!;
+    const a = runs[base.id]!;
+    const horizon = Math.min(...list.map((e) => e.scenario.horizonMonths));
+    const handles = list.slice(1).map((e) => {
+      const { va, vb, month } = pairedValues(a, runs[e.id]!, { ...VIEW, month: horizon });
+      return { month, h: runTask((w) => w.pairedDiff(va, vb), createWorker) };
+    });
+    let alive = true;
+    Promise.all(handles.map((x) => x.h.done)).then(
+      (ds) => alive && setOut({ list, runs, diffs: ds.map((d, i) => ({ ...d, month: handles[i]!.month })) }),
+      () => undefined,
+    );
+    return () => {
+      alive = false;
+      handles.forEach((x) => x.h.cancel());
+    };
+  }, [list, runs, ready, createWorker]);
+  return out && out.list === list && out.runs === runs ? out.diffs : null;
+}
+
 function CompareBody(p: CompareProps) {
   const { t } = useLingui();
   const list = useScenarioStore((s) => s.compareList);
@@ -49,11 +79,11 @@ function CompareBody(p: CompareProps) {
   const runs = useRuns(list, p);
   const full = list.length >= MAX_COMPARE;
   const ready = list.length > 0 && list.every((e) => runs[e.id]);
+  const diffs = useDiffs(list, runs, ready, p.createWorker);
 
   const rows = useMemo(() => {
-    if (!ready || list.length < 2) return null;
+    if (!ready || list.length < 2 || !diffs) return null;
     const base = list[0]!;
-    const a = runs[base.id]!;
     const money = (v: number) => formatMoney(v, base.scenario.baseCurrency, { sigDigits: 2 });
     const signed = (v: number) => (v === 0 ? money(0) : `${v > 0 ? '+' : '−'}${money(Math.abs(v))}`);
     const horizon = Math.min(...list.map((e) => e.scenario.horizonMonths));
@@ -63,14 +93,14 @@ function CompareBody(p: CompareProps) {
       const q = (x: number) => v[Math.floor((v.length - 1) * x)]!;
       return { name: e.name, median: money(q(0.5)), p10: money(q(0.1)) };
     });
-    const diffs = list.slice(1).map((e) => {
-      const d = pairedDifference(a, runs[e.id]!, { ...VIEW, month: horizon });
+    const diffRows = list.slice(1).map((e, i) => {
+      const d = diffs[i]!;
       const cell = (x: { diff: number; ci: [number, number] }) =>
         `${signed(x.diff)} (${signed(x.ci[0])} … ${signed(x.ci[1])})`;
       return { name: e.name, median: cell(d.median), p10: cell(d.p10) };
     });
-    return { base: base.name, abs, diffs, horizon };
-  }, [ready, list, runs]);
+    return { base: base.name, abs, diffs: diffRows, horizon };
+  }, [ready, list, runs, diffs]);
 
   const years = rows ? Math.floor(rows.horizon / 12) : 0;
   return (

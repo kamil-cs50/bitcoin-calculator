@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { i18n } from '../../i18n';
 import { ScenarioSchema } from '../../state/scenarioSchema';
 import { useScenarioStore } from '../../state/scenarioStore';
+import { syncWorker } from '../../workers/syncWorker';
 import { estimateRealReturn } from './estimate';
 import { PlanEditor } from './PlanEditor';
 
@@ -151,15 +152,15 @@ describe('PlanEditor: cel', () => {
   });
 });
 
-describe('estimateRealReturn (prawdziwy silnik)', () => {
+describe('estimateRealReturn (prawdziwy silnik, przez worker)', () => {
   it('portfel akcyjny: skończona mediana realnego CAGR w rozsądnym zakresie; pusty portfel: 0', async () => {
     const actual = await vi.importActual<typeof import('./estimate')>('./estimate');
-    expect(await actual.estimateRealReturn(sc())).toBe(0);
+    expect(await actual.estimateRealReturn(sc(), syncWorker)).toBe(0);
     useScenarioStore.getState().addPosition({ presetId: 'globalEquity', value: 100_000 });
-    const r = await actual.estimateRealReturn(sc());
+    const r = await actual.estimateRealReturn(sc(), syncWorker);
     expect(Number.isFinite(r)).toBe(true);
     expect(r).toBeGreaterThan(-0.02);
     expect(r).toBeLessThan(0.12);
-    expect(await actual.estimateRealReturn(sc())).toBe(r); // stałe ziarno
+    expect(await actual.estimateRealReturn(sc(), syncWorker)).toBe(r); // stałe ziarno
   });
 });

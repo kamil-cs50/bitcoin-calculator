@@ -3,12 +3,11 @@ import type { RunResult } from '@sim/engine';
 import { makeScenario } from '@sim/engine/src/testing/fixtures';
 import { describe, expect, it } from 'vitest';
 import { runProgressive } from './pool';
-import type { SimWorker } from './pool';
+import { syncWorker } from './syncWorker';
 
 const scenario = makeScenario({ horizonMonths: 24 });
 
 /** Worker podmieniony na wywołanie synchroniczne (bez Comlink i bez prawdziwego wątku). */
-const syncWorker = (): SimWorker => ({ run: async (s, o) => runBatch(s, o), solve: async () => { throw new Error('nie dotyczy'); }, terminate: () => undefined });
 
 const same = (a: RunResult, b: RunResult): void => {
   expect(a.paths).toBe(b.paths);

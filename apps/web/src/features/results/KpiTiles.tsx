@@ -4,6 +4,7 @@ import { summarize, wilson } from '@sim/engine';
 import { useMemo, type ReactNode } from 'react';
 import { Card } from '../../components/ui/Card';
 import { formatMoney, naturalFrequency } from '../../lib/format';
+import { currencyWord, useBasis } from './basis';
 import { capitalize, yearsText } from './periods';
 
 export interface KpiTilesProps {
@@ -35,7 +36,9 @@ export function KpiTiles({ result, scenario, month, real, afterTax, expert }: Kp
     return { p: result.paths > 0 ? k / result.paths : 0, ci: wilson(k, result.paths) };
   }, [result]);
   const years = yearsText(month);
-  const basis = real ? t`w dzisiejszych zł` : t`nominalnie`;
+  const b = useBasis(cur, real, afterTax);
+  const basis = b.full;
+  const unit = currencyWord(cur);
   const half = (ci: [number, number]) => new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 1 }).format(((ci[1] - ci[0]) / 2) * 100);
   const goalPp = s.probGoal ? half(s.probGoal.ci) : '';
   const deepPp = half(deep.ci);
@@ -45,9 +48,9 @@ export function KpiTiles({ result, scenario, month, real, afterTax, expert }: Kp
     <div className="grid gap-4 sm:grid-cols-2">
       <Card title={t`Typowy wynik za ${years} (${basis})`}>
         <Big testId="kpi-median">{money(s.median)}</Big>
-        <Note>{afterTax ? t`Mediana, po podatku` : t`Mediana, przed podatkiem`}</Note>
+        <Note>{t`Mediana: połowa przyszłości kończy się wyżej, połowa niżej`}</Note>
       </Card>
-      <Card title={t`Zakres wyników`}>
+      <Card title={t`Zakres wyników (${basis})`}>
         <p data-testid="kpi-range" className="m-0 text-xl font-semibold tabular-nums">
           {t`W 8 na 10 przyszłości między ${money(s.p10)} a ${money(s.p90)}`}
         </p>
@@ -57,7 +60,7 @@ export function KpiTiles({ result, scenario, month, real, afterTax, expert }: Kp
         <Card title={t`Szansa na cel`}>
           <Big>{capitalize(naturalFrequency(s.probGoal.p))}</Big>
           <Note>
-            {t`Cel: ${money(scenario.goal.amountReal)} w dzisiejszych zł za ${yearsText(scenario.goal.month)} (±${goalPp} pp)`}
+            {t`Cel: ${money(scenario.goal.amountReal)} w dzisiejszych ${unit} za ${yearsText(scenario.goal.month)}, ${b.tax} (±${goalPp} pp)`}
           </Note>
         </Card>
       )}
@@ -65,11 +68,11 @@ export function KpiTiles({ result, scenario, month, real, afterTax, expert }: Kp
         <Big>{capitalize(naturalFrequency(deep.p))}</Big>
         <Note>{t`portfel traci ponad 30% od swojego szczytu (cały okres, ±${deepPp} pp)`}</Note>
       </Card>
-      <Card title={t`Najgorsze 5% przyszłości: średnio`}>
+      <Card title={t`Najgorsze 5% przyszłości: średnio (${basis})`}>
         <Big>{money(s.cvar5)}</Big>
         <Note>{t`Średnia wartość w najgorszych 5 na 100 przyszłości`}</Note>
       </Card>
-      <Card title={t`Szansa straty realnej`}>
+      <Card title={t`Szansa straty realnej (${b.tax})`}>
         <Big>{capitalize(naturalFrequency(s.probRealLoss.p))}</Big>
         <Note>{t`wartość portfela niższa niż dziś po uwzględnieniu inflacji (±${lossPp} pp)`}</Note>
       </Card>

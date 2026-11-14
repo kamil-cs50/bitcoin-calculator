@@ -1,7 +1,9 @@
 import { mergeResults, STAGES } from '@sim/engine';
-import type { RunOptions, RunResult, Scenario, SolverOptions, SolverResult } from '@sim/engine';
+import type { ModelCheckRow, RunOptions, RunResult, Scenario, SolverOptions, SolverResult, Summary } from '@sim/engine';
 import * as Comlink from 'comlink';
-import type { SimWorkerApi, SolverKind } from './sim.worker';
+import type { PairedDifference } from '../features/compare/diff';
+import type { SimWorkerApi } from './sim.worker';
+import type { SolverKind } from './tasks';
 
 export interface SimHandle {
   cancel(): void;
@@ -20,6 +22,10 @@ export interface PoolOptions {
 export interface SimWorker {
   run(s: Scenario, o: RunOptions): Promise<RunResult>;
   solve(kind: SolverKind, s: Scenario, o: SolverOptions): Promise<SolverResult>;
+  modelCheck(s: Scenario, o: { seed: number; paths: number }): Promise<ModelCheckRow[]>;
+  summary(s: Scenario, o: RunOptions, v: { month: number; real: boolean; afterTax: boolean }): Promise<Summary>;
+  estimate(s: Scenario): Promise<number>;
+  pairedDiff(va: Float64Array, vb: Float64Array, reps?: number): Promise<Omit<PairedDifference, 'month'>>;
   terminate(): void;
 }
 
@@ -39,7 +45,15 @@ export function defaultMaxPaths(): number {
 function createRealWorker(): SimWorker {
   const worker = new Worker(new URL('./sim.worker.ts', import.meta.url), { type: 'module' });
   const remote = Comlink.wrap<SimWorkerApi>(worker);
-  return { run: (s, o) => remote.run(s, o), solve: (k, s, o) => remote.solve(k, s, o), terminate: () => worker.terminate() };
+  return {
+    run: (s, o) => remote.run(s, o),
+    solve: (k, s, o) => remote.solve(k, s, o),
+    modelCheck: (s, o) => remote.modelCheck(s, o),
+    summary: (s, o, v) => remote.summary(s, o, v),
+    estimate: (s) => remote.estimate(s),
+    pairedDiff: (a, b, r) => remote.pairedDiff(a, b, r),
+    terminate: () => worker.terminate(),
+  };
 }
 
 /** Skumulowane rozmiary etapów: 1000 → 4000 → 10000, obcięte do maxPaths; maxPaths ponad 10000 dodaje etap końcowy. */
@@ -121,21 +135,21 @@ export function runProgressive(s: Scenario, seed: number, o: PoolOptions): SimHa
   };
 }
 
-export interface SolverHandle {
+export interface TaskHandle<T> {
   cancel(): void;
-  done: Promise<SolverResult>;
+  done: Promise<T>;
 }
 
 /**
- * Solver w osobnym workerze (bez blokowania interfejsu). Postęp jest nieokreślony (solver nie raportuje
- * kroków), więc UI pokazuje pasek „w toku” i przycisk anulowania; `cancel()` kończy workera.
+ * Jedno zadanie w osobnym workerze (bez blokowania interfejsu). `cancel()` kończy workera, a `done`
+ * odrzuca z AbortError. Worker jest kończony także po zakończeniu zadania.
  */
-export function runSolver(kind: SolverKind, s: Scenario, o: SolverOptions, createWorker: () => SimWorker = createRealWorker): SolverHandle {
+export function runTask<T>(call: (w: SimWorker) => Promise<T>, createWorker: () => SimWorker = createRealWorker): TaskHandle<T> {
   const worker = createWorker();
   let rejectDone: (e: Error) => void = () => undefined;
-  const done = new Promise<SolverResult>((resolve, reject) => {
+  const done = new Promise<T>((resolve, reject) => {
     rejectDone = reject;
-    worker.solve(kind, s, o).then(resolve, reject);
+    call(worker).then(resolve, reject);
   }).finally(() => worker.terminate());
   return {
     cancel(): void {
@@ -144,4 +158,11 @@ export function runSolver(kind: SolverKind, s: Scenario, o: SolverOptions, creat
     },
     done,
   };
+}
+
+export type SolverHandle = TaskHandle<SolverResult>;
+
+/** Solver w osobnym workerze; postęp jest nieokreślony (solver nie raportuje kroków). */
+export function runSolver(kind: SolverKind, s: Scenario, o: SolverOptions, createWorker?: () => SimWorker): SolverHandle {
+  return runTask((w) => w.solve(kind, s, o), createWorker);
 }
