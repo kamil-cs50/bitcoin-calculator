@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&amp;family=Geist:wght@300;400;500&amp;family=Inter+Tight:wght@300;400;500&amp;family=Space+Grotesk:wght@300;400;500&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+html,body{margin:0;background:#030409;color:#eef1f8;font-family:'Sora',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#eef1f8;text-decoration:none}a:hover{color:#9db9ff}
+input,button{font-family:inherit}
+input[type=range]{height:24px}
+::selection{background:#2a55ff;color:#fff}
+@keyframes flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-1}}
+@keyframes ring{0%{transform:scale(.7);opacity:.8}100%{transform:scale(2.6);opacity:0}}
+@keyframes shimmer{0%,100%{filter:brightness(.8)}50%{filter:brightness(1.45)}}
+@keyframes flapTop{0%{transform:rotateX(0deg);filter:brightness(1)}100%{transform:rotateX(-90deg);filter:brightness(.45)}}
+@keyframes flapBot{0%{transform:rotateX(90deg);filter:brightness(1.6)}100%{transform:rotateX(0deg);filter:brightness(1)}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;overflow:hidden;background:#030409;font-family:{{ fontFamily }}">
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute;width:0;height:0">
+    <filter id="lgx" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="7" result="warp"></feTurbulence>
+      <feGaussianBlur in="warp" stdDeviation="4" result="warpB"></feGaussianBlur>
+      <feDisplacementMap in="SourceGraphic" in2="warpB" scale="{{ g.refr }}" xChannelSelector="R" yChannelSelector="G" result="bent"></feDisplacementMap>
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="3" result="grain"></feTurbulence>
+      <feDisplacementMap in="bent" in2="grain" scale="{{ g.frost }}" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </svg>
+  <canvas ref="{{ bgRef }}" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block"></canvas>
+  <div style="position:fixed;inset:-7%;z-index:1;background-image:url(assets/noise.webp);background-size:cover;background-position:center;background-repeat:no-repeat;mix-blend-mode:screen;opacity:{{ noiseOpacity }};pointer-events:none"></div>
+
+  <div style="position:relative;z-index:2;max-width:1360px;margin:0 auto;padding:0 clamp(18px,3.4vw,48px);display:flex;flex-direction:column;min-height:100vh">
+
+    <header style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:22px 0">
+      <div style="display:flex;flex-direction:column;gap:2px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase">
+        <span style="color:#eef1f8">Symulator portfela</span>
+        
+      </div>
+      <nav style="display:flex;gap:2px;padding:4px;border-radius:999px;background:{{ g.bg }};backdrop-filter:{{ g.bf }};-webkit-backdrop-filter:{{ g.wbf }};border:1px solid {{ g.border }};box-shadow:{{ g.sh }}">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+          <button onClick="{{ n.onClick }}" style="min-height:36px;padding:0 15px;border-radius:999px;border:0;cursor:{{ n.cursor }};background:{{ n.bg }};color:{{ n.color }};font-size:13px;font-weight:400;letter-spacing:-0.005em;transition:background .35s,color .35s">{{ n.label }}</button>
+        </sc-for>
+      </nav>
+      <div style="display:flex;justify-content:flex-end;gap:18px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.6)">
+        <span style="white-space:nowrap"><span style="color:#eef1f8">PL</span> / EN</span>
+        <span style="white-space:nowrap">Warszawa — <span style="color:#eef1f8">{{ clock }}</span></span>
+      </div>
+    </header>
+
+    <sc-if value="{{ isWynik }}" hint-placeholder-val="{{ true }}">
+      <main style="display:flex;flex-direction:column;gap:clamp(40px,6vw,72px);padding:clamp(28px,5vw,64px) 0 56px">
+
+        <section style="display:flex;flex-direction:column;gap:clamp(24px,3vw,40px)">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px 24px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.09);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase">
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="color:rgba(220,228,245,0.6)">Horyzont:</span><span>{{ horizonLabel }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="color:rgba(220,228,245,0.6)">Waluta:</span><span>PLN · {{ basis }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="color:rgba(220,228,245,0.6)">Udział BTC:</span><span>{{ btcShareLabel }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="color:rgba(220,228,245,0.6)">Próba:</span><span>10 000 przyszłości · ±0,9 pp</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:28px;align-items:end">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <span style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.6)">Typowy wynik za {{ tLabel }} · {{ calYear }}</span>
+              <div style="display:flex;align-items:flex-end;gap:clamp(12px,1.6vw,22px);flex-wrap:wrap">
+                <span style="display:flex;font-size:clamp(68px,10.5vw,156px);font-weight:300;line-height:1;letter-spacing:0">{{ heroFlap }}</span>
+                <span style="font-weight:300;letter-spacing:-0.02em;font-size:clamp(34px,4.4vw,64px);line-height:1;color:#9db9ff">{{ heroUnit }}</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:18px;max-width:420px;justify-self:end">
+              <p style="margin:0;font-size:17px;font-weight:300;line-height:1.5;color:rgba(230,236,248,0.82);text-wrap:pretty">Mediana: połowa przyszłości kończy się wyżej, połowa niżej. To <span style="color:#fff">{{ heroMult }}</span> tego, co masz dziś.</p>
+              <div style="display:flex;align-items:center;gap:10px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase">
+                <span style="width:7px;height:7px;border-radius:50%;background:#7fa8ff;box-shadow:0 0 12px #4d7dff"></span>
+                <span>Model skalibrowany</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px 24px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              
+              <h2 style="margin:0;font-size:clamp(24px,2.4vw,34px);font-weight:300;letter-spacing:-0.03em;line-height:1.2">Możliwe przyszłości <span style="font-weight:300;letter-spacing:-0.02em;color:#9db9ff">{{ basis }}</span></h2>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+              <sc-for list="{{ toggles }}" as="tg" hint-placeholder-count="3">
+                <button onClick="{{ tg.onClick }}" role="switch" aria-checked="{{ tg.on }}" style="display:flex;align-items:center;gap:9px;min-height:36px;padding:0 14px;border-radius:999px;cursor:pointer;background:{{ tg.bg }};border:1px solid {{ tg.border }};color:#eef1f8;font-size:13px;transition:background .3s,border-color .3s">
+                  <span style="width:6px;height:6px;border-radius:50%;background:{{ tg.dot }};box-shadow:0 0 10px {{ tg.glow }};transition:background .3s"></span>{{ tg.label }}
+                </button>
+              </sc-for>
+              <span style="width:1px;height:20px;background:rgba(255,255,255,0.12);margin:0 4px"></span>
+              <div style="display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09)">
+                <sc-for list="{{ horizons }}" as="h" hint-placeholder-count="3">
+                  <button onClick="{{ h.onClick }}" style="min-height:30px;padding:0 12px;border-radius:999px;border:0;cursor:pointer;background:{{ h.bg }};color:{{ h.color }};font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.04em;transition:background .3s">{{ h.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="position:relative;padding:28px 24px 14px;background:{{ g.bg }};backdrop-filter:{{ g.bf }};-webkit-backdrop-filter:{{ g.wbf }};border:1px solid {{ g.border }};box-shadow:{{ g.sh }};border-radius:32px">
+            <div style="position:relative">
+              <svg viewBox="0 0 1000 360" onPointerMove="{{ onFanPointer }}" onPointerDown="{{ onFanPointer }}" role="img" aria-label="Wachlarz możliwych wartości portfela" style="width:100%;height:auto;display:block;touch-action:pan-y;cursor:crosshair;overflow:visible">
+                <defs>
+                  <linearGradient id="v2fan" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" style="stop-color:#7fa8ff;stop-opacity:0.55"></stop>
+                    <stop offset="1" style="stop-color:#1d3fff;stop-opacity:0.02"></stop>
+                  </linearGradient>
+                  <linearGradient id="v2med" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" style="stop-color:#ffffff;stop-opacity:0.35"></stop>
+                    <stop offset="0.6" style="stop-color:#ffffff;stop-opacity:1"></stop>
+                    <stop offset="1" style="stop-color:#b9cdff;stop-opacity:1"></stop>
+                  </linearGradient>
+                  <radialGradient id="v2orb" cx="0.35" cy="0.3" r="0.8">
+                    <stop offset="0" style="stop-color:#ffffff"></stop>
+                    <stop offset="0.5" style="stop-color:#a9c3ff"></stop>
+                    <stop offset="1" style="stop-color:#2a55ff"></stop>
+                  </radialGradient>
+                  <linearGradient id="v2past" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" style="stop-color:#ffffff;stop-opacity:0"></stop>
+                    <stop offset="1" style="stop-color:#ffffff;stop-opacity:0.05"></stop>
+                  </linearGradient>
+                  <radialGradient id="v2spot" gradientUnits="userSpaceOnUse" cx="{{ orbMed.x }}" cy="{{ orbMed.y }}" r="340">
+                    <stop offset="0" style="stop-color:#ffffff"></stop>
+                    <stop offset="0.28" style="stop-color:#b9cdff"></stop>
+                    <stop offset="1" style="stop-color:#4d7dff;stop-opacity:0.45"></stop>
+                  </radialGradient>
+                  <radialGradient id="v2bspot" gradientUnits="userSpaceOnUse" cx="{{ btcMark.x }}" cy="{{ btcMark.y }}" r="300">
+                    <stop offset="0" style="stop-color:#ffffff"></stop>
+                    <stop offset="0.3" style="stop-color:#b9cdff"></stop>
+                    <stop offset="1" style="stop-color:#4d7dff;stop-opacity:0.25"></stop>
+                  </radialGradient>
+                  <radialGradient id="v2bloom" cx="0.5" cy="0.5" r="0.5">
+                    <stop offset="0" style="stop-color:#8fb0ff;stop-opacity:0.6"></stop>
+                    <stop offset="0.35" style="stop-color:#3d6bff;stop-opacity:0.22"></stop>
+                    <stop offset="1" style="stop-color:#2a55ff;stop-opacity:0"></stop>
+                  </radialGradient>
+                  <radialGradient id="v2pearl" cx="0.36" cy="0.3" r="0.78">
+                    <stop offset="0" style="stop-color:#ffffff"></stop>
+                    <stop offset="0.28" style="stop-color:#e4ecff"></stop>
+                    <stop offset="0.7" style="stop-color:#8fb0ff"></stop>
+                    <stop offset="1" style="stop-color:#3358e6"></stop>
+                  </radialGradient>
+                </defs>
+                <rect x="92" y="20" width="{{ pastW }}" height="300" style="fill:url(#v2past);transition:width .18s ease-out"></rect>
+                <sc-for list="{{ yTicks }}" as="yt" hint-placeholder-count="5">
+                  <line x1="92" x2="985" y1="{{ yt.y }}" y2="{{ yt.y }}" style="stroke:rgba(255,255,255,0.07);stroke-width:1"></line>
+                </sc-for>
+                <path d="{{ fan.band0 }}" style="fill:url(#v2fan);opacity:0.32;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.band1 }}" style="fill:url(#v2fan);opacity:0.5;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.band2 }}" style="fill:url(#v2fan);opacity:0.85;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l0 }}" style="fill:none;stroke:rgba(255,255,255,0.28);stroke-width:1;stroke-dasharray:2 5;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l6 }}" style="fill:none;stroke:rgba(255,255,255,0.28);stroke-width:1;stroke-dasharray:2 5;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l1 }}" style="fill:none;stroke:#7fa8ff;stroke-opacity:0.55;stroke-width:1;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l5 }}" style="fill:none;stroke:#7fa8ff;stroke-opacity:0.55;stroke-width:1;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l3 }}" style="fill:none;stroke:#2a55ff;stroke-width:18;stroke-linecap:round;opacity:0.22;filter:blur(12px);transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l3 }}" style="fill:none;stroke:url(#v2spot);stroke-width:7;stroke-linecap:round;opacity:0.45;filter:blur(3px);transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l3 }}" style="fill:none;stroke:url(#v2spot);stroke-width:2.6;stroke-linecap:round;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l3 }}" pathLength="1" style="fill:none;stroke:#1f5bff;stroke-width:24;stroke-linecap:round;stroke-dasharray:0.16 0.84;opacity:0.95;filter:blur(14px);animation:flow 5s linear 0.000s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l3 }}" pathLength="1" style="fill:none;stroke:#7fa6ff;stroke-width:9;stroke-linecap:round;stroke-dasharray:0.1 0.9;opacity:0.95;filter:blur(5px);animation:flow 5s linear -0.150s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l3 }}" pathLength="1" style="fill:none;stroke:#f2f6ff;stroke-width:2.6;stroke-linecap:round;stroke-dasharray:0.05 0.95;opacity:1;filter:blur(1.2px);animation:flow 5s linear -0.275s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l5 }}" pathLength="1" style="fill:none;stroke:#1f5bff;stroke-width:12;stroke-linecap:round;stroke-dasharray:0.11 0.89;opacity:0.8;filter:blur(9px);animation:flow 7s linear -1.200s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l5 }}" pathLength="1" style="fill:none;stroke:#7fa6ff;stroke-width:5;stroke-linecap:round;stroke-dasharray:0.07 0.9299999999999999;opacity:0.85;filter:blur(3.5px);animation:flow 7s linear -1.340s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l5 }}" pathLength="1" style="fill:none;stroke:#f2f6ff;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:0.035 0.965;opacity:0.9;filter:blur(0.8px);animation:flow 7s linear -1.462s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l1 }}" pathLength="1" style="fill:none;stroke:#1f5bff;stroke-width:12;stroke-linecap:round;stroke-dasharray:0.11 0.89;opacity:0.8;filter:blur(9px);animation:flow 7s linear -4.600s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l1 }}" pathLength="1" style="fill:none;stroke:#7fa6ff;stroke-width:5;stroke-linecap:round;stroke-dasharray:0.07 0.9299999999999999;opacity:0.85;filter:blur(3.5px);animation:flow 7s linear -4.740s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <path d="{{ fan.l1 }}" pathLength="1" style="fill:none;stroke:#f2f6ff;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:0.035 0.965;opacity:0.9;filter:blur(0.8px);animation:flow 7s linear -4.862s infinite;mix-blend-mode:screen;transition:d .8s cubic-bezier(.2,.8,.2,1)"></path>
+                <g style="transform:translate({{ scrubX }}px,0px);transition:transform .18s ease-out">
+                  <line x1="0" x2="0" y1="20" y2="320" style="stroke:rgba(255,255,255,0.22);stroke-width:1;stroke-dasharray:2 4"></line>
+                </g>
+                <g style="transform:translate({{ orbLo.x }}px,{{ orbLo.y }}px);transition:transform .18s ease-out">
+                  <circle r="3.5" style="fill:#030409;stroke:#9db9ff;stroke-width:1.5"></circle>
+                </g>
+                <g style="transform:translate({{ orbHi.x }}px,{{ orbHi.y }}px);transition:transform .18s ease-out">
+                  <circle r="3.5" style="fill:#030409;stroke:#9db9ff;stroke-width:1.5"></circle>
+                </g>
+                <g style="transform:translate({{ orbMed.x }}px,{{ orbMed.y }}px);transition:transform .18s ease-out">
+                  <circle r="34" style="fill:url(#v2bloom)"></circle>
+                  <circle r="11" style="fill:none;stroke:#9db9ff;stroke-width:1;transform-box:fill-box;transform-origin:center;animation:ring 2.6s ease-out infinite"></circle>
+                  <circle r="11" style="fill:rgba(3,4,9,0.35);stroke:rgba(225,233,255,0.55);stroke-width:1"></circle>
+                  <circle r="4" style="fill:#ffffff"></circle>
+                </g>
+              </svg>
+              <sc-for list="{{ yTicks }}" as="yt" hint-placeholder-count="5">
+                <span style="position:absolute;left:8.1%;top:{{ yt.top }};transform:translate(-100%,-50%);font-family:'Geist Mono',monospace;font-size:10.5px;color:rgba(220,228,245,0.55);white-space:nowrap;pointer-events:none">{{ yt.label }}</span>
+              </sc-for>
+              <sc-for list="{{ xTicks }}" as="xt" hint-placeholder-count="5">
+                <span style="position:absolute;left:{{ xt.left }};top:95.5%;transform:{{ xt.tf }};font-family:'Geist Mono',monospace;font-size:11px;color:rgba(220,228,245,0.55);white-space:nowrap;pointer-events:none">{{ xt.label }}</span>
+              </sc-for>
+              <div style="position:absolute;left:{{ tip.left }};top:3%;transform:{{ tip.tf }};transition:left .18s ease-out;pointer-events:none;padding:12px 14px;min-width:190px;border-radius:18px;background:{{ g.bgTip }};backdrop-filter:{{ g.bf }};-webkit-backdrop-filter:{{ g.wbf }};border:1px solid {{ g.border }};box-shadow:{{ g.sh }};display:flex;flex-direction:column;gap:6px">
+                <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.65)">Za {{ tLabel }} · {{ calYear }}</span>
+                <sc-for list="{{ readout }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;justify-content:space-between;gap:16px;font-size:13px;white-space:nowrap"><span style="color:rgba(230,236,248,0.7)">{{ r.pre }}</span><span style="font-variant-numeric:tabular-nums;color:{{ r.color }}">{{ r.valR }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;margin-top:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(220,228,245,0.62)">
+              <div style="display:flex;flex-wrap:wrap;gap:8px 20px">
+                <span style="display:flex;align-items:center;gap:8px"><span style="width:18px;height:2px;border-radius:2px;background:#fff;box-shadow:0 0 8px #4d7dff"></span>Mediana</span>
+                <span style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:10px;border-radius:3px;background:rgba(127,168,255,0.55)"></span>25–75%</span>
+                <span style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:10px;border-radius:3px;background:rgba(127,168,255,0.3)"></span>10–90%</span>
+                <span style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:10px;border-radius:3px;background:rgba(127,168,255,0.14)"></span>5–95%</span>
+              </div>
+              <span>Lata od dziś — przesuń po wykresie</span>
+            </div>
+          </div>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:18px">
+          <span style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.6)">Wskaźniki · za {{ tLabel }}</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px">
+            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+              <div style="padding:22px 22px 24px;background:{{ g.bg }};backdrop-filter:{{ g.bf }};-webkit-backdrop-filter:{{ g.wbf }};border:1px solid {{ g.border }};box-shadow:{{ g.sh }};border-radius:26px;display:flex;flex-direction:column;gap:16px;min-height:200px">
+                <div style="display:flex;justify-content:space-between;gap:12px;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(220,228,245,0.62)">
+                  <span style="text-wrap:pretty;max-width:80%">{{ k.title }}</span>
+                </div>
+                <div style="margin-top:auto;max-width:100%;overflow:hidden;font-size:{{ k.size }};font-weight:300;letter-spacing:-0.045em;line-height:1;font-variant-numeric:tabular-nums">{{ k.bigR }}</div>
+                <sc-if value="{{ k.isDots }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:6px">
+                    <sc-for list="{{ k.dots }}" as="d" hint-placeholder-count="10">
+                      <span style="flex:1;height:6px;border-radius:999px;background:{{ d.bg }};box-shadow:0 0 10px {{ d.glow }};transition:background .4s"></span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ k.isRange }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;height:6px;border-radius:999px;background:rgba(255,255,255,0.08)">
+                    <span style="position:absolute;top:0;bottom:0;left:{{ k.rl }};width:{{ k.rw }};border-radius:999px;background:linear-gradient(90deg,#2a55ff,#9db9ff);box-shadow:0 0 14px #2a55ff;transition:left .3s,width .3s"></span>
+                    <span style="position:absolute;top:-4px;width:2px;height:14px;border-radius:2px;background:#fff;left:{{ k.rm }};transition:left .3s"></span>
+                  </div>
+                </sc-if>
+                <p style="margin:0;font-size:13.5px;font-weight:300;line-height:1.45;color:rgba(230,236,248,0.7);text-wrap:pretty">{{ k.note }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:18px;align-items:stretch">
+          <div style="padding:26px;background:{{ g.bg }};backdrop-filter:{{ g.bf }};-webkit-backdrop-filter:{{ g.wbf }};border:1px solid {{ g.border }};box-shadow:{{ g.sh }};border-radius:32px;display:flex;flex-direction:column;gap:14px">
+            
+            <h3 style="margin:0;font-size:26px;font-weight:300;letter-spacing:-0.03em">Wartość za {{ tLabel }} <span style="font-weight:300;letter-spacing:-0.02em;color:#9db9ff">{{ basis }}</span></h3>
+            <div style="display:flex;align-items:baseline;gap:10px;min-height:22px;font-size:14px;color:rgba(230,236,248,0.78)">
+              <span style="font-variant-numeric:tabular-nums;color:#fff">{{ histInfo.aR }}</span><span>{{ histInfo.b }}</span>
+            </div>
+            <div style="position:relative;margin-top:auto">
+              <svg viewBox="0 0 640 240" onPointerLeave="{{ onHistLeave }}" role="img" aria-label="Rozkład wartości portfela" style="width:100%;height:auto;display:block;overflow:visible">
+                <defs>
+                  <linearGradient id="v2hist" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" style="stop-color:#a9c3ff;stop-opacity:1"></stop>
+                    <stop offset="1" style="stop-color:#1d3fff;stop-opacity:0.1"></stop>
+                  </linearGradient>
+                </defs>
+                <sc-for list="{{ hist.bars }}" as="b" hint-placeholder-count="30">
+                  <rect x="{{ b.x }}" width="{{ b.w }}" rx="{{ b.rx }}" style="y:{{ b.y }}px;height:{{ b.h }}px;fill:url(#v2hist);opacity:{{ b.op }};animation:shimmer 3.6s ease-in-out {{ b.dl }} infinite;transition:y .6s cubic-bezier(.2,.8,.2,1),height .6s cubic-bezier(.2,.8,.2,1),opacity .25s"></rect>
+                  <rect x="{{ b.hx }}" y="0" width="{{ b.hw }}" height="208" onPointerEnter="{{ b.onEnter }}" style="fill:transparent;cursor:pointer"></rect>
+                </sc-for>
+                <line x1="12" x2="628" y1="208" y2="208" style="stroke:rgba(255,255,255,0.18)"></line>
+                <g style="transform:translate({{ hist.medX }}px,0px);transition:transform .6s cubic-bezier(.2,.8,.2,1)">
+                  <line x1="0" x2="0" y1="0" y2="208" style="stroke:#fff;stroke-width:1;stroke-dasharray:2 4;opacity:0.6"></line>
+                </g>
+              </svg>
+              <sc-for list="{{ hist.ticks }}" as="ht" hint-placeholder-count="5">
+                <span style="position:absolute;left:{{ ht.left }};top:95%;transform:{{ ht.tf }};font-family:'Geist Mono',monospace;font-size:11px;color:rgba(220,228,245,0.55);white-space:nowrap;pointer-events:none">{{ ht.label }}</span>
+              </sc-for>
+            </div>
+            <p style="margin:0;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(220,228,245,0.5)">Najwyższe 1% przyszłości połączono w ostatnim słupku</p>
+          </div>
+
+          <sc-if value="{{ hasBtc }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:26px;background:{{ g.bg }};backdrop-filter:{{ g.bf }};-webkit-backdrop-filter:{{ g.wbf }};border:1px solid {{ g.border }};box-shadow:{{ g.sh }};border-radius:32px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                <span style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.6)">Bitcoin · cena w roku {{ calYear }}</span>
+                <label style="display:flex;align-items:center;gap:8px;padding:0 14px;min-height:36px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12)">
+                  <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.62)">1 BTC dziś</span>
+                  <input value="{{ btcPriceStr }}" onChange="{{ onBtcPrice }}" inputmode="numeric" aria-label="Dzisiejsza cena 1 BTC (USD)" style="width:72px;background:none;border:0;outline:none;color:#fff;font-size:14px;font-variant-numeric:tabular-nums;text-align:right">
+                  <span style="font-size:12px;color:rgba(220,228,245,0.62)">USD</span>
+                </label>
+              </div>
+              <div style="position:relative">
+                <svg viewBox="0 0 520 230" onPointerMove="{{ onBtcPointer }}" onPointerLeave="{{ onBtcLeave }}" style="width:100%;height:auto;display:block;overflow:visible;cursor:crosshair;touch-action:pan-y">
+                  <defs>
+                    <linearGradient id="v2grid" x1="0" y1="100" x2="0" y2="230" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" style="stop-color:#7fa8ff;stop-opacity:0"></stop>
+                      <stop offset="1" style="stop-color:#7fa8ff;stop-opacity:0.32"></stop>
+                    </linearGradient>
+                    <linearGradient id="v2curve" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0" style="stop-color:#7fa8ff;stop-opacity:0.1"></stop>
+                      <stop offset="0.5" style="stop-color:#b9cdff;stop-opacity:1"></stop>
+                      <stop offset="1" style="stop-color:#7fa8ff;stop-opacity:0.1"></stop>
+                    </linearGradient>
+                    <linearGradient id="v2streak" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" style="stop-color:#dbe5ff;stop-opacity:0.95"></stop>
+                      <stop offset="0.35" style="stop-color:#4d7dff;stop-opacity:0.55"></stop>
+                      <stop offset="1" style="stop-color:#2a55ff;stop-opacity:0.02"></stop>
+                    </linearGradient>
+                    <linearGradient id="v2under" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" style="stop-color:#4d7dff;stop-opacity:0.3"></stop>
+                      <stop offset="1" style="stop-color:#4d7dff;stop-opacity:0"></stop>
+                    </linearGradient>
+                  </defs>
+                  <sc-for list="{{ btcBars }}" as="bb" hint-placeholder-count="64">
+                    <rect x="{{ bb.x }}" y="{{ bb.y }}" width="2" height="{{ bb.h }}" rx="1" style="fill:url(#v2streak);opacity:{{ bb.op }};transition:opacity .3s;animation:shimmer 3.6s ease-in-out {{ bb.dl }} infinite"></rect>
+                  </sc-for>
+                  <line x1="0" x2="520" y1="200" y2="200" style="stroke:rgba(255,255,255,0.14)"></line>
+                  <path d="{{ btcCurve.line }}" style="fill:none;stroke:#2a55ff;stroke-width:18;opacity:0.25;filter:blur(12px)"></path>
+                  <path d="{{ btcCurve.line }}" style="fill:none;stroke:url(#v2bspot);stroke-width:7;opacity:0.45;filter:blur(3px)"></path>
+                  <path d="{{ btcCurve.line }}" style="fill:none;stroke:url(#v2bspot);stroke-width:2.6;stroke-linecap:round"></path>
+                  <path d="{{ btcCurve.line }}" pathLength="1" style="fill:none;stroke:#1f5bff;stroke-width:24;stroke-linecap:round;stroke-dasharray:0.16 0.84;opacity:0.95;filter:blur(14px);animation:flow 4.5s linear 0.000s infinite;mix-blend-mode:screen"></path>
+                <path d="{{ btcCurve.line }}" pathLength="1" style="fill:none;stroke:#7fa6ff;stroke-width:9;stroke-linecap:round;stroke-dasharray:0.1 0.9;opacity:0.95;filter:blur(5px);animation:flow 4.5s linear -0.135s infinite;mix-blend-mode:screen"></path>
+                <path d="{{ btcCurve.line }}" pathLength="1" style="fill:none;stroke:#f2f6ff;stroke-width:2.6;stroke-linecap:round;stroke-dasharray:0.05 0.95;opacity:1;filter:blur(1.2px);animation:flow 4.5s linear -0.247s infinite;mix-blend-mode:screen"></path>
+                  <g style="transform:translate({{ btcMark.x }}px,{{ btcMark.y }}px)">
+                    <line x1="0" x2="0" y1="12" y2="{{ btcMark.drop }}" style="stroke:rgba(255,255,255,0.3);stroke-dasharray:2 4"></line>
+                    <circle r="34" style="fill:url(#v2bloom)"></circle>
+                  <circle r="11" style="fill:none;stroke:#9db9ff;stroke-width:1;transform-box:fill-box;transform-origin:center;animation:ring 2.6s ease-out infinite"></circle>
+                  <circle r="11" style="fill:rgba(3,4,9,0.35);stroke:rgba(225,233,255,0.55);stroke-width:1"></circle>
+                  <circle r="4" style="fill:#ffffff"></circle>
+                  </g>
+                </svg>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center">
+                <span style="font-size:16px;font-weight:300;color:rgba(230,236,248,0.8)">{{ btcView.title }}</span>
+                <span style="font-size:clamp(56px,6.8vw,88px);font-weight:300;letter-spacing:-0.05em;line-height:1;font-variant-numeric:tabular-nums">{{ btcView.bigR }}</span>
+                <span style="font-size:13px;font-weight:300;color:rgba(230,236,248,0.68)">{{ btcView.sub }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(230,236,248,0.85)">
+                <span>9 na 10 › {{ btc.p10 }}</span><span>1 na 10 › {{ btc.p90 }}</span><span style="color:#9db9ff">{{ btc.collapse }}</span>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+      </main>
+    </sc-if>
+
+    <sc-if value="{{ isPortfel }}" hint-placeholder-val="{{ false }}">
+      <main style="display:flex;flex-direction:column;gap:clamp(32px,5vw,56px);padding:clamp(28px,5vw,64px) 0 56px">
+        <section style="display:flex;flex-direction:column;gap:24px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px 24px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.09);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase">
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="color:rgba(220,228,245,0.6)">Pozycje:</span><span>{{ posCount }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="color:rgba(220,228,245,0.6)">Waluta:</span><span>PLN</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="color:rgba(220,228,245,0.6)">Udział BTC:</span><span>{{ btcShareLabel }}</span></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <span style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.6)">Portfel · razem</span>
+              <div style="display:flex;align-items:flex-end;gap:clamp(12px,1.6vw,22px);flex-wrap:wrap">
+                <span style="display:flex;font-size:clamp(68px,10.5vw,156px);font-weight:300;line-height:1;letter-spacing:0">{{ totalFlap }}</span>
+                <span style="font-weight:300;letter-spacing:-0.02em;font-size:clamp(34px,4.4vw,64px);line-height:1;color:#9db9ff">{{ totalUnit }}</span>
+              </div>
+            </div>
+            <button onClick="{{ goWynik }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 22px;border-radius:999px;cursor:pointer;color:#fff;font-size:15px;background:rgba(42,85,255,0.22);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(157,185,255,0.5);box-shadow:inset 0 1px 0 rgba(255,255,255,0.2),0 0 40px -10px #2a55ff">Zobacz wynik <span>→</span></button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;height:6px;gap:4px">
+              <sc-for list="{{ alloc }}" as="a" hint-placeholder-count="3">
+                <span style="flex:{{ a.flex }};border-radius:999px;background:{{ a.color }};box-shadow:0 0 14px {{ a.glow }};transition:flex .6s cubic-bezier(.2,.8,.2,1)"></span>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px 24px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.05em;text-transform:uppercase">
+              <sc-for list="{{ alloc }}" as="a" hint-placeholder-count="3">
+                <span style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.color }}"></span>{{ a.name }} <span style="color:rgba(220,228,245,0.55)">{{ a.pct }}</span></span>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px">
+          <sc-for list="{{ tiles }}" as="p" hint-placeholder-count="3">
+            <div role="group" aria-label="{{ p.name }}" style="padding:22px;background:{{ g.bg }};backdrop-filter:{{ g.bf }};-webkit-backdrop-filter:{{ g.wbf }};border:1px solid {{ g.border }};box-shadow:{{ g.sh }};border-radius:26px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                <h3 style="margin:0;font-size:22px;font-weight:300;letter-spacing:-0.02em">{{ p.name }}</h3>
+                
+              </div>
+              <label style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(220,228,245,0.6)">Wartość</span>
+                <span style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.16)">
+                  <input value="{{ p.valueStr }}" onChange="{{ p.onChange }}" inputmode="numeric" style="flex:1;min-width:0;background:none;border:0;outline:none;color:#fff;font-size:40px;font-weight:300;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;padding:0">
+                  <span style="font-weight:300;letter-spacing:-0.02em;font-size:22px;color:#9db9ff">zł</span>
+                </span>
+              </label>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(220,228,245,0.6)">Konto</span>
+                <div style="display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08)">
+                  <sc-for list="{{ p.wrappers }}" as="w" hint-placeholder-count="3">
+                    <button onClick="{{ w.onClick }}" style="flex:1;min-height:34px;border-radius:999px;border:0;cursor:pointer;font-size:13px;background:{{ w.bg }};color:{{ w.color }};transition:background .3s">{{ w.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <sc-if value="{{ p.note }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:12.5px;font-weight:300;line-height:1.5;color:rgba(230,236,248,0.65);text-wrap:pretty">{{ p.note }}</p>
+              </sc-if>
+              <button onClick="{{ p.onRemove }}" aria-label="Usuń {{ p.name }}" style="align-self:flex-start;min-height:34px;padding:0 14px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.14);color:rgba(230,236,248,0.78);cursor:pointer;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.05em;text-transform:uppercase">Usuń</button>
+            </div>
+          </sc-for>
+        </section>
+
+        <section style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.09)">
+          <span style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.6);margin-right:10px">Dodaj aktywo</span>
+          <sc-for list="{{ picker }}" as="pk" hint-placeholder-count="4">
+            <button onClick="{{ pk.onClick }}" style="min-height:38px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#eef1f8;cursor:pointer;font-size:14px">+ {{ pk.label }}</button>
+          </sc-for>
+        </section>
+      </main>
+    </sc-if>
+
+    <footer style="margin-top:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 24px;align-items:end;padding:22px 0 26px;border-top:1px solid rgba(255,255,255,0.09);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(220,228,245,0.6)">
+      <span>Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej</span>
+      <a href="#" style="justify-self:center;color:#eef1f8">Metodologia ↗</a>
+      <span style="justify-self:end">© 2026</span>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;font&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Sora&quot;,&quot;Geist&quot;,&quot;Inter Tight&quot;,&quot;Space Grotesk&quot;,&quot;Helvetica Neue&quot;],&quot;default&quot;:&quot;Sora&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Typografia&quot;},&quot;glassBlur&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:70,&quot;step&quot;:1,&quot;default&quot;:30,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Szkło&quot;},&quot;glassFrost&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:20,&quot;step&quot;:0.5,&quot;default&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Szkło&quot;},&quot;glassRefraction&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:120,&quot;step&quot;:1,&quot;default&quot;:28,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Szkło&quot;},&quot;glassSaturation&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:100,&quot;max&quot;:260,&quot;step&quot;:5,&quot;default&quot;:180,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Szkło&quot;},&quot;glassTint&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:0.2,&quot;step&quot;:0.005,&quot;default&quot;:0.06,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Szkło&quot;},&quot;glassDarken&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:0.6,&quot;step&quot;:0.01,&quot;default&quot;:0.2,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Szkło&quot;},&quot;glassEdge&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:1.6,&quot;step&quot;:0.05,&quot;default&quot;:0.8,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Szkło&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:3,&quot;step&quot;:0.1,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Tło&quot;},&quot;glow&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.4,&quot;max&quot;:1.6,&quot;step&quot;:0.05,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Tło&quot;},&quot;noise&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:0.5,&quot;step&quot;:0.01,&quot;default&quot;:0.28,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Tło&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: 'wynik', mo: 240, H: 20, real: true, afterTax: true, expert: false, btcPrice: 96000, hb: -1, bz: null,
+    positions: [
+      { id: 'btc', name: 'Bitcoin', value: 80000, wrapper: 'taxable' },
+      { id: 'eq', name: 'Akcje globalne', value: 120000, wrapper: 'IKE' },
+      { id: 'bond', name: 'Obligacje skarbowe', value: 50000, wrapper: 'taxable' },
+    ],
+  };
+  bgRef = React.createRef();
+  m = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
+  tm = 0;
+
+  componentDidMount() {
+    this.lastMove = -1e9;
+    this.onMove = (e) => { this.m.tx = e.clientX / innerWidth; this.m.ty = 1 - e.clientY / innerHeight; this.lastMove = performance.now(); };
+    addEventListener('pointermove', this.onMove);
+    this.clockT = setInterval(() => this.forceUpdate(), 20000);
+    this.initGL();
+  }
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf); clearInterval(this.clockT);
+    removeEventListener('pointermove', this.onMove); removeEventListener('resize', this.onResize);
+  }
+
+  initGL() {
+    const c = this.bgRef.current; if (!c) return;
+    const gl = c.getContext('webgl', { antialias: false, alpha: false });
+    if (!gl) { c.style.background = 'radial-gradient(120% 70% at 50% 110%,#1d3fff 0%,#08114a 40%,#030409 75%)'; return; }
+    const vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+    const fs = `precision highp float;uniform vec2 r;uniform float t;uniform vec2 m;uniform float k;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*n(p);p*=2.03;a*=.5;}return s;}
+void main(){vec2 uv=gl_FragCoord.xy/r;float asp=r.x/r.y;vec2 p=vec2(uv.x*asp,uv.y);
+float w=fbm(vec2(p.x*.6+t*.02,t*.05))*.8;
+float c1=fbm(vec2((p.x+w)*1.8,t*.06));
+float c2=n(vec2((p.x+w)*8.,t*.1));
+float col=smoothstep(.38,.85,c1)*.8+c2*c2*.25;
+vec2 mp=vec2(m.x*asp,m.y);vec2 d=(p-mp)*vec2(1.,1.5);
+float glow=exp(-dot(d,d)*2.4);
+float reach=.12+col*.6;
+float v=1.-smoothstep(0.,reach,uv.y);v=pow(v,1.5);
+float I=(v*(.16+col)*.8+glow*.6*(.55+.45*c1))*k;
+I*=.9+.1*n(vec2((p.x+w)*40.,uv.y*1.4+t*.08));
+vec3 c0=vec3(.014,.014,.04),cA=vec3(.016,.03,.19),cB=vec3(.05,.16,.82),cC=vec3(.35,.52,1.);
+vec3 o=mix(c0,cA,smoothstep(0.,.4,I));o=mix(o,cB,smoothstep(.36,1.,I));o=mix(o,cC,smoothstep(1.05,1.7,I)*.4);
+o*=1.-.38*length((uv-vec2(.5,.45))*vec2(1.,1.15));
+o+=(h(gl_FragCoord.xy)-.5)/255.;
+gl_FragColor=vec4(o,1.);}`;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { c.style.background = '#030409'; return; }
+    gl.useProgram(pr);
+    const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = { r: gl.getUniformLocation(pr, 'r'), t: gl.getUniformLocation(pr, 't'), m: gl.getUniformLocation(pr, 'm'), k: gl.getUniformLocation(pr, 'k') };
+    this.onResize = () => { const s = Math.min(1, devicePixelRatio) * 0.6; c.width = Math.max(2, innerWidth * s | 0); c.height = Math.max(2, innerHeight * s | 0); gl.viewport(0, 0, c.width, c.height); };
+    this.onResize(); addEventListener('resize', this.onResize);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let last = performance.now();
+    const loop = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      this.tm += dt * (this.props.motion ?? 1) * (reduce ? 0.1 : 1);
+      const m = this.m;
+      if (now - this.lastMove > 2500) { m.tx = 0.5 + 0.34 * Math.sin(this.tm * 0.19); m.ty = 0.32 + 0.2 * Math.sin(this.tm * 0.27 + 1.3); }
+      m.x += (m.tx - m.x) * 0.018; m.y += (m.ty - m.y) * 0.018;
+      gl.uniform2f(U.r, c.width, c.height); gl.uniform1f(U.t, this.tm + 40); gl.uniform2f(U.m, m.x, m.y); gl.uniform1f(U.k, this.props.glow ?? 1);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+
+  erf(v) { const s = Math.sign(v); v = Math.abs(v); const k = 1 / (1 + 0.3275911 * v); return s * (1 - ((((1.061405429 * k - 1.453152027) * k + 1.421413741) * k - 0.284496736) * k + 0.254829592) * k * Math.exp(-v * v)); }
+  Phi(v) { return 0.5 * (1 + this.erf(v / Math.SQRT2)); }
+  pln(v) { return new Intl.NumberFormat('pl-PL', { notation: 'compact', maximumSignificantDigits: 2 }).format(v) + ' zł'; }
+  usd(v) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumSignificantDigits: 2 }).format(v); }
+  freq(p) { if (p >= 0.095) return `${Math.round(p * 10)} na 10`; if (p >= 0.005) return `${Math.max(1, Math.round(p * 100))} na 100`; return '< 1 na 100'; }
+  yrs(n) { const w = n === 1 ? 'rok' : (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14)) ? 'lata' : 'lat'; return `${n} ${w}`; }
+  moLabel(mo) { const y = Math.floor(mo / 12), m = mo % 12; if (!y) return `${m} mies.`; return m ? `${this.yrs(y)} ${m} mies.` : this.yrs(y); }
+  niceStep(v) { const e = Math.pow(10, Math.floor(Math.log10(v))), f = v / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e; }
+  smooth(pts, cont) {
+    let d = (cont ? 'L' : 'M') + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+    }
+    return d;
+  }
+  flap(str, id) {
+    const h = React.createElement;
+    const S = ((this.fl = this.fl || {})[id] = this.fl[id] || {});
+    const now = performance.now(), GAP = 560;
+    if (!S.cur) { S.cur = [...str]; S.prev = S.cur.slice(); S.gen = S.cur.map(() => 0); S.delay = []; S.at = 0; }
+    else if (str !== S.cur.join('')) {
+      if (now - S.at < GAP) {
+        if (!S.timer) S.timer = setTimeout(() => { S.timer = null; this.forceUpdate(); }, GAP - (now - S.at) + 16);
+      } else {
+        const ch = [...str], prev = S.cur; let k = 0;
+        S.prev = ch.map((c, i) => prev[i] ?? ' ');
+        S.gen = ch.map((c, i) => { const g = S.gen[i] || 0; if (c !== prev[i]) { S.delay[i] = (k++) * 60; return g + 1; } return g; });
+        S.cur = ch; S.at = now;
+      }
+    }
+    const half = (char, top, extra) => h('span', { style: Object.assign({
+      position: 'absolute', left: 0, right: 0, height: '50%', top: top ? 0 : '50%', overflow: 'hidden',
+      background: top ? 'linear-gradient(180deg,rgba(30,35,56,0.94) 0%,rgba(19,23,39,0.96) 100%)' : 'linear-gradient(180deg,rgba(14,17,30,0.97) 0%,rgba(22,27,45,0.95) 100%)',
+      borderRadius: top ? '0.075em 0.075em 0 0' : '0 0 0.075em 0.075em', transformOrigin: top ? '50% 100%' : '50% 0%', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
+    }, extra || {}) }, h('span', { style: { position: 'absolute', left: 0, right: 0, top: top ? 0 : '-100%', height: '200%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.84em', fontWeight: 300, color: '#f3f5fb', letterSpacing: 0 } }, char));
+    const cells = S.cur.map((c, i) => {
+      if (!/\d/.test(c)) return h('span', { key: 's' + i + c, style: { display: 'inline-flex', alignItems: 'flex-end', justifyContent: 'center', width: c === ' ' ? '0.18em' : '0.26em', height: '1.16em', paddingBottom: '0.08em', fontSize: '0.84em', color: '#eef1f8' } }, c);
+      const old = S.prev[i] ?? c, anim = old !== c, d = (S.delay[i] || 0) / 1000;
+      const layers = [half(c, true), half(anim ? old : c, false)];
+      if (anim) layers.push(
+        half(old, true, { animation: `flapTop .26s cubic-bezier(.55,.05,.85,.4) ${d}s both`, zIndex: 2 }),
+        half(c, false, { animation: `flapBot .34s cubic-bezier(.2,.9,.35,1.15) ${d + 0.26}s both`, zIndex: 2 }));
+      layers.push(
+        h('span', { key: 'ln', style: { position: 'absolute', left: 0, right: 0, top: 'calc(50% - 1px)', height: '2px', background: 'rgba(2,3,8,0.9)', boxShadow: '0 1px 0 rgba(255,255,255,0.05)', zIndex: 3 } }),
+        h('span', { key: 'hl', style: { position: 'absolute', left: '-0.02em', top: 'calc(50% - 0.07em)', width: '0.05em', height: '0.14em', borderRadius: '0.02em', background: '#05060c', zIndex: 3 } }),
+        h('span', { key: 'hr', style: { position: 'absolute', right: '-0.02em', top: 'calc(50% - 0.07em)', width: '0.05em', height: '0.14em', borderRadius: '0.02em', background: '#05060c', zIndex: 3 } }),
+        h('span', { key: 'ol', style: { position: 'absolute', inset: 0, borderRadius: '0.075em', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.07), inset 0 1px 0 rgba(255,255,255,0.12)', pointerEvents: 'none', zIndex: 4 } }));
+      return h('span', { key: i + '-' + (S.gen[i] || 0), style: { position: 'relative', display: 'inline-block', width: '0.7em', height: '1.16em', margin: '0 0.03em', perspective: '2.4em', borderRadius: '0.075em', boxShadow: '0 0.12em 0.3em rgba(0,0,0,0.55), 0 0.02em 0 rgba(0,0,0,0.6)' } }, ...layers);
+    });
+    return h('span', { style: { display: 'inline-flex', alignItems: 'stretch' }, 'aria-label': str }, ...cells);
+  }
+  roll(str) {
+    const h = React.createElement, ch = [...String(str)], n = ch.length;
+    const box = { display: 'inline-block', height: '1.1em', lineHeight: '1.1em' };
+    return h('span', { style: { display: 'inline-flex', alignItems: 'flex-end', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }, 'aria-label': str }, ...ch.map((c, i) => {
+      const key = 'p' + (n - i);
+      if (!/\d/.test(c)) return h('span', { key: key + 's' + c, style: Object.assign({ whiteSpace: 'pre' }, box) }, c);
+      return h('span', { key, style: Object.assign({ overflow: 'hidden', WebkitMaskImage: 'linear-gradient(180deg,transparent 0,#000 10%,#000 90%,transparent 100%)', maskImage: 'linear-gradient(180deg,transparent 0,#000 10%,#000 90%,transparent 100%)' }, box) },
+        h('span', { style: { display: 'flex', flexDirection: 'column', transform: `translateY(${-Number(c) * 1.1}em)`, transition: 'transform .85s cubic-bezier(.22,1,.36,1)', willChange: 'transform' } },
+          ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((k) => h('span', { key: k, style: box }, String(k)))));
+    }));
+  }
+  parse(s) { const n = Number(String(s).replace(/[^\d]/g, '')); return Number.isFinite(n) ? n : 0; }
+
+  renderVals() {
+    const { view, mo, H, real, afterTax, expert, positions, btcPrice, hb, bz } = this.state;
+    const t = mo / 12;
+    const total = positions.reduce((a, p) => a + p.value, 0);
+    const btcVal = positions.filter((p) => p.id.startsWith('btc')).reduce((a, p) => a + p.value, 0);
+    const s = total ? btcVal / total : 0;
+    const mu = 0.035 + 0.11 * s, sig = 0.11 + 0.5 * s, INF = 0.03, V0 = total || 1;
+    const tr = (vn, tt, r = real) => { let v = vn; if (afterTax) v -= 0.19 * Math.max(0, v - V0); if (r) v *= Math.exp(-INF * tt); return v; };
+    const qv = (z, tt, r) => tr(V0 * Math.exp(mu * tt + z * sig * Math.sqrt(tt)), tt, r);
+    const solveZ = (target, tt, r) => { let lo = -8, hi = 8; for (let i = 0; i < 50; i++) { const md = (lo + hi) / 2; if (qv(md, tt, r) < target) lo = md; else hi = md; } return (lo + hi) / 2; };
+    const Z = [-1.6449, -1.2816, -0.6745, 0, 0.6745, 1.2816, 1.6449];
+
+    const N = 48, ts = Array.from({ length: N + 1 }, (_, k) => (H * k) / N);
+    let vmax = 0, vmin = Infinity; for (const tt of ts) { vmax = Math.max(vmax, qv(Z[6], tt)); vmin = Math.min(vmin, qv(Z[0], tt)); }
+    const lmin = Math.log(vmin * 0.82), lmax = Math.log(vmax * 1.15);
+    const X = (tt) => 92 + (tt / H) * 893, Y = (v) => 320 - ((Math.log(Math.max(v, 1)) - lmin) / (lmax - lmin)) * 300;
+    const line = (l) => ts.map((tt) => [X(tt), Y(qv(Z[l], tt))]);
+    const area = (lo, hi) => this.smooth(line(hi)) + ' ' + this.smooth(line(lo).reverse(), true) + ' Z';
+    const fan = { band0: area(0, 6), band1: area(1, 5), band2: area(2, 4), l0: this.smooth(line(0)), l1: this.smooth(line(1)), l3: this.smooth(line(3)), l5: this.smooth(line(5)), l6: this.smooth(line(6)) };
+    let yTicks = []; for (let e = 3; e <= 9; e++) for (const mlt of [1, 2, 5]) { const v = mlt * 10 ** e, lv = Math.log(v); if (lv > lmin + 0.04 && lv < lmax - 0.02) yTicks.push({ y: Y(v).toFixed(1), top: (Y(v) / 3.6).toFixed(2) + '%', label: this.pln(v) }); }
+    if (yTicks.length > 6) yTicks = yTicks.filter((_, i) => i % 2 === 0);
+    const xs = H === 5 ? 1 : H === 10 ? 2 : 5;
+    const xTicks = []; for (let v = 0; v <= H; v += xs) xTicks.push({ left: (X(v) / 10).toFixed(2) + '%', tf: v === 0 ? 'translate(-20%,-50%)' : v === H ? 'translate(-100%,-50%)' : 'translate(-50%,-50%)', label: v === 0 ? 'Dziś' : String(2026 + v) });
+
+    const med = qv(0, t), p10 = qv(Z[1], t), p90 = qv(Z[5], t), p95 = qv(Z[6], t);
+    const pGoal = 1 - this.Phi(solveZ(1000000, 20, true));
+    const pDeep = 1 - Math.exp(-sig * 2.4);
+    const cvar = tr(V0 * Math.exp(mu * t + (sig * sig * t) / 2) * this.Phi(-1.6449 - sig * Math.sqrt(t)) / 0.05, t);
+    const pLoss = this.Phi(solveZ(V0, t, true));
+    const meanV = tr(V0 * Math.exp(mu * t + (sig * sig * t) / 2), t);
+    const basis = `${real ? 'realnie' : 'nominalnie'}, ${afterTax ? 'po podatku' : 'przed podatkiem'}`;
+    const tLabel = this.moLabel(mo);
+    const dots = (p) => Array.from({ length: 10 }, (_, i) => { const on = i < Math.round(p * 10); return { bg: on ? '#9db9ff' : 'rgba(255,255,255,0.09)', glow: on ? 'rgba(61,107,255,0.8)' : 'transparent' }; });
+    const pct = (v) => (Math.max(0, Math.min(1, v / p95)) * 100).toFixed(1) + '%';
+    const dl = (v) => { const d = Math.round((v / V0 - 1) * 100); return `${d >= 0 ? '+' : '−'}${Math.abs(d)}% względem dziś`; };
+    const kpis = [
+      { title: `Typowy wynik (${basis})`, big: this.pln(med), note: `Mediana · ${dl(med)}`, size: 'clamp(38px,3.8vw,52px)' },
+      { title: `Zakres wyników (${basis})`, big: `${this.pln(p10)} – ${this.pln(p90)}`, note: 'W 8 na 10 przyszłości. Przedział od 10. do 90. percentyla.', size: 'clamp(22px,2.3vw,32px)', isRange: true, rl: pct(p10), rw: ((p90 - p10) / p95 * 100).toFixed(1) + '%', rm: pct(med) },
+      { title: 'Szansa na cel', big: this.freq(pGoal), note: `Cel: 1 mln zł w dzisiejszych złotych za 20 lat, ${afterTax ? 'po podatku' : 'przed podatkiem'} (±0,9 pp)`, size: 'clamp(38px,3.8vw,52px)', isDots: true, dots: dots(pGoal) },
+      { title: 'Ryzyko spadku o ponad 30%', big: this.freq(pDeep), note: 'Portfel traci ponad 30% od swojego szczytu (cały okres, ±0,9 pp)', size: 'clamp(38px,3.8vw,52px)', isDots: true, dots: dots(pDeep) },
+      { title: `Najgorsze 5% przyszłości: średnio`, big: this.pln(cvar), note: `Średnia w najgorszych 5 na 100 przyszłości · ${dl(cvar)}`, size: 'clamp(38px,3.8vw,52px)' },
+      { title: `Szansa straty realnej`, big: this.freq(pLoss), note: 'Wartość niższa niż dziś po uwzględnieniu inflacji (±0,8 pp)', size: 'clamp(38px,3.8vw,52px)', isDots: true, dots: dots(pLoss) },
+    ];
+    if (expert) kpis.push({ title: 'Średnia (tryb eksperta)', big: this.pln(meanV), note: 'Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę.', size: 'clamp(38px,3.8vw,52px)' });
+    kpis.forEach((k, i) => { k.idx = String(i + 1).padStart(2, '0'); k.bigR = this.roll(k.big); });
+
+    const m0 = Math.log(V0) + mu * t, sd = sig * Math.sqrt(t), BINS = 48, lz = -2.6, hz = 2.326, bzw = (hz - lz) / BINS;
+    const edge = (i) => Math.exp(m0 + (lz + i * bzw) * sd);
+    const counts = Array.from({ length: BINS }, (_, i) => this.Phi(lz + (i + 1) * bzw) - this.Phi(lz + i * bzw) + (i === BINS - 1 ? 1 - this.Phi(hz) : 0) + (i === 0 ? this.Phi(lz) : 0));
+    const cmax = Math.max(...counts) * 1.04, medBin = Math.floor(-lz / bzw);
+    const BW = 616 / BINS, HX = (i) => 12 + i * BW, HY = (c) => 208 - (c / cmax) * 196;
+    const bars = counts.map((c, i) => ({
+      x: (HX(i) + BW * 0.29).toFixed(1), w: (BW * 0.42).toFixed(1), rx: (BW * 0.21).toFixed(1), y: HY(c).toFixed(1), h: (208 - HY(c)).toFixed(1),
+      op: hb >= 0 ? (i === hb ? 1 : 0.28) : (0.35 + 0.65 * Math.exp(-(((i - medBin) / 6) ** 2))).toFixed(2),
+      hx: HX(i).toFixed(1), hw: BW.toFixed(1), dl: (i * 0.075).toFixed(2) + 's', onEnter: () => this.setState({ hb: i }),
+    }));
+    const histInfo = hb >= 0
+      ? { a: `${this.pln(tr(edge(hb), t))} – ${this.pln(tr(edge(hb + 1), t))}`, b: `· w ${new Intl.NumberFormat('pl-PL').format(Math.round(counts[hb] * 10000))} z 10 000 przyszłości` }
+      : { a: this.pln(med), b: '· mediana — najedź na słupek' };
+    histInfo.aR = this.roll(histInfo.a);
+    const hist = { bars, medX: (12 + (-lz / (hz - lz)) * 616).toFixed(1), ticks: [0, 12, 24, 36, 48].map((i) => ({ left: (HX(i) / 6.4).toFixed(2) + '%', tf: i === 0 ? 'translate(0,-50%)' : i === 48 ? 'translate(-100%,-50%)' : 'translate(-50%,-50%)', label: this.pln(tr(edge(i), t)) })) };
+
+    const bmu = 0.12, bs = 0.45 * Math.sqrt(t), bq = (z) => btcPrice * Math.exp(bmu * t + z * bs);
+    const pc = 1 - Math.exp(-0.02 * t);
+    const btc = { p10: this.usd(bq(Z[1])), p90: this.usd(bq(Z[5])), collapse: `Szansa upadku do ${2026 + Math.floor(t)}: ${Math.round(pc * 100)} na 100` };
+    const BX = (z) => 260 + (z / 4.2) * 250, BY = (z) => 192 - 164 * Math.exp(-(z * z) / 2 / 0.55);
+    const zs = Array.from({ length: 61 }, (_, i) => -4.2 + (8.4 * i) / 60);
+    const bl = this.smooth(zs.map((z) => [BX(z), BY(z)]));
+    const btcCurve = { line: bl, area: bl + ' L520,230 L0,230 Z' };
+    const btcBars = Array.from({ length: 64 }, (_, i) => { const z = -3.6 + (7.2 * i) / 63, y = BY(z) + 7; return { x: (BX(z) - 1).toFixed(1), y: y.toFixed(1), h: Math.max(0, 200 - y).toFixed(1), dl: (i * 0.06).toFixed(2) + 's', op: bz === null ? (0.3 + 0.7 * Math.exp(-(z * z) / 1.2)).toFixed(2) : z >= bz ? 0.95 : 0.16 }; });
+    const btcGrid = { v: Array.from({ length: 14 }, (_, i) => 20 + i * 37), h: [130, 150, 170, 190, 210, 230] };
+    const zz = bz === null ? 0 : bz;
+    const btcMark = { x: BX(zz).toFixed(1), y: BY(zz).toFixed(1), drop: (200 - BY(zz)).toFixed(1) };
+    const above = Math.round((1 - this.Phi(zz)) * 100);
+    const btcView = bz === null
+      ? { title: 'Mediana ceny 1 BTC', big: this.usd(bq(0)), sub: `×${new Intl.NumberFormat('pl-PL', { maximumSignificantDigits: 2 }).format(Math.exp(bmu * t))} dzisiejszej ceny · przesuń po krzywej` }
+      : { title: `Percentyl ${100 - above}.`, big: this.usd(bq(zz)), sub: `w ${above} na 100 przyszłości cena będzie wyższa` };
+
+    btcView.bigR = this.roll(btcView.big);
+    const navItems = [['portfel', 'Portfel'], ['plan', 'Plan'], ['wynik', 'Wynik'], ['porownanie', 'Porównanie'], ['zalozenia', 'Założenia'], ['ustawienia', 'Ustawienia']];
+    const live = ['portfel', 'wynik'];
+    const nav = navItems.map(([k, label]) => ({
+      label, cursor: live.includes(k) ? 'pointer' : 'default',
+      bg: view === k ? 'rgba(255,255,255,0.12)' : 'transparent',
+      color: view === k ? '#ffffff' : live.includes(k) ? 'rgba(235,240,250,0.78)' : 'rgba(235,240,250,0.38)',
+      onClick: () => live.includes(k) && this.setState({ view: k }),
+    }));
+    const tg = (label, on, key) => ({ label, on, bg: on ? 'rgba(42,85,255,0.18)' : 'rgba(255,255,255,0.03)', border: on ? 'rgba(157,185,255,0.45)' : 'rgba(255,255,255,0.1)', dot: on ? '#9db9ff' : 'rgba(255,255,255,0.3)', glow: on ? '#3d6bff' : 'transparent', onClick: () => this.setState({ [key]: !on }) });
+    const horizons = [5, 10, 20].map((h) => ({ label: `${h}L`, bg: H === h ? 'rgba(255,255,255,0.14)' : 'transparent', color: H === h ? '#fff' : 'rgba(235,240,250,0.6)', onClick: () => this.setState({ H: h, mo: Math.min(this.state.mo, h * 12) }) }));
+
+    const split = (str) => { const mm = str.match(/^([\d.,]+)[\s\u00a0]+(.*)$/); return mm ? [mm[1], mm[2]] : [str, '']; };
+    const [heroNum, heroUnit] = split(this.pln(med));
+    const [totalNum, totalUnit] = split(this.pln(total));
+
+    const NOTES = {
+      IKE: 'Reguły IKE (limit wpłat, wypłata bez podatku od 60 lat, wcześniej 19% od zysku) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty.',
+      IKZE: 'Reguły IKZE (limit wpłat, zwrot podatku, 10% od wypłaty od 65 lat, wcześniej uproszczone 19% od zysku zamiast zwrotu odliczeń) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty.',
+    };
+    const upd = (i, patch) => this.setState((st) => ({ positions: st.positions.map((p, j) => (j === i ? { ...p, ...patch } : p)) }));
+    const tiles = positions.map((p, i) => ({
+      name: p.name, idx: String(i + 1).padStart(2, '0'), valueStr: new Intl.NumberFormat('pl-PL').format(p.value),
+      onChange: (e) => upd(i, { value: this.parse(e.target.value) }), note: NOTES[p.wrapper] || '',
+      wrappers: [['taxable', 'Zwykłe'], ['IKE', 'IKE'], ['IKZE', 'IKZE']].map(([w, l]) => ({ label: l, bg: p.wrapper === w ? 'rgba(255,255,255,0.13)' : 'transparent', color: p.wrapper === w ? '#fff' : 'rgba(235,240,250,0.62)', onClick: () => upd(i, { wrapper: w }) })),
+      onRemove: () => this.setState((st) => ({ positions: st.positions.filter((_, j) => j !== i) })),
+    }));
+    const tints = ['rgba(255,255,255,0.85)', 'rgba(255,255,255,0.45)', 'rgba(255,255,255,0.25)', 'rgba(255,255,255,0.14)'];
+    const alloc = positions.map((p, i) => { const b = p.id.startsWith('btc'); return { name: p.name, flex: Math.max(p.value, 1), pct: `${total ? Math.round((p.value / total) * 100) : 0}%`, color: b ? '#7fa8ff' : tints[i % 4], glow: b ? '#2a55ff' : 'transparent' }; });
+    const picker = [['btc', 'Bitcoin'], ['eq', 'Akcje'], ['bond', 'Obligacje'], ['cash', 'Gotówka']].map(([id, label]) => ({ label, onClick: () => this.setState((st) => ({ positions: [...st.positions, { id: id + '-' + Date.now(), name: label, value: 10000, wrapper: 'taxable' }] })) }));
+
+    const P = this.props;
+    const gb = P.glassBlur ?? 30, gt = P.glassTint ?? 0.06, gs = P.glassSaturation ?? 180, gr = P.glassRefraction ?? 28, gf = P.glassFrost ?? 5, ge = P.glassEdge ?? 0.8, gd = P.glassDarken ?? 0.2;
+    const chromium = typeof window !== 'undefined' && !!window.chrome && !/Firefox/.test(navigator.userAgent);
+    const baseBF = `blur(${gb}px) saturate(${gs}%) brightness(1.08)`;
+    const fullBF = chromium && (gr > 0 || gf > 0) ? `blur(${gb}px) url(#lgx) saturate(${gs}%) brightness(1.08)` : baseBF;
+    const glassBg = (k) => `linear-gradient(135deg,rgba(255,255,255,${(gt * 1.8).toFixed(3)}) 0%,rgba(255,255,255,${(gt * 0.5).toFixed(3)}) 35%,rgba(255,255,255,${(gt * 0.3).toFixed(3)}) 65%,rgba(255,255,255,${(gt * 1.2).toFixed(3)}) 100%),rgba(8,11,26,${(gd * k).toFixed(3)})`;
+    const g = {
+      bg: glassBg(1), bgTip: glassBg(1.8), bf: fullBF, wbf: fullBF, refr: gr, frost: gf,
+      border: `rgba(255,255,255,${(0.05 + 0.09 * ge).toFixed(3)})`,
+      sh: `inset 1px 1px 0.5px rgba(255,255,255,${(0.55 * ge).toFixed(3)}),inset -1px -1px 0.5px rgba(255,255,255,${(0.18 * ge).toFixed(3)}),inset 12px 12px 26px -16px rgba(255,255,255,${(0.3 * ge).toFixed(3)}),inset -12px -12px 26px -18px rgba(140,170,255,${(0.24 * ge).toFixed(3)}),inset 0 0 44px rgba(120,150,255,${(0.07 * ge).toFixed(3)}),0 30px 70px -30px rgba(0,0,0,0.85)`,
+    };
+    const FONTS = { 'Sora': "'Sora',system-ui,sans-serif", 'Geist': "'Geist',system-ui,sans-serif", 'Inter Tight': "'Inter Tight',system-ui,sans-serif", 'Space Grotesk': "'Space Grotesk',system-ui,sans-serif", 'Helvetica Neue': "'Helvetica Neue',Helvetica,Arial,sans-serif" };
+    const now = new Date();
+    const tipLeft = Math.max(12, Math.min(88, X(t) / 10));
+    return {
+      bgRef: this.bgRef, g, fontFamily: FONTS[P.font] || FONTS.Sora, heroFlap: this.flap(heroNum, 'hero'), totalFlap: this.flap(totalNum, 'total'), noiseOpacity: this.props.noise ?? 0.28,
+      clock: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+      isWynik: view === 'wynik', isPortfel: view === 'portfel', nav,
+      tLabel, calYear: 2026 + Math.floor(t), basis, heroNum, heroUnit,
+      heroMult: `×${new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 1 }).format(med / V0)}`,
+      horizonLabel: `${this.yrs(H)} · do ${2026 + H}`, btcShareLabel: `${Math.round(s * 100)}%`, posCount: String(positions.length),
+      toggles: [tg('Realnie', real, 'real'), tg('Po podatku', afterTax, 'afterTax'), tg('Ekspert', expert, 'expert')], horizons,
+      onFanPointer: (e) => {
+        const r = e.currentTarget.getBoundingClientRect(); if (!r.width) return;
+        const px = ((e.clientX - r.left) / r.width) * 1000;
+        this.pendMo = Math.max(1, Math.min(H * 12, Math.round(((px - 92) / 893) * H * 12)));
+        if (!this.rafMo) this.rafMo = requestAnimationFrame(() => { this.rafMo = 0; if (this.pendMo !== this.state.mo) this.setState({ mo: this.pendMo }); });
+      },
+      fan, yTicks, xTicks, scrubX: X(t).toFixed(1), pastW: Math.max(0, X(t) - 92).toFixed(1),
+      orbMed: { x: X(t).toFixed(1), y: Y(med).toFixed(1) }, orbLo: { x: X(t).toFixed(1), y: Y(p10).toFixed(1) }, orbHi: { x: X(t).toFixed(1), y: Y(p90).toFixed(1) },
+      tip: { left: (X(t) / 10).toFixed(2) + '%', tf: X(t) > 560 ? 'translate(calc(-100% - 22px),0)' : 'translate(22px,0)' },
+      readout: [{ pre: '1 na 10 więcej niż', valR: this.roll(this.pln(p90)), color: '#9db9ff' }, { pre: 'Mediana', valR: this.roll(this.pln(med)), color: '#ffffff' }, { pre: '9 na 10 więcej niż', valR: this.roll(this.pln(p10)), color: '#9db9ff' }],
+      kpis, hist, histInfo, onHistLeave: () => this.setState({ hb: -1 }),
+      hasBtc: btcVal > 0, btc, btcBars, btcCurve, btcGrid, btcMark, btcView,
+      onBtcPointer: (e) => { const r = e.currentTarget.getBoundingClientRect(); if (!r.width) return; const px = ((e.clientX - r.left) / r.width) * 520; this.pendBz = Math.max(-3.2, Math.min(3.2, ((px - 260) / 250) * 4.2)); if (!this.rafBz) this.rafBz = requestAnimationFrame(() => { this.rafBz = 0; this.setState({ bz: this.pendBz }); }); },
+      onBtcLeave: () => { cancelAnimationFrame(this.rafBz); this.rafBz = 0; this.setState({ bz: null }); },
+      btcPriceStr: new Intl.NumberFormat('pl-PL').format(btcPrice),
+      onBtcPrice: (e) => this.setState({ btcPrice: Math.max(1, this.parse(e.target.value)) }),
+      totalNum, totalUnit, tiles, alloc, picker, goWynik: () => this.setState({ view: 'wynik' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

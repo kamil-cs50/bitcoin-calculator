@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+html,body{margin:0;background:#02040c;color:#f2f5fb;font-family:'Outfit',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#f2f5fb;text-decoration:underline;text-underline-offset:3px}a:hover{color:#fff}
+input,button,select{font-family:inherit}
+input[type=range]{height:28px}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;overflow:hidden;background:#02040c">
+  <canvas ref="{{ bgRef }}" width="160" height="100" style="position:fixed;inset:0;width:100%;height:100%;filter:blur(26px) saturate(1.15);transform:scale(1.12);z-index:0"></canvas>
+  <div style="position:fixed;inset:0;z-index:1;background:linear-gradient(180deg,rgba(2,4,12,0.15) 0%,rgba(2,4,12,0.35) 55%,rgba(2,4,12,0.6) 100%);pointer-events:none"></div>
+  <div ref="{{ grainRef }}" style="position:fixed;inset:-20px;z-index:2;opacity:{{ grainOpacity }};mix-blend-mode:overlay;pointer-events:none"></div>
+
+  <div style="position:relative;z-index:3;max-width:1280px;margin:0 auto;padding:0 clamp(16px,3vw,40px);display:flex;flex-direction:column;min-height:100vh">
+
+    <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:26px 0 20px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:22px;font-weight:400;letter-spacing:-0.02em">Symulator portfela</span>
+        <span style="width:1px;height:18px;background:rgba(255,255,255,0.3)"></span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.7)">symulacja edukacyjna</span>
+      </div>
+      <nav style="display:flex;flex-wrap:wrap;gap:4px;padding:5px;border-radius:999px;background:rgba(255,255,255,0.05);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.1)">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+          <button onClick="{{ n.onClick }}" style="display:flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;border:0;cursor:pointer;background:{{ n.bg }};color:{{ n.color }};font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;transition:background .3s">
+            <span style="opacity:0.55">{{ n.idx }}</span><span>{{ n.label }}</span>
+          </button>
+        </sc-for>
+      </nav>
+    </header>
+
+    <sc-if value="{{ isWynik }}" hint-placeholder-val="{{ true }}">
+      <main style="display:flex;flex-direction:column;gap:20px;padding-bottom:40px">
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:24px;align-items:end;padding:36px 0 12px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.72)">[03] Typowy wynik za {{ yearsLabel }} ({{ basis }})</div>
+            <div style="display:flex;align-items:flex-start;gap:14px">
+              <span style="font-size:clamp(84px,12vw,168px);font-weight:200;line-height:0.92;letter-spacing:-0.05em;font-variant-numeric:tabular-nums">{{ heroNum }}</span>
+              <div style="display:flex;flex-direction:column;gap:10px;padding-top:clamp(10px,1.6vw,24px)">
+                <span style="font-size:clamp(22px,2.6vw,36px);font-weight:300;letter-spacing:-0.02em">{{ heroUnit }}</span>
+                <span style="font-size:24px;font-weight:300;color:{{ accent }}">↗</span>
+              </div>
+            </div>
+            <p style="margin:8px 0 0;font-size:17px;font-weight:300;color:rgba(236,240,250,0.78);max-width:46ch;text-wrap:pretty">Mediana: połowa przyszłości kończy się wyżej, połowa niżej.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 28px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;justify-self:end;color:#eef2fa">
+            <span style="opacity:0.6">Horyzont</span><span>20 lat · {{ calYear }}</span>
+            <span style="opacity:0.6">Waluta</span><span>PLN</span>
+            <span style="opacity:0.6">Udział BTC</span><span>{{ btcShareLabel }}</span>
+            <span style="opacity:0.6">Próba</span><span>10 000 przyszłości · dokładność ±0,9 pp</span>
+            <span style="opacity:0.6">Model</span><span style="color:{{ accent }}">skalibrowany ✓</span>
+          </div>
+        </section>
+
+        <section style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding:12px 22px;background:rgba(255,255,255,0.06);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(255,255,255,0.13);box-shadow:inset 0 1px 0 rgba(255,255,255,0.16);border-radius:999px">
+          <sc-for list="{{ toggles }}" as="tg" hint-placeholder-count="3">
+            <button onClick="{{ tg.onClick }}" role="switch" aria-checked="{{ tg.on }}" style="display:flex;align-items:center;gap:12px;min-height:44px;background:none;border:0;color:#f2f5fb;cursor:pointer;font-size:15px;font-weight:300;padding:0">
+              <span style="position:relative;width:44px;height:26px;border-radius:999px;background:{{ tg.track }};border:1px solid rgba(255,255,255,0.22);transition:background .3s;flex:none">
+                <span style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:{{ tg.knob }};box-shadow:0 0 14px {{ tg.glow }};transform:translateX({{ tg.kx }}px);transition:transform .3s cubic-bezier(.2,.8,.2,1)"></span>
+              </span>
+              <span>{{ tg.label }}</span>
+            </button>
+          </sc-for>
+          <label style="display:flex;align-items:center;gap:14px;flex:1;min-width:240px;margin-left:auto">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;color:#eef2fa">Za {{ yearsLabel }} ({{ calYear }})</span>
+            <input type="range" min="1" max="20" step="1" value="{{ t }}" onChange="{{ onSlider }}" aria-label="Rok na wykresie" style="flex:1;accent-color:{{ accent }}">
+          </label>
+        </section>
+
+        <section style="padding:26px 26px 18px;background:rgba(255,255,255,0.055);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);border:1px solid rgba(255,255,255,0.13);box-shadow:inset 0 1px 0 rgba(255,255,255,0.16),0 40px 90px -50px rgba(0,0,0,0.7);border-radius:32px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px">
+            <h2 style="margin:0;font-size:22px;font-weight:300;letter-spacing:-0.01em">Wachlarz możliwych przyszłości <span style="color:rgba(236,240,250,0.6)">({{ basis }})</span></h2>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.66)">Przeciągnij po wykresie</span>
+          </div>
+          <div style="position:relative"><svg viewBox="0 0 1000 360" onPointerMove="{{ onFanPointer }}" onPointerDown="{{ onFanPointer }}" role="img" aria-label="Wachlarz możliwych wartości portfela" style="width:100%;height:auto;display:block;touch-action:pan-y;cursor:crosshair;overflow:visible">
+            <defs>
+              <linearGradient id="fanG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" style="stop-color:{{ accent }};stop-opacity:0.55"></stop>
+                <stop offset="1" style="stop-color:{{ accent2 }};stop-opacity:0.04"></stop>
+              </linearGradient>
+              <linearGradient id="medG" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" style="stop-color:#ffffff;stop-opacity:0.25"></stop>
+                <stop offset="0.5" style="stop-color:#ffffff;stop-opacity:1"></stop>
+                <stop offset="1" style="stop-color:{{ accent }};stop-opacity:1"></stop>
+              </linearGradient>
+              <radialGradient id="orbG" cx="0.35" cy="0.3" r="0.8">
+                <stop offset="0" style="stop-color:#ffffff"></stop>
+                <stop offset="0.55" style="stop-color:{{ accent }}"></stop>
+                <stop offset="1" style="stop-color:{{ accent2 }}"></stop>
+              </radialGradient>
+            </defs>
+            <sc-for list="{{ yTicks }}" as="yt" hint-placeholder-count="5">
+              <line x1="70" x2="985" y1="{{ yt.y }}" y2="{{ yt.y }}" style="stroke:rgba(255,255,255,0.08);stroke-width:1"></line>
+            </sc-for>
+            <path d="{{ fan.band0 }}" style="fill:url(#fanG);opacity:0.35;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.band1 }}" style="fill:url(#fanG);opacity:0.5;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.band2 }}" style="fill:url(#fanG);opacity:0.8;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.l0 }}" style="fill:none;stroke:rgba(255,255,255,0.35);stroke-width:1;stroke-dasharray:3 5;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.l6 }}" style="fill:none;stroke:rgba(255,255,255,0.35);stroke-width:1;stroke-dasharray:3 5;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.l1 }}" style="fill:none;stroke:{{ accent }};stroke-opacity:0.6;stroke-width:1;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.l5 }}" style="fill:none;stroke:{{ accent }};stroke-opacity:0.6;stroke-width:1;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.l3 }}" style="fill:none;stroke:{{ accent }};stroke-width:10;stroke-linecap:round;opacity:0.55;filter:blur(8px);transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <path d="{{ fan.l3 }}" style="fill:none;stroke:url(#medG);stroke-width:2.5;stroke-linecap:round;transition:d .7s cubic-bezier(.2,.8,.2,1)"></path>
+            <g style="transform:translate({{ scrubX }}px,0px);transition:transform .5s cubic-bezier(.2,.8,.2,1)">
+              <line x1="0" x2="0" y1="20" y2="320" style="stroke:rgba(255,255,255,0.35);stroke-width:1;stroke-dasharray:2 4"></line>
+            </g>
+            <g style="transform:translate({{ orbLo.x }}px,{{ orbLo.y }}px);transition:transform .5s cubic-bezier(.2,.8,.2,1)">
+              <circle r="4" style="fill:{{ accent }};stroke:#02040c;stroke-width:1.5"></circle>
+            </g>
+            <g style="transform:translate({{ orbHi.x }}px,{{ orbHi.y }}px);transition:transform .5s cubic-bezier(.2,.8,.2,1)">
+              <circle r="4" style="fill:{{ accent }};stroke:#02040c;stroke-width:1.5"></circle>
+            </g>
+            <g style="transform:translate({{ orbMed.x }}px,{{ orbMed.y }}px);transition:transform .5s cubic-bezier(.2,.8,.2,1)">
+              <circle r="24" style="fill:{{ accent }};opacity:0.35;filter:blur(10px)"></circle>
+              <circle r="10" style="fill:url(#orbG);stroke:rgba(255,255,255,0.7);stroke-width:1"></circle>
+            </g>
+          </svg>
+          <sc-for list="{{ yTicks }}" as="yt" hint-placeholder-count="5">
+            <span style="position:absolute;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(236,240,250,0.66);white-space:nowrap;pointer-events:none;transform:translate(-100%,-50%);left:6.2%;top:{{ yt.top }}">{{ yt.label }}</span>
+          </sc-for>
+          <sc-for list="{{ xTicks }}" as="xt" hint-placeholder-count="5">
+            <span style="position:absolute;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(236,240,250,0.66);white-space:nowrap;pointer-events:none;left:{{ xt.left }};top:95.5%">{{ xt.label }}</span>
+          </sc-for>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px 28px;align-items:center;border-top:1px solid rgba(255,255,255,0.1);padding-top:14px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.66)">lata od dziś · za {{ yearsLabel }}</span>
+            <sc-for list="{{ readout }}" as="r" hint-placeholder-count="3">
+              <span style="font-size:15px;font-weight:300;color:rgba(242,245,251,0.86)">{{ r.pre }} <strong style="font-weight:500;color:#fff;font-variant-numeric:tabular-nums">{{ r.val }}</strong></span>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:16px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+            <div style="padding:22px 22px 24px;background:rgba(255,255,255,0.055);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);border:1px solid rgba(255,255,255,0.13);box-shadow:inset 0 1px 0 rgba(255,255,255,0.16),0 40px 90px -50px rgba(0,0,0,0.7);border-radius:26px;display:flex;flex-direction:column;gap:14px;min-height:170px">
+              <div style="display:flex;justify-content:space-between;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.72)">
+                <span style="text-wrap:pretty">{{ k.title }}</span><span style="opacity:0.6">{{ k.idx }}</span>
+              </div>
+              <div style="font-size:{{ k.size }};font-weight:200;letter-spacing:-0.03em;line-height:1.05;font-variant-numeric:tabular-nums;margin-top:auto;text-wrap:balance">{{ k.big }}</div>
+              <p style="margin:0;font-size:14px;font-weight:300;color:rgba(236,240,250,0.72);text-wrap:pretty">{{ k.note }}</p>
+            </div>
+          </sc-for>
+        </section>
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:20px;align-items:stretch">
+          <div style="padding:26px;background:rgba(255,255,255,0.055);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);border:1px solid rgba(255,255,255,0.13);box-shadow:inset 0 1px 0 rgba(255,255,255,0.16),0 40px 90px -50px rgba(0,0,0,0.7);border-radius:32px;display:flex;flex-direction:column;gap:12px">
+            <h2 style="margin:0;font-size:22px;font-weight:300">Rozkład wartości za {{ yearsLabel }} <span style="color:rgba(236,240,250,0.6)">({{ basis }})</span></h2>
+            <p style="margin:0;font-size:14px;font-weight:300;color:rgba(236,240,250,0.72)">Najwyższe 1% przyszłości połączono w ostatnim słupku.</p>
+            <div style="position:relative;margin-top:auto"><svg viewBox="0 0 640 240" role="img" aria-label="Rozkład wartości portfela" style="width:100%;height:auto;display:block;overflow:visible">
+              <defs>
+                <linearGradient id="histG" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" style="stop-color:{{ accent }};stop-opacity:0.95"></stop>
+                  <stop offset="1" style="stop-color:{{ accent2 }};stop-opacity:0.08"></stop>
+                </linearGradient>
+              </defs>
+              <sc-for list="{{ hist.bars }}" as="b" hint-placeholder-count="30">
+                <rect x="{{ b.x }}" width="{{ b.w }}" rx="3" style="y:{{ b.y }}px;height:{{ b.h }}px;fill:url(#histG);opacity:{{ b.op }};transition:y .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),opacity .4s"></rect>
+              </sc-for>
+              <path d="{{ hist.curve }}" style="fill:none;stroke:{{ accent }};stroke-width:8;opacity:0.4;filter:blur(7px)"></path>
+              <path d="{{ hist.curve }}" style="fill:none;stroke:#ffffff;stroke-width:1.5;opacity:0.9"></path>
+              <line x1="12" x2="628" y1="208" y2="208" style="stroke:rgba(255,255,255,0.25)"></line>
+            </svg>
+            <sc-for list="{{ hist.ticks }}" as="ht" hint-placeholder-count="5">
+              <span style="position:absolute;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(236,240,250,0.66);white-space:nowrap;pointer-events:none;left:{{ ht.left }};top:95%">{{ ht.label }}</span>
+            </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ hasBtc }}" hint-placeholder-val="{{ true }}">
+            <div style="position:relative;padding:26px 26px 30px;border-radius:40px;overflow:hidden;background:linear-gradient(180deg,rgba(14,22,48,0.55) 0%,rgba(4,8,20,0.7) 60%,rgba(10,20,50,0.55) 100%);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);border:1px solid rgba(255,255,255,0.14);box-shadow:inset 0 1px 0 rgba(255,255,255,0.2),inset 0 -70px 70px -40px {{ accent2 }},inset 0 -6px 18px -6px {{ accent }},0 40px 90px -40px rgba(0,0,0,0.8);display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                <span style="font-size:17px;font-weight:300;color:rgba(236,240,250,0.8)">Bitcoin: rozkład ceny w roku {{ calYear }}</span>
+                <label style="display:flex;align-items:center;gap:8px;padding:0 14px;min-height:40px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14)">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.7)">1 BTC dziś</span>
+                  <input value="{{ btcPriceStr }}" onChange="{{ onBtcPrice }}" inputmode="numeric" aria-label="Dzisiejsza cena 1 BTC (USD)" style="width:78px;background:none;border:0;outline:none;color:#fff;font-size:15px;font-variant-numeric:tabular-nums;text-align:right">
+                  <span style="font-size:13px;color:rgba(236,240,250,0.7)">USD</span>
+                </label>
+              </div>
+              <div style="position:relative"><svg viewBox="0 0 520 230" style="width:100%;height:auto;display:block;overflow:visible">
+                <defs>
+                  <linearGradient id="gridFade" x1="0" y1="110" x2="0" y2="230" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" style="stop-color:{{ accent }};stop-opacity:0"></stop>
+                    <stop offset="1" style="stop-color:{{ accent }};stop-opacity:0.35"></stop>
+                  </linearGradient>
+                  <linearGradient id="curveG" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" style="stop-color:{{ accent }};stop-opacity:0.15"></stop>
+                    <stop offset="0.5" style="stop-color:{{ accent }};stop-opacity:1"></stop>
+                    <stop offset="1" style="stop-color:{{ accent }};stop-opacity:0.15"></stop>
+                  </linearGradient>
+                  <linearGradient id="underG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" style="stop-color:{{ accent }};stop-opacity:0.28"></stop>
+                    <stop offset="1" style="stop-color:{{ accent }};stop-opacity:0"></stop>
+                  </linearGradient>
+                </defs>
+                <sc-for list="{{ btcGrid.v }}" as="gv" hint-placeholder-count="13">
+                  <line x1="{{ gv }}" x2="{{ gv }}" y1="110" y2="230" style="stroke:url(#gridFade);stroke-width:1"></line>
+                </sc-for>
+                <sc-for list="{{ btcGrid.h }}" as="gh" hint-placeholder-count="6">
+                  <line x1="0" x2="520" y1="{{ gh }}" y2="{{ gh }}" style="stroke:url(#gridFade);stroke-width:1"></line>
+                </sc-for>
+                <path d="{{ btcCurve.area }}" style="fill:url(#underG)"></path>
+                <path d="{{ btcCurve.line }}" style="fill:none;stroke:{{ accent }};stroke-width:9;opacity:0.45;filter:blur(8px)"></path>
+                <path d="{{ btcCurve.line }}" style="fill:none;stroke:url(#curveG);stroke-width:3;stroke-linecap:round"></path>
+                <line x1="{{ btcCurve.loX }}" x2="{{ btcCurve.loX }}" y1="{{ btcCurve.loY }}" y2="200" style="stroke:rgba(255,255,255,0.3);stroke-dasharray:2 4"></line>
+                <line x1="{{ btcCurve.hiX }}" x2="{{ btcCurve.hiX }}" y1="{{ btcCurve.hiY }}" y2="200" style="stroke:rgba(255,255,255,0.3);stroke-dasharray:2 4"></line>
+                <circle cx="260" cy="{{ btcCurve.peakY }}" r="22" style="fill:{{ accent }};opacity:0.4;filter:blur(9px)"></circle>
+                <circle cx="260" cy="{{ btcCurve.peakY }}" r="10" style="fill:url(#orbG);stroke:rgba(255,255,255,0.75);stroke-width:1"></circle>
+              </svg>
+              <span style="position:absolute;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(236,240,250,0.66);white-space:nowrap;pointer-events:none;left:{{ btcCurve.loL }};top:94.5%">{{ btc.p10 }}</span>
+              <span style="position:absolute;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(236,240,250,0.66);white-space:nowrap;pointer-events:none;left:{{ btcCurve.hiL }};top:94.5%">{{ btc.p90 }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center">
+                <span style="font-size:18px;font-weight:300;color:rgba(236,240,250,0.82)">Mediana ceny 1 BTC</span>
+                <div style="display:flex;align-items:flex-start;gap:6px">
+                  <span style="font-size:clamp(56px,7vw,84px);font-weight:400;letter-spacing:-0.04em;line-height:1;font-variant-numeric:tabular-nums">{{ btc.med }}</span>
+                  <span style="font-size:16px;color:{{ accent }};padding-top:6px">↗</span>
+                </div>
+                <span style="font-size:13px;font-weight:300;color:rgba(236,240,250,0.72)">{{ btc.mult }} dzisiejszej ceny · w 5 na 10 przyszłości więcej</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#eef2fa">
+                <span>9 na 10 › {{ btc.p10 }}</span><span>1 na 10 › {{ btc.p90 }}</span><span style="color:{{ accent }}">{{ btc.collapse }}</span>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+      </main>
+    </sc-if>
+
+    <sc-if value="{{ isPortfel }}" hint-placeholder-val="{{ false }}">
+      <main style="display:flex;flex-direction:column;gap:22px;padding-bottom:40px">
+        <section style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;padding:36px 0 6px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.72)">[01] Portfel · Razem</span>
+            <div style="display:flex;align-items:flex-start;gap:14px">
+              <span style="font-size:clamp(84px,12vw,168px);font-weight:200;line-height:0.92;letter-spacing:-0.05em;font-variant-numeric:tabular-nums">{{ totalNum }}</span>
+              <span style="font-size:clamp(22px,2.6vw,36px);font-weight:300;padding-top:clamp(10px,1.6vw,24px)">{{ totalUnit }}</span>
+            </div>
+          </div>
+          <button onClick="{{ goWynik }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 24px;border-radius:999px;cursor:pointer;color:#fff;font-size:16px;font-weight:300;background:rgba(255,255,255,0.08);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ accent }};box-shadow:0 0 30px -8px {{ accent }}">
+            <span style="color:{{ accent }}">⟶</span><span>Zobacz wynik</span>
+          </button>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;height:10px;border-radius:999px;overflow:hidden;gap:3px">
+            <sc-for list="{{ alloc }}" as="a" hint-placeholder-count="3">
+              <span style="flex:{{ a.flex }};background:{{ a.color }};border-radius:999px;box-shadow:0 0 18px {{ a.glow }};transition:flex .5s cubic-bezier(.2,.8,.2,1)"></span>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 24px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#eef2fa">
+            <sc-for list="{{ alloc }}" as="a" hint-placeholder-count="3">
+              <span style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ a.color }}"></span>{{ a.name }} {{ a.pct }}</span>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px">
+          <sc-for list="{{ tiles }}" as="p" hint-placeholder-count="3">
+            <div role="group" aria-label="{{ p.name }}" style="padding:22px;background:rgba(255,255,255,0.055);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);border:1px solid rgba(255,255,255,0.13);box-shadow:inset 0 1px 0 rgba(255,255,255,0.16),0 40px 90px -50px rgba(0,0,0,0.7);border-radius:28px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                <h3 style="margin:0;font-size:22px;font-weight:300">{{ p.name }}</h3>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:rgba(236,240,250,0.6)">{{ p.idx }}</span>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:6px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.7)">Wartość</span>
+                <span style="display:flex;align-items:baseline;gap:8px;padding:6px 16px;border-radius:18px;background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.12)">
+                  <input value="{{ p.valueStr }}" onChange="{{ p.onChange }}" inputmode="numeric" style="flex:1;min-width:0;background:none;border:0;outline:none;color:#fff;font-size:34px;font-weight:200;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;padding:4px 0">
+                  <span style="font-size:16px;color:rgba(236,240,250,0.7)">zł</span>
+                </span>
+              </label>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.7)">Konto</span>
+                <div style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.1)">
+                  <sc-for list="{{ p.wrappers }}" as="w" hint-placeholder-count="3">
+                    <button onClick="{{ w.onClick }}" style="flex:1;min-height:38px;border-radius:999px;border:0;cursor:pointer;font-size:14px;background:{{ w.bg }};color:{{ w.color }};transition:background .3s">{{ w.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <sc-if value="{{ p.note }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:13px;font-weight:300;line-height:1.45;color:rgba(236,240,250,0.72);text-wrap:pretty">{{ p.note }}</p>
+              </sc-if>
+              <button onClick="{{ p.onRemove }}" aria-label="Usuń {{ p.name }}" style="align-self:flex-start;min-height:40px;padding:0 16px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(242,245,251,0.85);cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase">Usuń</button>
+            </div>
+          </sc-for>
+        </section>
+
+        <section style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:14px 18px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.2)">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.72);padding:0 6px">Dodaj aktywo</span>
+          <sc-for list="{{ picker }}" as="pk" hint-placeholder-count="4">
+            <button onClick="{{ pk.onClick }}" style="min-height:40px;padding:0 18px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#f2f5fb;cursor:pointer;font-size:15px;font-weight:300">+ {{ pk.label }}</button>
+          </sc-for>
+        </section>
+      </main>
+    </sc-if>
+
+    <footer style="margin-top:auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 24px;padding:20px 0 26px;border-top:1px solid rgba(255,255,255,0.12);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(236,240,250,0.7)">
+      <span>Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej</span>
+      <a href="#" style="color:#eef2fa">Metodologia</a>
+      <span>©2026</span>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;palette&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;blue&quot;,&quot;ember&quot;,&quot;green&quot;],&quot;default&quot;:&quot;blue&quot;,&quot;tsType&quot;:&quot;'blue'|'ember'|'green'&quot;,&quot;section&quot;:&quot;Gradient&quot;},&quot;flow&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;mgla&quot;,&quot;smugi&quot;],&quot;default&quot;:&quot;mgla&quot;,&quot;tsType&quot;:&quot;'mgla'|'smugi'&quot;,&quot;section&quot;:&quot;Gradient&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:2.5,&quot;step&quot;:0.1,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Gradient&quot;},&quot;grain&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Gradient&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: 'wynik', t: 20, real: true, afterTax: true, expert: false, btcPrice: 96000,
+    positions: [
+      { id: 'btc', name: 'Bitcoin', value: 80000, wrapper: 'taxable' },
+      { id: 'eq', name: 'Akcje globalne', value: 120000, wrapper: 'IKE' },
+      { id: 'bond', name: 'Obligacje skarbowe', value: 50000, wrapper: 'taxable' },
+    ],
+  };
+  bgRef = React.createRef();
+  grainRef = React.createRef();
+  m = { x: 0.5, y: 0.45, tx: 0.5, ty: 0.45 };
+  tm = 0;
+  PAL = {
+    blue: { bg: '#02040c', blobs: ['#1f40ff', '#2f8bff', '#0b1c8f', '#6fc3ff', '#160c66'], haze: 'rgba(205,218,240,', accent: '#9fcbff', accent2: '#2f5cff' },
+    ember: { bg: '#060302', blobs: ['#ff3d12', '#ff8a2a', '#a01806', '#ffd08a', '#3a0a02'], haze: 'rgba(255,224,196,', accent: '#ffb582', accent2: '#ff4a1c' },
+    green: { bg: '#020605', blobs: ['#16b884', '#0b5e46', '#0a3a2e', '#a6f7d6', '#3c4a47'], haze: 'rgba(214,240,232,', accent: '#93f2ca', accent2: '#13a575' },
+  };
+  pal() { return this.PAL[this.props.palette] || this.PAL.blue; }
+
+  componentDidMount() {
+    this.onMove = (e) => { this.m.tx = e.clientX / innerWidth; this.m.ty = e.clientY / innerHeight; };
+    addEventListener('pointermove', this.onMove);
+    const g = document.createElement('canvas'); g.width = g.height = 180;
+    const gx = g.getContext('2d'); const id = gx.createImageData(180, 180);
+    for (let i = 0; i < id.data.length; i += 4) { const v = Math.random() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
+    gx.putImageData(id, 0, 0); this.grainUrl = g.toDataURL();
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let last = performance.now(), frame = 0;
+    const loop = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      this.tm += dt * (this.props.motion ?? 1) * (reduce ? 0.15 : 1);
+      this.draw(); frame++;
+      const gr = this.grainRef.current;
+      if (gr) {
+        if (!gr.style.backgroundImage) gr.style.backgroundImage = `url(${this.grainUrl})`;
+        if (frame % 3 === 0) gr.style.backgroundPosition = `${(Math.random() * 180) | 0}px ${(Math.random() * 180) | 0}px`;
+      }
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); removeEventListener('pointermove', this.onMove); }
+
+  draw() {
+    const c = this.bgRef.current; if (!c) return;
+    const x = c.getContext('2d'), W = c.width, H = c.height, P = this.pal(), m = this.m, t = this.tm;
+    m.x += (m.tx - m.x) * 0.03; m.y += (m.ty - m.y) * 0.03;
+    x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.fillStyle = P.bg; x.fillRect(0, 0, W, H);
+    x.globalCompositeOperation = 'lighter';
+    if ((this.props.flow ?? 'mgla') === 'smugi') {
+      const N = 44;
+      for (let i = 0; i < N; i++) {
+        const u = (i + 0.5) / N;
+        let k = 0.5 + 0.28 * Math.sin(i * 0.47 + t * 0.7) + 0.22 * Math.sin(i * 0.19 - t * 0.45);
+        k += 0.4 * Math.exp(-((u - m.x) ** 2) / 0.006);
+        k = Math.max(0, Math.min(1.2, k));
+        const top = H * (0.95 - 0.62 * k);
+        const gr = x.createLinearGradient(0, top, 0, H);
+        gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(0.35, P.blobs[i % 2 ? 0 : 1]); gr.addColorStop(1, P.blobs[2]);
+        x.globalAlpha = 0.5; x.fillStyle = gr; x.fillRect(u * W - W / N, top, (W / N) * 1.4, H - top);
+      }
+      x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
+      const hz = x.createLinearGradient(0, 0, 0, H * 0.42);
+      hz.addColorStop(0, P.haze + '0.5)'); hz.addColorStop(1, P.haze + '0)');
+      x.fillStyle = hz; x.fillRect(0, 0, W, H * 0.42);
+    } else {
+      const B = [
+        [m.x, m.y, 0.5, 0, 0.7],
+        [0.5 + 0.35 * Math.sin(t * 0.21), 0.3 + 0.2 * Math.cos(t * 0.17), 0.6, 1, 0.5],
+        [0.2 + 0.15 * Math.cos(t * 0.13 + 1), 0.75 + 0.15 * Math.sin(t * 0.19), 0.55, 2, 0.6],
+        [0.82 + 0.12 * Math.sin(t * 0.16 + 2), 0.65 + 0.2 * Math.cos(t * 0.23), 0.35, 3, 0.45],
+        [0.5 + 0.4 * Math.cos(t * 0.09 + 3), 0.95 + 0.08 * Math.sin(t * 0.3), 0.7, 4, 0.6],
+      ];
+      for (const [bx, by, r, ci, a] of B) {
+        const R = r * W, g = x.createRadialGradient(bx * W, by * H, 0, bx * W, by * H, R);
+        g.addColorStop(0, P.blobs[ci]); g.addColorStop(1, 'rgba(0,0,0,0)');
+        x.globalAlpha = a; x.fillStyle = g; x.fillRect(0, 0, W, H);
+      }
+      x.globalAlpha = 1;
+    }
+    x.globalCompositeOperation = 'source-over';
+  }
+
+  erf(v) { const s = Math.sign(v); v = Math.abs(v); const k = 1 / (1 + 0.3275911 * v); return s * (1 - ((((1.061405429 * k - 1.453152027) * k + 1.421413741) * k - 0.284496736) * k + 0.254829592) * k * Math.exp(-v * v)); }
+  Phi(v) { return 0.5 * (1 + this.erf(v / Math.SQRT2)); }
+  pln(v) { return new Intl.NumberFormat('pl-PL', { notation: 'compact', maximumSignificantDigits: 2 }).format(v) + ' zł'; }
+  usd(v) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumSignificantDigits: 2 }).format(v); }
+  freq(p) { if (p >= 0.095) return `${Math.round(p * 10)} na 10`; if (p >= 0.005) return `${Math.max(1, Math.round(p * 100))} na 100`; return 'mniej niż 1 na 100'; }
+  yrs(n) { const w = n === 1 ? 'rok' : (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14)) ? 'lata' : 'lat'; return `${n} ${w}`; }
+  niceStep(v) { const e = Math.pow(10, Math.floor(Math.log10(v))), f = v / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e; }
+  smooth(pts, cont) {
+    let d = (cont ? 'L' : 'M') + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += ` C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+    }
+    return d;
+  }
+  parse(s) { const n = Number(String(s).replace(/[^\d]/g, '')); return Number.isFinite(n) ? n : 0; }
+
+  renderVals() {
+    const P = this.pal();
+    const { view, t, real, afterTax, expert, positions, btcPrice } = this.state;
+    const total = positions.reduce((a, p) => a + p.value, 0);
+    const btcVal = positions.filter((p) => p.id.startsWith('btc')).reduce((a, p) => a + p.value, 0);
+    const s = total ? btcVal / total : 0;
+    const mu = 0.035 + 0.11 * s, sig = 0.11 + 0.5 * s, INF = 0.03, T = 20, V0 = total || 1;
+    const tr = (vn, tt, r = real) => { let v = vn; if (afterTax) v -= 0.19 * Math.max(0, v - V0); if (r) v *= Math.exp(-INF * tt); return v; };
+    const qv = (z, tt, r) => tr(V0 * Math.exp(mu * tt + z * sig * Math.sqrt(tt)), tt, r);
+    const solveZ = (target, tt, r) => { let lo = -8, hi = 8; for (let i = 0; i < 50; i++) { const md = (lo + hi) / 2; if (qv(md, tt, r) < target) lo = md; else hi = md; } return (lo + hi) / 2; };
+    const Z = [-1.6449, -1.2816, -0.6745, 0, 0.6745, 1.2816, 1.6449];
+
+    // fan chart
+    const N = 48, ts = Array.from({ length: N + 1 }, (_, k) => (T * k) / N);
+    let vmax = 0; for (const tt of ts) vmax = Math.max(vmax, qv(Z[6], tt));
+    const step = this.niceStep(vmax / 4), ymax = Math.ceil(vmax / step) * step;
+    const X = (tt) => 70 + (tt / T) * 915, Y = (v) => 320 - (v / ymax) * 300;
+    const line = (l) => ts.map((tt) => [X(tt), Y(qv(Z[l], tt))]);
+    const area = (lo, hi) => this.smooth(line(hi)) + ' ' + this.smooth(line(lo).reverse(), true) + ' Z';
+    const fan = { band0: area(0, 6), band1: area(1, 5), band2: area(2, 4), l0: this.smooth(line(0)), l1: this.smooth(line(1)), l3: this.smooth(line(3)), l5: this.smooth(line(5)), l6: this.smooth(line(6)) };
+    const yTicks = []; for (let v = 0; v <= ymax + 1; v += step) yTicks.push({ y: Y(v).toFixed(1), top: (Y(v) / 360 * 100).toFixed(2) + '%', label: v === 0 ? '0' : this.pln(v) });
+    const xTicks = [0, 5, 10, 15, 20].map((v) => ({ x: X(v), left: (X(v) / 10).toFixed(2) + '%', label: String(v) }));
+
+    // KPIs
+    const med = qv(0, t), p10 = qv(Z[1], t), p90 = qv(Z[5], t);
+    const goal = 1000000;
+    const pGoal = 1 - this.Phi(solveZ(goal, T, true));
+    const pDeep = 1 - Math.exp(-sig * 2.4);
+    const cvarN = V0 * Math.exp(mu * t + (sig * sig * t) / 2) * this.Phi(-1.6449 - sig * Math.sqrt(t)) / 0.05;
+    const pLoss = this.Phi(solveZ(V0, t, true));
+    const meanV = tr(V0 * Math.exp(mu * t + (sig * sig * t) / 2), t);
+    const basis = `${real ? 'realnie' : 'nominalnie'}, ${afterTax ? 'po podatku' : 'przed podatkiem'}`;
+    const yl = this.yrs(t);
+    const kpis = [
+      { title: `Typowy wynik za ${yl} (${basis})`, big: this.pln(med), note: 'Mediana: połowa przyszłości kończy się wyżej, połowa niżej', size: '52px' },
+      { title: `Zakres wyników (${basis})`, big: `${this.pln(p10)} – ${this.pln(p90)}`, note: 'W 8 na 10 przyszłości. Przedział od 10. do 90. percentyla', size: '34px' },
+      { title: 'Szansa na cel', big: this.freq(pGoal), note: `Cel: 1 mln zł w dzisiejszych złotych za 20 lat, ${afterTax ? 'po podatku' : 'przed podatkiem'} (±0,9 pp)`, size: '52px' },
+      { title: 'Ryzyko spadku o ponad 30%', big: this.freq(pDeep), note: 'portfel traci ponad 30% od swojego szczytu (cały okres, ±0,9 pp)', size: '52px' },
+      { title: `Najgorsze 5% przyszłości: średnio (${basis})`, big: this.pln(tr(cvarN, t)), note: 'Średnia wartość w najgorszych 5 na 100 przyszłości', size: '52px' },
+      { title: `Szansa straty realnej (${afterTax ? 'po podatku' : 'przed podatkiem'})`, big: this.freq(pLoss), note: 'wartość portfela niższa niż dziś po uwzględnieniu inflacji (±0,8 pp)', size: '52px' },
+    ];
+    if (expert) kpis.push({ title: 'Średnia (tryb eksperta)', big: this.pln(meanV), note: 'Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę.', size: '52px' });
+    kpis.forEach((k, i) => (k.idx = `[${String(i + 1).padStart(2, '0')}]`));
+
+    // histogram
+    const m0 = Math.log(V0) + mu * t, sd = sig * Math.sqrt(t), BINS = 30;
+    const lz = -2.6, hz = 2.326, bz = (hz - lz) / BINS;
+    const edge = (i) => Math.exp(m0 + (lz + i * bz) * sd);
+    const counts = Array.from({ length: BINS }, (_, i) => this.Phi(lz + (i + 1) * bz) - this.Phi(lz + i * bz) + (i === BINS - 1 ? 1 - this.Phi(hz) : 0) + (i === 0 ? this.Phi(lz) : 0));
+    const cmax = Math.max(...counts) * 1.02;
+    const medBin = Math.floor(-lz / bz);
+    const HX = (i) => 12 + (i / BINS) * 616, HY = (c) => 208 - (c / cmax) * 190;
+    const bars = counts.map((c, i) => ({ x: (HX(i) + 1.5).toFixed(1), w: (616 / BINS - 3).toFixed(1), y: HY(c).toFixed(1), h: (208 - HY(c)).toFixed(1), op: (0.3 + 0.7 * Math.exp(-(((i - medBin) / 5) ** 2))).toFixed(2) }));
+    const curvePts = counts.slice(0, BINS - 1).map((c, i) => [HX(i + 0.5), HY(c) - 6]);
+    const hist = { bars, curve: this.smooth(curvePts), ticks: [2, 9, 16, 23, 30].map((i) => ({ left: (HX(i) / 6.4).toFixed(2) + '%', label: this.pln(tr(edge(i), t)) })) };
+
+    // BTC
+    const bmu = 0.12, bsig = 0.45, bs = bsig * Math.sqrt(t);
+    const bq = (z) => btcPrice * Math.exp(bmu * t + z * bs);
+    const pc = 1 - Math.exp(-0.02 * t);
+    const btc = { med: this.usd(bq(0)), p10: this.usd(bq(Z[1])), p90: this.usd(bq(Z[5])), mult: `×${new Intl.NumberFormat('pl-PL', { maximumSignificantDigits: 2 }).format(Math.exp(bmu * t))}`, collapse: `Szansa upadku do ${2026 + t}: ${Math.round(pc * 100)} na 100` };
+    const BX = (z) => 260 + (z / 4.2) * 260, BY = (z) => 196 - 168 * Math.exp(-(z * z) / 2 / 0.55);
+    const zs = Array.from({ length: 57 }, (_, i) => -4.2 + (8.4 * i) / 56);
+    const bl = this.smooth(zs.map((z) => [BX(z), BY(z)]));
+    const btcCurve = { line: bl, area: bl + ' L520,230 L0,230 Z', peakY: BY(0), loX: BX(-1.2816), loY: BY(-1.2816), hiX: BX(1.2816), hiY: BY(1.2816), loL: (BX(-1.2816) / 5.2).toFixed(2) + '%', hiL: (BX(1.2816) / 5.2).toFixed(2) + '%' };
+    const btcGrid = { v: Array.from({ length: 14 }, (_, i) => 20 + i * 37), h: [140, 158, 176, 194, 212, 230] };
+
+    // nav
+    const navItems = [['portfel', 'Portfel'], ['plan', 'Plan'], ['wynik', 'Wynik'], ['porownanie', 'Porównanie'], ['zalozenia', 'Założenia'], ['ustawienia', 'Ustawienia']];
+    const live = ['portfel', 'wynik'];
+    const nav = navItems.map(([k, label], i) => ({
+      idx: `0${i + 1}`, label,
+      bg: view === k ? 'rgba(255,255,255,0.16)' : 'transparent',
+      color: view === k ? '#ffffff' : live.includes(k) ? 'rgba(242,245,251,0.82)' : 'rgba(242,245,251,0.45)',
+      onClick: () => live.includes(k) && this.setState({ view: k }),
+    }));
+
+    const tg = (label, on, key) => ({ label, on, track: on ? P.accent2 : 'rgba(255,255,255,0.08)', knob: on ? '#ffffff' : 'rgba(255,255,255,0.7)', glow: on ? P.accent : 'transparent', kx: on ? 18 : 0, onClick: () => this.setState({ [key]: !on }) });
+
+    const split = (str) => { const mm = str.match(/^([\d.,]+)[\s\u00a0]+(.*)$/); return mm ? [mm[1], mm[2]] : [str, '']; };
+    const [heroNum, heroUnit] = split(this.pln(med));
+    const [totalNum, totalUnit] = split(this.pln(total));
+
+    const NOTES = {
+      IKE: 'Reguły IKE (limit wpłat, wypłata bez podatku od 60 lat, wcześniej 19% od zysku) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty.',
+      IKZE: 'Reguły IKZE (limit wpłat, zwrot podatku, 10% od wypłaty od 65 lat, wcześniej uproszczone 19% od zysku zamiast zwrotu odliczeń) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty.',
+    };
+    const upd = (i, patch) => this.setState((st) => ({ positions: st.positions.map((p, j) => (j === i ? { ...p, ...patch } : p)) }));
+    const tiles = positions.map((p, i) => ({
+      name: p.name, idx: `[${String(i + 1).padStart(2, '0')}]`,
+      valueStr: new Intl.NumberFormat('pl-PL').format(p.value),
+      onChange: (e) => upd(i, { value: this.parse(e.target.value) }),
+      note: NOTES[p.wrapper] || '',
+      wrappers: [['taxable', 'Zwykłe'], ['IKE', 'IKE'], ['IKZE', 'IKZE']].map(([w, l]) => ({ label: l, bg: p.wrapper === w ? 'rgba(255,255,255,0.16)' : 'transparent', color: p.wrapper === w ? '#fff' : 'rgba(242,245,251,0.7)', onClick: () => upd(i, { wrapper: w }) })),
+      onRemove: () => this.setState((st) => ({ positions: st.positions.filter((_, j) => j !== i) })),
+    }));
+    const tints = [P.accent, 'rgba(255,255,255,0.85)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.18)'];
+    const alloc = positions.map((p, i) => ({ name: p.name, flex: Math.max(p.value, 1), pct: `${total ? Math.round((p.value / total) * 100) : 0}%`, color: p.id.startsWith('btc') ? P.accent : tints[(i % 4) + 1], glow: p.id.startsWith('btc') ? P.accent : 'transparent' }));
+    const picker = [['btc', 'Bitcoin'], ['eq', 'Akcje'], ['bond', 'Obligacje'], ['cash', 'Gotówka']].map(([id, label]) => ({ label, onClick: () => this.setState((st) => ({ positions: [...st.positions, { id: id + '-' + Date.now(), name: label, value: 10000, wrapper: 'taxable' }] })) }));
+
+    return {
+      bgRef: this.bgRef, grainRef: this.grainRef, grainOpacity: this.props.grain === false ? 0 : 0.14,
+      accent: P.accent, accent2: P.accent2,
+      isWynik: view === 'wynik', isPortfel: view === 'portfel', nav,
+      t, yearsLabel: yl, calYear: 2026 + t, basis, heroNum, heroUnit,
+      btcShareLabel: `${Math.round(s * 100)}%`,
+      toggles: [tg('Realnie (w dzisiejszych złotych)', real, 'real'), tg('Po podatku', afterTax, 'afterTax'), tg('Tryb eksperta', expert, 'expert')],
+      onSlider: (e) => this.setState({ t: Number(e.target.value) }),
+      onFanPointer: (e) => {
+        const r = e.currentTarget.getBoundingClientRect(); if (!r.width) return;
+        const px = ((e.clientX - r.left) / r.width) * 1000;
+        const nt = Math.max(1, Math.min(20, Math.round(((px - 70) / 915) * 20)));
+        if (nt !== this.state.t) this.setState({ t: nt });
+      },
+      fan, yTicks, xTicks, scrubX: X(t),
+      orbMed: { x: X(t), y: Y(med) }, orbLo: { x: X(t), y: Y(p10) }, orbHi: { x: X(t), y: Y(p90) },
+      readout: [{ pre: 'w 9 na 10 przyszłości więcej niż', val: this.pln(p10) }, { pre: 'w 5 na 10 więcej niż', val: this.pln(med) }, { pre: 'w 1 na 10 więcej niż', val: this.pln(p90) }],
+      kpis, hist, hasBtc: btcVal > 0, btc, btcCurve, btcGrid,
+      btcPriceStr: new Intl.NumberFormat('pl-PL').format(btcPrice),
+      onBtcPrice: (e) => this.setState({ btcPrice: Math.max(1, this.parse(e.target.value)) }),
+      totalNum, totalUnit, tiles, alloc, picker, goWynik: () => this.setState({ view: 'wynik' }),
+    };
+  }
+}
+</script>
+</body>
+</html>
