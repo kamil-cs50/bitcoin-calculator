@@ -7,6 +7,7 @@ import { applyTheme, useThemeStore } from './state/themeStore';
 import { useUpdateStore } from './state/updateStore';
 import { registerSW } from 'virtual:pwa-register';
 import '@fontsource-variable/sora';
+import '@fontsource-variable/geist-mono';
 import './styles.css';
 
 applyTheme(useThemeStore.getState().theme);
