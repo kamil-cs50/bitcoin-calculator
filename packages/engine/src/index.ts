@@ -7,6 +7,7 @@ export { fanChart, summarize, histogram, samplePathIndices } from './stats/summa
 export type { FanChart, Summary } from './stats/summary';
 export { modelCheck } from './stats/modelCheck';
 export { wilson, quantileCI } from './stats/intervals';
+export { survivalCurve, probRuinWhileAlive, remainingLifeExpectancy } from './stats/mortality';
 export type { ModelCheckRow } from './stats/modelCheck';
 export { solveSafeWithdrawal } from './solvers/safeWithdrawal';
 export { solveRequiredContribution } from './solvers/requiredContribution';

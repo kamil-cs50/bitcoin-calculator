@@ -4,7 +4,7 @@ import { DatasetSchema, type Dataset } from './schema';
 // w bundlu przeglądarkowym bez fs. Gdy plików jeszcze nie ma, glob jest pusty.
 const FILES = import.meta.glob('../datasets/*/*.json', { eager: true, import: 'default' });
 
-const PARTS = ['assets', 'crypto', 'market', 'inflation', 'fx', 'edo', 'taxPL'] as const;
+const PARTS = ['assets', 'crypto', 'market', 'inflation', 'fx', 'edo', 'taxPL', 'lifeTables'] as const;
 
 export type DatasetVersion = '2026.11';
 

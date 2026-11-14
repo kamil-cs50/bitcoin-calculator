@@ -16,6 +16,7 @@ separator `;` lub `,`, nagłówek opcjonalny).
 | `calibrate-fx.ts --input kurs.csv` lub `--fetch USD\|EUR --from --to` [`--cpi-pl`, `--cpi-foreign`] | kursy NBP tabela A (okna 93 dni), opcjonalnie CPI | `σ` 12-mies. zmiany `ln q`, `φ` miesięczne i półokres (tylko przy CPI; sprawdzenie `fxPhi`) |
 | `calibrate-assets.ts --input id=plik.csv ...` | poziomy indeksów (pliki użytkownika) | `σ`, średni log-zwrot, autokorelacja, korelacje (ściąganie Ledoita–Wolfa) |
 | `calibrate-regimes.ts --input plik.csv` | miesięczne poziomy indeksu | `p01`, `p10`, `κ₁`, `Δ`, `ν`, logLik (EM z filtrem Hamiltona, t-Studenta) |
+| `convert-gus-life-table.ts --input tablica_a.xlsx [--output plik.json] [--accessed YYYY-MM-DD]` | XLSX „Tablica A” GUS (pobrany ręcznie) | `datasets/2026.11/lifeTables.json`: `q_x` 0–100 (M, K ogółem) + opublikowane `e_0`, `e_60`, `e_65`; **zapisuje** plik zbioru (`--output -` na stdout) |
 
 Skrypty importują `calibrateInflation` i `fxPhi` z `@sim/engine` (devDependency; `@sim/engine` nie zależy od
 `@sim/data`, brak cyklu) oraz zbiór danych przez `@sim/data/node`.
@@ -27,6 +28,7 @@ Skrypty importują `calibrateInflation` i `fxPhi` z `@sim/engine` (devDependency
 | NBP Web API (`api.nbp.pl`) | `curl -m 10` (kurs USD) oraz `calibrate-fx.ts --fetch USD/EUR` od 2002-01-02 do 2026-11-12 | **Udane** (HTTP 200, okna po 93 dni) |
 | GUS BDL (`bdl.stat.gov.pl`) | jedno zapytanie testowe | Serwis odpowiada (HTTP 200), ale znalezione zmienne (podmiot P2955, 217230–217238) są roczne. Miesięcznego szeregu poziomów CPI **nie pobrano**; kalibracji inflacji nie wykonano na realnych danych |
 | FRED (`fredgraph.csv`) | jedno zapytanie testowe | HTTP 200, szeregu nie pobierano (brak sprawdzenia oznaczenia „Copyright”) |
+| GUS, Tablica A (trwanie życia 2025) | `curl` strony publikacji, potem pobranie XLSX z linku „Tablica A” (`stat.gov.pl/download/gfx/portalinformacyjny/pl/defaultaktualnosci/5470/2/20/1/tablica_a_...xlsx`), 2026-11-14 | **Udane**; pełna tablica 0–100 lat, arkusze „Ogółem mężczyźni/kobiety”. Wygenerowano `lifeTables.json` skryptem `convert-gus-life-table.ts`; `verified: 'yes'` (odczytane z pliku). Kontrola: q_0 M 0,00333, K 0,00316; e_0, e_60, e_65 z `q_x` zgodne z publikacją (±0,15) |
 | Indeksy akcji (MSCI, WIG itd.) | — | Brak plików od użytkownika; `calibrate-assets` i `calibrate-regimes` sprawdzone tylko na danych syntetycznych |
 
 ## Propozycje kalibracji (nie wprowadzone do zbioru)

@@ -189,6 +189,24 @@ export const TaxPresetSchema = z.object({
 });
 export type TaxPreset = z.infer<typeof TaxPresetSchema>;
 
+/** Tablica trwania życia jednej płci (spec 4.12): q_x dla wieku 0–100 oraz opublikowane punkty kontrolne e_x. */
+export const LifeTableSchema = z.object({
+  /** Prawdopodobieństwo zgonu przed ukończeniem x+1 lat, x = 0..100. */
+  qx: z.array(z.number().finite().gt(0).max(1)).length(101),
+  e0: ParamSchema,
+  e60: ParamSchema,
+  e65: ParamSchema,
+});
+export type LifeTable = z.infer<typeof LifeTableSchema>;
+
+/** Tablice trwania życia GUS (4.12) i kohortowa poprawka „+2 lata” (założenie). */
+export const LifeTablesSchema = z.object({
+  male: LifeTableSchema,
+  female: LifeTableSchema,
+  cohortExtraYears: ParamSchema,
+});
+export type LifeTables = z.infer<typeof LifeTablesSchema>;
+
 export const DatasetSchema = z.object({
   version: z.string().min(1),
   assets: z.record(z.string(), AssetPresetSchema),
@@ -198,5 +216,6 @@ export const DatasetSchema = z.object({
   fx: z.object({ USD: FxPresetSchema, EUR: FxPresetSchema }),
   edo: EdoPresetSchema,
   taxPL: TaxPresetSchema,
+  lifeTables: LifeTablesSchema,
 });
 export type Dataset = z.infer<typeof DatasetSchema>;

@@ -64,6 +64,19 @@ describe('zbiór danych 2026.11', () => {
     expect(d.inflation.cpiLevels).toHaveLength(13);
   });
 
+  it('tablice trwania życia GUS: q_x 0-100 obu płci, wartości kontrolne, q_0, +2 lata jako założenie', () => {
+    const lt = d.lifeTables;
+    expect(lt.male.qx).toHaveLength(101);
+    expect(lt.female.qx).toHaveLength(101);
+    expect(lt.male.qx[0]).toBe(0.00333);
+    expect(lt.female.qx[0]).toBe(0.00316);
+    expect(lt.male.e60.value).toBe(20.04);
+    expect(lt.female.e60.value).toBe(24.71);
+    expect(lt.male.e60.verified).toBe('yes');
+    expect(lt.cohortExtraYears.kind).toBe('assumption');
+    expect(lt.cohortExtraYears.verified).toBe('no');
+  });
+
   it('każdy Param w całym zbiorze przechodzi ParamSchema (przejście rekurencyjne)', () => {
     const found: [string, unknown][] = [];
     collectParams(d, 'dataset', found);

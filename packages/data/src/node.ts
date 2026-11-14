@@ -4,7 +4,7 @@ import { DatasetSchema, type Dataset } from './schema';
 
 // Wariant loadDataset dla czystego Node (skrypty, tsx): czyta pliki z dysku przez fs,
 // bez import.meta.glob (który działa tylko w Vite/Vitest). Dostępny jako `@sim/data/node`.
-const PARTS = ['assets', 'crypto', 'market', 'inflation', 'fx', 'edo', 'taxPL'] as const;
+const PARTS = ['assets', 'crypto', 'market', 'inflation', 'fx', 'edo', 'taxPL', 'lifeTables'] as const;
 const DATASETS_DIR = fileURLToPath(new URL('../datasets/', import.meta.url));
 
 /** Wersje, dla których istnieje komplet plików JSON. */
