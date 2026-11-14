@@ -1,4 +1,12 @@
 export const ENGINE_VERSION = '0.1.0';
+export * from './types';
+export { validateScenario } from './validate';
+export type { ValidationResult } from './validate';
+export { runBatch, mergeResults, STAGES } from './runner';
+export { fanChart, summarize, histogram, samplePathIndices } from './stats/summary';
+export { modelCheck } from './stats/modelCheck';
+export { solveSafeWithdrawal } from './solvers/safeWithdrawal';
+export { solveRequiredContribution } from './solvers/requiredContribution';
+export { effectiveVol, fxPhi } from './models/fx';
 export { calibrateInflation } from './models/inflation';
-export { fxPhi } from './models/fx';
-export type { RegimeParams } from './types';
+export { meanExpHalfVar, buildScaleTable } from './math/scaleTable';

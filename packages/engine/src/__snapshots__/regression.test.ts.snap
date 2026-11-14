@@ -1,0 +1,146 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > accumulation: summarize zgodne z migawką 1`] = `
+{
+  "cvar5": 414969,
+  "maxDrawdown": {
+    "p50": 0.361005,
+    "p90": 0.549754,
+  },
+  "mean": 1306600,
+  "median": 1118380,
+  "medianCI": [
+    1088730,
+    1151620,
+  ],
+  "p10": 599192,
+  "p90": 2237560,
+  "probCollapse": {
+    "btc": 0.2175,
+    "deposit": 0,
+    "edo": 0,
+    "globalEquity": 0,
+  },
+  "probGoal": {
+    "ci": [
+      0.264177,
+      0.303653,
+    ],
+    "p": 0.2835,
+  },
+  "probRealLoss": {
+    "ci": [
+      0,
+      0.00191705,
+    ],
+    "p": 0,
+  },
+  "probRuin": {
+    "ci": [
+      0,
+      0.00191705,
+    ],
+    "p": 0,
+  },
+  "realCagr": {
+    "p10": -0.00257222,
+    "p50": 0.0398174,
+    "p90": 0.082742,
+  },
+  "worst12m": {
+    "p10": -0.418662,
+  },
+}
+`;
+
+exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > btcHeavy: summarize zgodne z migawką 1`] = `
+{
+  "cvar5": 25664.1,
+  "maxDrawdown": {
+    "p50": 0.476806,
+    "p90": 0.690242,
+  },
+  "mean": 292323,
+  "median": 183869,
+  "medianCI": [
+    173618,
+    196006,
+  ],
+  "p10": 52808.8,
+  "p90": 648607,
+  "probCollapse": {
+    "btc": 0.1385,
+    "deposit": 0,
+    "globalEquity": 0,
+  },
+  "probGoal": undefined,
+  "probRealLoss": {
+    "ci": [
+      0.213055,
+      0.249977,
+    ],
+    "p": 0.231,
+  },
+  "probRuin": {
+    "ci": [
+      0,
+      0.00191705,
+    ],
+    "p": 0,
+  },
+  "realCagr": {
+    "p10": -0.0347934,
+    "p50": 0.0557446,
+    "p90": 0.153349,
+  },
+  "worst12m": {
+    "p10": -0.537574,
+  },
+}
+`;
+
+exports[`regresja (T8): scenariusze wzorcowe, ziarno 1, 2000 ścieżek > retirement: summarize zgodne z migawką 1`] = `
+{
+  "cvar5": 0,
+  "maxDrawdown": {
+    "p50": 0.166508,
+    "p90": 0.262873,
+  },
+  "mean": 11.9289,
+  "median": 0,
+  "medianCI": [
+    0,
+    0,
+  ],
+  "p10": 0,
+  "p90": 0,
+  "probCollapse": {
+    "bonds": 0,
+    "edo": 0,
+    "globalEquity": 0,
+  },
+  "probGoal": undefined,
+  "probRealLoss": {
+    "ci": [
+      0.998083,
+      1,
+    ],
+    "p": 1,
+  },
+  "probRuin": {
+    "ci": [
+      0.909955,
+      0.933425,
+    ],
+    "p": 0.9225,
+  },
+  "realCagr": {
+    "p10": 0.00730173,
+    "p50": 0.023453,
+    "p90": 0.0442792,
+  },
+  "worst12m": {
+    "p10": -0.218534,
+  },
+}
+`;
