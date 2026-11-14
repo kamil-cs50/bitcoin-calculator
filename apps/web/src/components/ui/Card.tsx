@@ -14,11 +14,11 @@ export function Card({ title, aside, className = '', children }: CardProps) {
   return (
     <section
       aria-labelledby={title ? id : undefined}
-      className={`rounded-card border border-border bg-surface p-4 shadow-sm sm:p-5 ${className}`}
+      className={`glass rounded-card p-4 sm:p-6 ${className}`}
     >
       {title && (
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 id={id} className="text-base font-semibold">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h2 id={id} className="text-base font-medium tracking-[-0.01em]">
             {title}
           </h2>
           {aside}

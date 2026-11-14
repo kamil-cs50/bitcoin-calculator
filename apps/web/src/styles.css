@@ -1,85 +1,103 @@
 @import "tailwindcss";
 
 /*
- * Tokeny projektu. Kontrast sprawdzony względem WCAG 2.2 AA (tekst >= 4,5:1,
- * obramowania pól i fokus >= 3:1). Motyw ciemny: preferencja systemu albo
- * atrybut data-theme na <html>.
+ * Tokeny projektu (FeatureView, układ v3). Kontrast sprawdzony względem WCAG 2.2 AA (tekst >= 4,5:1,
+ * obramowania pól i fokus >= 3:1). Motyw ciemny (domyślny w wyglądzie v3): preferencja systemu albo
+ * atrybut data-theme na <html>. Szkło: --glass-blur domyślnie 0 px (sama tafla, bez rozmycia tła).
  */
 :root {
-  --bg: #fafaf9;
+  --bg: #eef2fb;
   --surface: #ffffff;
-  --surface-2: #f5f5f4;
-  --fg: #1c1917;
-  --muted: #57534e;
-  --border: #d6d3d1;
-  --border-strong: #78716c;
-  --accent: #b45309;
-  --accent-hover: #92400e;
+  --surface-2: #e9eef9;
+  --fg: #0b1020;
+  --muted: #4a5470;
+  --border: #d5ddee;
+  --border-strong: #6f7a94;
+  --accent: #1d4ed8;
+  --accent-hover: #1e40af;
   --accent-fg: #ffffff;
-  --accent-soft: #fef3c7;
-  --accent-soft-fg: #78350f;
+  --accent-soft: #dfe8ff;
+  --accent-soft-fg: #1e3a8a;
   --danger: #b91c1c;
   --danger-hover: #991b1b;
   --danger-soft: #fee2e2;
   --ok: #166534;
   --ok-soft: #dcfce7;
   --focus: #1d4ed8;
-  /* wykresy: paleta Okabe-Ito (bezpieczna dla daltonistów); znaczenie niesie też kształt i podpis */
-  --chart-band: #0072b2;
-  --chart-mark: #d55e00;
-  --chart-grid: #d6d3d1;
+  /* wykresy: kolor niesie też kształt (grubość, przerywana linia) i podpis */
+  --chart-band: #2a55ff;
+  --chart-mark: #0b1020;
+  --chart-grid: #d5ddee;
+  /* szkło (wersja jasna) */
+  --glass-fill: rgba(255, 255, 255, 0.66);
+  --glass-hi: rgba(255, 255, 255, 0.6);
+  --glass-edge: rgba(255, 255, 255, 0.95);
+  --glass-shadow: 0 24px 60px -34px rgba(20, 40, 110, 0.35);
+  --glass-blur: 0px;
+  /* tło „żyjące” jest tylko w ciemnym motywie */
+  --ambient-opacity: 0;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0c0a09;
-    --surface: #1c1917;
-    --surface-2: #292524;
-    --fg: #fafaf9;
-    --muted: #a8a29e;
-    --border: #44403c;
-    --border-strong: #a8a29e;
-    --accent: #f59e0b;
-  --accent-hover: #fbbf24;
-    --accent-fg: #1c1917;
-    --accent-soft: #451a03;
-    --accent-soft-fg: #fde68a;
-    --danger: #f87171;
-  --danger-hover: #fca5a5;
-    --danger-soft: #450a0a;
-    --ok: #4ade80;
-    --ok-soft: #052e16;
-    --focus: #93c5fd;
-    --chart-band: #56b4e9;
-    --chart-mark: #e69f00;
-    --chart-grid: #44403c;
+    --bg: #030409;
+    --surface: #0b0e1c;
+    --surface-2: #151a2e;
+    --fg: #eef1f8;
+    --muted: #b4bdd3;
+    --border: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(255, 255, 255, 0.3);
+    --accent: #2a55ff;
+    --accent-hover: #3d6bff;
+    --accent-fg: #ffffff;
+    --accent-soft: rgba(42, 85, 255, 0.2);
+    --accent-soft-fg: #cfdcff;
+    --danger: #ff8080;
+    --danger-hover: #ffa0a0;
+    --danger-soft: rgba(255, 90, 90, 0.14);
+    --ok: #6ee7a8;
+    --ok-soft: rgba(110, 231, 168, 0.12);
+    --focus: #9db9ff;
+    --chart-band: #7fa8ff;
+    --chart-mark: #ffffff;
+    --chart-grid: rgba(255, 255, 255, 0.08);
+    --glass-fill: rgba(9, 12, 28, 0.55);
+    --glass-hi: rgba(255, 255, 255, 0.075);
+    --glass-edge: rgba(255, 255, 255, 0.22);
+    --glass-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.85);
+    --ambient-opacity: 1;
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #0c0a09;
-  --surface: #1c1917;
-  --surface-2: #292524;
-  --fg: #fafaf9;
-  --muted: #a8a29e;
-  --border: #44403c;
-  --border-strong: #a8a29e;
-  --accent: #f59e0b;
-  --accent-hover: #fbbf24;
-  --accent-fg: #1c1917;
-  --accent-soft: #451a03;
-  --accent-soft-fg: #fde68a;
-  --danger: #f87171;
-  --danger-hover: #fca5a5;
-  --danger-soft: #450a0a;
-  --ok: #4ade80;
-  --ok-soft: #052e16;
-  --focus: #93c5fd;
-  --chart-band: #56b4e9;
-  --chart-mark: #e69f00;
-  --chart-grid: #44403c;
+  --bg: #030409;
+  --surface: #0b0e1c;
+  --surface-2: #151a2e;
+  --fg: #eef1f8;
+  --muted: #b4bdd3;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.3);
+  --accent: #2a55ff;
+  --accent-hover: #3d6bff;
+  --accent-fg: #ffffff;
+  --accent-soft: rgba(42, 85, 255, 0.2);
+  --accent-soft-fg: #cfdcff;
+  --danger: #ff8080;
+  --danger-hover: #ffa0a0;
+  --danger-soft: rgba(255, 90, 90, 0.14);
+  --ok: #6ee7a8;
+  --ok-soft: rgba(110, 231, 168, 0.12);
+  --focus: #9db9ff;
+  --chart-band: #7fa8ff;
+  --chart-mark: #ffffff;
+  --chart-grid: rgba(255, 255, 255, 0.08);
+  --glass-fill: rgba(9, 12, 28, 0.55);
+  --glass-hi: rgba(255, 255, 255, 0.075);
+  --glass-edge: rgba(255, 255, 255, 0.22);
+  --glass-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.85);
+  --ambient-opacity: 1;
   color-scheme: dark;
 }
 
@@ -101,8 +119,8 @@
   --color-danger-soft: var(--danger-soft);
   --color-ok: var(--ok);
   --color-ok-soft: var(--ok-soft);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --radius-card: 1rem;
+  --font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius-card: 1.75rem;
   --min-target: 2.75rem; /* 44 px: minimalny cel dotykowy */
 }
 
@@ -111,6 +129,7 @@ html {
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -130,6 +149,94 @@ body {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
   border-radius: 0.25rem;
+}
+
+/*
+ * Szkło („liquid glass” bez zniekształceń): tafla z lekkim połyskiem u góry, jasną krawędzią
+ * i wewnętrzną poświatą. Rozmycie tła ustawia --glass-blur (domyślnie 0 px).
+ */
+@layer components {
+  .glass {
+    background-color: var(--glass-fill);
+    background-image: linear-gradient(135deg, var(--glass-hi) 0%, transparent 38%, transparent 68%, var(--glass-hi) 100%);
+    border: 1px solid var(--border);
+    box-shadow:
+      inset 1px 1px 0.5px var(--glass-edge),
+      inset 0 0 44px rgba(120, 150, 255, 0.07),
+      var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+  }
+}
+
+/*
+ * Tło „żyjące”: powolny dryf niebieskiej poświaty i pionowych smug (transform, bez migotania)
+ * oraz tekstura szumu nałożona trybem screen, rozciągnięta poza krawędzie ekranu.
+ */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--bg);
+  opacity: var(--ambient-opacity);
+}
+.ambient::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(55% 42% at 24% 102%, rgba(42, 85, 255, 0.5) 0%, rgba(42, 85, 255, 0) 70%),
+    radial-gradient(40% 32% at 88% 4%, rgba(77, 125, 255, 0.26) 0%, rgba(77, 125, 255, 0) 70%),
+    repeating-linear-gradient(90deg, rgba(157, 185, 255, 0) 0 140px, rgba(157, 185, 255, 0.06) 200px, rgba(157, 185, 255, 0) 290px);
+  animation: fv-drift 28s ease-in-out infinite;
+  will-change: transform;
+}
+.ambient::after {
+  content: "";
+  position: absolute;
+  inset: -7%;
+  background-image: url(/noise.webp);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.28;
+}
+@keyframes fv-drift {
+  0%, 100% { transform: translate3d(-3%, 0, 0) scale(1); }
+  50% { transform: translate3d(3%, -2%, 0) scale(1.06); }
+}
+
+/*
+ * Świecące elementy wykresów: wszystkie korzystają z jednej osi czasu (6 s, te same opóźnienia),
+ * więc płyną synchronicznie.
+ */
+@keyframes fv-flow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -1; }
+}
+.fv-flow {
+  fill: none;
+  stroke-linecap: round;
+  animation: fv-flow 6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+@keyframes fv-ring {
+  0% { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+.fv-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fv-ring 3s ease-out infinite;
+}
+@keyframes fv-shimmer {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.fv-shimmer {
+  animation: fv-shimmer 6s ease-in-out infinite;
 }
 
 /* Animacje wejścia arkusza i podpowiedzi; wyłączane przy prefers-reduced-motion. */

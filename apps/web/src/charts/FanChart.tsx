@@ -37,6 +37,8 @@ export function nearestIndex(months: Int32Array, month: number): number {
 export function FanChart({ fan, month, onMonthChange, formatValue, label }: FanChartProps) {
   const { t } = useLingui();
   const titleId = useId();
+  // id bez dwukropków z useId: używany w odwołaniu url(#…) filtra poświaty
+  const glowId = `${useId().replace(/:/g, '')}-glow`;
   const G = fan.months.length;
   const L = fan.levels.length;
   const at = (l: number, j: number): number => fan.values[l * G + j]!;
@@ -123,10 +125,27 @@ export function FanChart({ fan, month, onMonthChange, formatValue, label }: FanC
             strokeDasharray={l === 0 || l === L - 1 ? '4 3' : undefined}
           />
         ))}
+        {/* Świecące linie: wszystkie płyną w tym samym rytmie (klasa fv-flow, wspólna oś czasu 6 s). */}
+        <defs>
+          <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" />
+          </filter>
+        </defs>
+        {[
+          { l: mid, w: 7, op: 0.85 },
+          { l: 1, w: 5, op: 0.5 },
+          { l: L - 2, w: 5, op: 0.5 },
+        ].map(({ l, w, op }) => (
+          <g key={`glow-${l}`} filter={`url(#${glowId})`} opacity={op} aria-hidden="true">
+            <path d={lineGen(l)} pathLength={1} className="fv-flow" stroke="var(--chart-band)" strokeWidth={w} strokeDasharray="0.14 0.86" />
+            <path d={lineGen(l)} pathLength={1} className="fv-flow" stroke="#fff" strokeWidth={1.5} strokeDasharray="0.05 0.95" />
+          </g>
+        ))}
         <line x1={px} x2={px} y1={M.top} y2={H - M.bottom} stroke="var(--chart-mark)" strokeWidth={2} />
         {lines.map(({ l }) => (
           <circle key={l} cx={px} cy={y(at(l, j))} r={4} fill="var(--chart-mark)" stroke="var(--surface)" strokeWidth={1.5} />
         ))}
+        <circle cx={px} cy={y(at(mid, j))} r={7} fill="none" stroke="var(--chart-band)" strokeWidth={1.5} className="fv-ring" aria-hidden="true" />
       </svg>
       <ul data-testid="fan-readout" className="m-0 list-none p-0 text-sm">
         {lines.map(({ l, k }) => {

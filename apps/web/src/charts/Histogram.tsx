@@ -42,6 +42,7 @@ export function Histogram({ values, bins = 30, formatValue, label }: HistogramPr
             height={H - M.bottom - y(c)}
             fill="var(--chart-band)"
             fillOpacity={0.75}
+            className="fv-shimmer"
           />
         ))}
         <line x1={M.left} x2={W - M.right} y1={H - M.bottom} y2={H - M.bottom} stroke="var(--border-strong)" />

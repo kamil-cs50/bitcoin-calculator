@@ -7,7 +7,7 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pl\n"
 
-#: src/features/results/Dashboard.tsx:136
+#: src/features/results/Dashboard.tsx:151
 msgid "(roczna)"
 msgstr "(roczna)"
 
@@ -20,12 +20,12 @@ msgstr "{bad} z {0} pozycji odbiega od wejścia"
 msgid "{h} godz. temu"
 msgstr "{h} godz. temu"
 
-#: src/charts/FanChart.tsx:140
-#: src/charts/Histogram.tsx:57
+#: src/charts/FanChart.tsx:159
+#: src/charts/Histogram.tsx:58
 msgid "{label}: dane w tabeli"
 msgstr "{label}: dane w tabeli"
 
-#: src/charts/FanChart.tsx:94
+#: src/charts/FanChart.tsx:96
 msgid "{label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem."
 msgstr "{label}. Pasma od 5% do 95% możliwych wartości w kolejnych latach; dokładne liczby w tabeli pod wykresem."
 
@@ -56,6 +56,10 @@ msgstr "{name} (ETF/ETP)"
 #: src/features/results/RiskCard.tsx:68
 msgid "{name} to {value}% wartości i {risk}% ryzyka"
 msgstr "{name} to {value}% wartości i {risk}% ryzyka"
+
+#: src/features/results/Dashboard.tsx:226
+msgid "{paths} przyszłości"
+msgstr "{paths} przyszłości"
 
 #: src/features/assumptions/AssumptionsPanel.tsx:79
 msgid "{scaleText}× domyślnej niepewności"
@@ -329,9 +333,17 @@ msgstr "Cel za ile lat"
 #. placeholder {0}: money(scenario.goal.amountReal)
 #. placeholder {1}: yearsText(scenario.goal.month)
 #. placeholder {2}: b.tax
+#. placeholder {3}: halfPp(s.probGoal.ci)
+#: src/features/results/KpiTiles.tsx:121
+msgid "Cel: {0} w dzisiejszych {unit} za {1}, {2} (±{3} pp)"
+msgstr "Cel: {0} w dzisiejszych {unit} za {1}, {2} (±{3} pp)"
+
+#. placeholder {0}: money(scenario.goal.amountReal)
+#. placeholder {1}: yearsText(scenario.goal.month)
+#. placeholder {2}: b.tax
 #: src/features/results/KpiTiles.tsx:64
-msgid "Cel: {0} w dzisiejszych {unit} za {1}, {2} (±{goalPp} pp)"
-msgstr "Cel: {0} w dzisiejszych {unit} za {1}, {2} (±{goalPp} pp)"
+#~ msgid "Cel: {0} w dzisiejszych {unit} za {1}, {2} (±{goalPp} pp)"
+#~ msgstr "Cel: {0} w dzisiejszych {unit} za {1}, {2} (±{goalPp} pp)"
 
 #. placeholder {0}: money(scenario.goal.amountReal)
 #. placeholder {1}: yearsText(scenario.goal.month)
@@ -445,7 +457,7 @@ msgstr "Dalej"
 msgid "dane"
 msgstr "dane"
 
-#: src/features/results/Dashboard.tsx:146
+#: src/features/results/Dashboard.tsx:161
 msgid "Dane planu są niepoprawne albo niekompletne. Popraw portfel i plan albo zacznij od nowa w Ustawieniach."
 msgstr "Dane planu są niepoprawne albo niekompletne. Popraw portfel i plan albo zacznij od nowa w Ustawieniach."
 
@@ -493,7 +505,7 @@ msgstr "Dodaj Bitcoina do portfela, aby użyć nakładki."
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
 
-#: src/features/results/Dashboard.tsx:239
+#: src/features/results/Dashboard.tsx:269
 msgid "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 msgstr "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 
@@ -618,7 +630,7 @@ msgstr "Gdzie trzymasz bitcoina?"
 msgid "Giełda lub własny portfel"
 msgstr "Giełda lub własny portfel"
 
-#: src/app/Layout.tsx:32
+#: src/app/Layout.tsx:33
 msgid "Główna nawigacja"
 msgstr "Główna nawigacja"
 
@@ -632,6 +644,7 @@ msgid "Grube ogony"
 msgstr "Grube ogony"
 
 #: src/features/plan/PlanEditor.tsx:116
+#: src/features/results/Dashboard.tsx:224
 msgid "Horyzont"
 msgstr "Horyzont"
 
@@ -670,7 +683,7 @@ msgid "Indeksacja wpłat"
 msgstr "Indeksacja wpłat"
 
 #: src/features/methodology/Annex.tsx:101
-#: src/features/results/Dashboard.tsx:135
+#: src/features/results/Dashboard.tsx:150
 msgid "Inflacja"
 msgstr "Inflacja"
 
@@ -809,7 +822,7 @@ msgstr "kobieta"
 msgid "Kobieta"
 msgstr "Kobieta"
 
-#: src/features/portfolio/AssetTile.tsx:41
+#: src/features/portfolio/AssetTile.tsx:48
 msgid "Konto"
 msgstr "Konto"
 
@@ -874,7 +887,7 @@ msgid "Kryptowaluty: przychody roku minus wydatki roku i nadwyżka kosztów z la
 msgstr "Kryptowaluty: przychody roku minus wydatki roku i nadwyżka kosztów z lat poprzednich."
 
 #. placeholder {0}: id.slice(3)
-#: src/features/results/Dashboard.tsx:135
+#: src/features/results/Dashboard.tsx:150
 msgid "Kurs {0}"
 msgstr "Kurs {0}"
 
@@ -912,7 +925,7 @@ msgstr "Kwotę w zł"
 msgid "lat"
 msgstr "lat"
 
-#: src/charts/FanChart.tsx:110
+#: src/charts/FanChart.tsx:112
 msgid "lata od dziś"
 msgstr "lata od dziś"
 
@@ -928,7 +941,7 @@ msgstr "Liczba jednostajna z 32-bitowego wyniku generatora, zawsze ściśle mię
 msgid "Liczba lat"
 msgstr "Liczba lat"
 
-#: src/charts/Histogram.tsx:59
+#: src/charts/Histogram.tsx:60
 msgid "Liczba przyszłości"
 msgstr "Liczba przyszłości"
 
@@ -952,7 +965,7 @@ msgstr "Liczby losowe"
 msgid "liczę dalej, wynik się doprecyzuje"
 msgstr "liczę dalej, wynik się doprecyzuje"
 
-#: src/features/results/Dashboard.tsx:172
+#: src/features/results/Dashboard.tsx:187
 msgid "Liczymy {n} możliwych przyszłości…"
 msgstr "Liczymy {n} możliwych przyszłości…"
 
@@ -1056,11 +1069,11 @@ msgstr "Masz w portfelu mieszkanie, którego nie da się wypłacać po kawałku,
 #~ msgid "Mediana, przed podatkiem"
 #~ msgstr "Mediana, przed podatkiem"
 
-#: src/features/results/KpiTiles.tsx:52
+#: src/features/results/KpiTiles.tsx:95
 msgid "Mediana: połowa przyszłości kończy się wyżej, połowa niżej"
 msgstr "Mediana: połowa przyszłości kończy się wyżej, połowa niżej"
 
-#: src/app/Layout.tsx:69
+#: src/app/Layout.tsx:70
 #: src/features/methodology/Methodology.tsx:59
 msgid "Metodologia"
 msgstr "Metodologia"
@@ -1081,7 +1094,7 @@ msgstr "Miara"
 msgid "Między celem NBP a średnią historyczną (❌ średnia historyczna)."
 msgstr "Między celem NBP a średnią historyczną (❌ średnia historyczna)."
 
-#: src/charts/FanChart.tsx:79
+#: src/charts/FanChart.tsx:81
 msgid "Miesiąc"
 msgstr "Miesiąc"
 
@@ -1151,7 +1164,7 @@ msgstr "Można porównać najwyżej {MAX_COMPARE} scenariusze. Usuń jeden, aby 
 #~ msgid "Najgorsze 5% przyszłości: średnio"
 #~ msgstr "Najgorsze 5% przyszłości: średnio"
 
-#: src/features/results/KpiTiles.tsx:72
+#: src/features/results/KpiTiles.tsx:147
 msgid "Najgorsze 5% przyszłości: średnio ({basis})"
 msgstr "Najgorsze 5% przyszłości: średnio ({basis})"
 
@@ -1159,7 +1172,7 @@ msgstr "Najgorsze 5% przyszłości: średnio ({basis})"
 msgid "Najważniejsze zdanie: model nie jest prognozą. Pokazuje, jak mogą potoczyć się losy portfela przy założeniach, które możesz zobaczyć i zmienić, a nie jak się potoczą. Wynik jest edukacyjny i nie stanowi rekomendacji inwestycyjnej."
 msgstr "Najważniejsze zdanie: model nie jest prognozą. Pokazuje, jak mogą potoczyć się losy portfela przy założeniach, które możesz zobaczyć i zmienić, a nie jak się potoczą. Wynik jest edukacyjny i nie stanowi rekomendacji inwestycyjnej."
 
-#: src/features/results/Dashboard.tsx:219
+#: src/features/results/Dashboard.tsx:246
 msgid "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 msgstr "Najwyższe 1% przyszłości połączono w ostatnim słupku."
 
@@ -1180,7 +1193,7 @@ msgstr "Nie ma osobnych macierzy korelacji dla kryzysu. Wzrost współruchu w kr
 msgid "Nie ma takiej strony"
 msgstr "Nie ma takiej strony"
 
-#: src/features/results/Dashboard.tsx:145
+#: src/features/results/Dashboard.tsx:160
 msgid "Nie możemy policzyć tego scenariusza"
 msgstr "Nie możemy policzyć tego scenariusza"
 
@@ -1204,7 +1217,7 @@ msgstr "Nie udało się pobrać ceny (brak sieci lub limit). Wpisz ją ręcznie 
 msgid "Nie udało się policzyć odpowiedzi. Spróbuj jeszcze raz."
 msgstr "Nie udało się policzyć odpowiedzi. Spróbuj jeszcze raz."
 
-#: src/features/results/Dashboard.tsx:163
+#: src/features/results/Dashboard.tsx:178
 msgid "Nie udało się policzyć wyniku"
 msgstr "Nie udało się policzyć wyniku"
 
@@ -1258,7 +1271,7 @@ msgstr "O aplikacji"
 msgid "Obliczenia idą w puli Web Workerów, poza głównym wątkiem, więc strona nie zamarza. Pętla miesięczna działa na wcześniej przydzielonych tablicach, bez alokacji, a wyniki wracają bez kopiowania. Wynik nie zależy od liczby wątków."
 msgstr "Obliczenia idą w puli Web Workerów, poza głównym wątkiem, więc strona nie zamarza. Pętla miesięczna działa na wcześniej przydzielonych tablicach, bez alokacji, a wyniki wracają bez kopiowania. Wynik nie zależy od liczby wątków."
 
-#: src/features/results/Dashboard.tsx:164
+#: src/features/results/Dashboard.tsx:179
 msgid "Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie albo odśwież stronę, żeby spróbować ponownie."
 msgstr "Obliczenia w tle zakończyły się błędem. Zmień cokolwiek w planie albo odśwież stronę, żeby spróbować ponownie."
 
@@ -1322,7 +1335,7 @@ msgstr "Około {0} miesięcznie: cel osiągniesz {1}."
 msgid "Około {0} miesięcznie: pieniądze starczą {1}."
 msgstr "Około {0} miesięcznie: pieniądze starczą {1}."
 
-#: src/charts/FanChart.tsx:141
+#: src/charts/FanChart.tsx:160
 msgid "Okres"
 msgstr "Okres"
 
@@ -1442,7 +1455,7 @@ msgstr "Percentyle ceny bitcoina w roku {year}"
 msgid "Pesymistyczny"
 msgstr "Pesymistyczny"
 
-#: src/features/results/KpiTiles.tsx:83
+#: src/features/results/KpiTiles.tsx:158
 msgid "pieniądze kończą się przed wybranym rokiem"
 msgstr "pieniądze kończą się przed wybranym rokiem"
 
@@ -1481,7 +1494,7 @@ msgstr "Płeć (opcjonalnie)"
 msgid "po podatku"
 msgstr "po podatku"
 
-#: src/features/results/Dashboard.tsx:186
+#: src/features/results/Dashboard.tsx:201
 msgid "Po podatku"
 msgstr "Po podatku"
 
@@ -1534,11 +1547,11 @@ msgstr "Podłoga (zł miesięcznie, opcjonalnie)"
 msgid "Podręcznikowy"
 msgstr "Podręcznikowy"
 
-#: src/charts/Histogram.tsx:55
+#: src/charts/Histogram.tsx:56
 msgid "Pokaż dane rozkładu w tabeli"
 msgstr "Pokaż dane rozkładu w tabeli"
 
-#: src/charts/FanChart.tsx:138
+#: src/charts/FanChart.tsx:157
 msgid "Pokaż dane wachlarza w tabeli"
 msgstr "Pokaż dane wachlarza w tabeli"
 
@@ -1585,9 +1598,14 @@ msgstr "Portfel"
 msgid "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
 msgstr "Portfel jest pusty. Dodaj pierwsze aktywo poniżej."
 
+#. placeholder {0}: halfPp(deep.ci)
+#: src/features/results/KpiTiles.tsx:128
+msgid "portfel traci ponad 30% od swojego szczytu (cały okres, ±{0} pp)"
+msgstr "portfel traci ponad 30% od swojego szczytu (cały okres, ±{0} pp)"
+
 #: src/features/results/KpiTiles.tsx:70
-msgid "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
-msgstr "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
+#~ msgid "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
+#~ msgstr "portfel traci ponad 30% od swojego szczytu (cały okres, ±{deepPp} pp)"
 
 #: src/features/methodology/Methodology.tsx:342
 msgid "Portfel, rebalans i koszty"
@@ -1607,6 +1625,10 @@ msgstr "Prawdopodobieństwo wyczerpania środków za życia z krzywą przeżycia
 #: src/features/methodology/Methodology.tsx:151
 msgid "Prawdziwe rynki miewają miesiące znacznie gorsze, niż pozwala zwykły rozkład normalny. Dlatego szok miesiąca mnożymy przez losową skalę, wspólną dla wszystkich czynników (aktywa, kursy, inflacja). W niektórych miesiącach wszystko drga mocniej naraz, co odtwarza współruch w kryzysach (por. McNeil, Frey i Embrechts <0/>)."
 msgstr "Prawdziwe rynki miewają miesiące znacznie gorsze, niż pozwala zwykły rozkład normalny. Dlatego szok miesiąca mnożymy przez losową skalę, wspólną dla wszystkich czynników (aktywa, kursy, inflacja). W niektórych miesiącach wszystko drga mocniej naraz, co odtwarza współruch w kryzysach (por. McNeil, Frey i Embrechts <0/>)."
+
+#: src/features/results/Dashboard.tsx:226
+msgid "Próba"
+msgstr "Próba"
 
 #: src/features/plan/WithdrawalForm.tsx:218
 msgid "Procent na start"
@@ -1644,11 +1666,11 @@ msgstr "przed chwilą"
 msgid "przed podatkiem"
 msgstr "przed podatkiem"
 
-#: src/charts/Histogram.tsx:58
+#: src/charts/Histogram.tsx:59
 msgid "Przedział"
 msgstr "Przedział"
 
-#: src/features/results/KpiTiles.tsx:58
+#: src/features/results/KpiTiles.tsx:101
 msgid "Przedział od 10. do 90. percentyla"
 msgstr "Przedział od 10. do 90. percentyla"
 
@@ -1660,7 +1682,7 @@ msgstr "Przedział ufności Wilsona dla prawdopodobieństwa."
 msgid "Przedział uwzględnia tylko błąd losowania symulacji rynku, nie niepewność tablic."
 msgstr "Przedział uwzględnia tylko błąd losowania symulacji rynku, nie niepewność tablic."
 
-#: src/app/Layout.tsx:26
+#: src/app/Layout.tsx:27
 msgid "Przejdź do treści"
 msgstr "Przejdź do treści"
 
@@ -1730,7 +1752,7 @@ msgstr "Realistyczny"
 msgid "Realistyczny: ogony grubsze niż w rozkładzie normalnym i okresy kryzysu. Podręcznikowy: zwroty o rozkładzie log-normalnym, bez kryzysów."
 msgstr "Realistyczny: ogony grubsze niż w rozkładzie normalnym i okresy kryzysu. Podręcznikowy: zwroty o rozkładzie log-normalnym, bez kryzysów."
 
-#: src/features/results/Dashboard.tsx:185
+#: src/features/results/Dashboard.tsx:200
 msgid "Realnie (w dzisiejszych {unit})"
 msgstr "Realnie (w dzisiejszych {unit})"
 
@@ -1758,7 +1780,7 @@ msgstr "Rebalans może być wyłączony, roczny (w styczniu), progowy (gdy udzia
 msgid "Reguły Guytona–Klingera"
 msgstr "Reguły Guytona–Klingera"
 
-#: src/features/portfolio/AssetTile.tsx:58
+#: src/features/portfolio/AssetTile.tsx:65
 msgid "Reguły IKE (limit wpłat, wypłata bez podatku od 60 lat, wcześniej 19% od zysku) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty."
 msgstr "Reguły IKE (limit wpłat, wypłata bez podatku od 60 lat, wcześniej 19% od zysku) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty."
 
@@ -1766,7 +1788,7 @@ msgstr "Reguły IKE (limit wpłat, wypłata bez podatku od 60 lat, wcześniej 19
 msgid "Reguły IKE i IKZE zależą od Twojego wieku (wypłata z IKE bez podatku od 60 lat, z IKZE od 65 lat), a nie zakładamy go za Ciebie. Podaj wiek, żeby wybrać konto {wrapper}."
 msgstr "Reguły IKE i IKZE zależą od Twojego wieku (wypłata z IKE bez podatku od 60 lat, z IKZE od 65 lat), a nie zakładamy go za Ciebie. Podaj wiek, żeby wybrać konto {wrapper}."
 
-#: src/features/portfolio/AssetTile.tsx:59
+#: src/features/portfolio/AssetTile.tsx:66
 msgid "Reguły IKZE (limit wpłat, zwrot podatku, 10% od wypłaty od 65 lat, wcześniej uproszczone 19% od zysku zamiast zwrotu odliczeń) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty."
 msgstr "Reguły IKZE (limit wpłat, zwrot podatku, 10% od wypłaty od 65 lat, wcześniej uproszczone 19% od zysku zamiast zwrotu odliczeń) są niezweryfikowane w ISAP; wymóg 5 lat wpłat pominięty."
 
@@ -1803,7 +1825,7 @@ msgstr "Rocznie (symulacja)"
 msgid "Rocznie, zwrot typowy"
 msgstr "Rocznie, zwrot typowy"
 
-#: src/charts/FanChart.tsx:78
+#: src/charts/FanChart.tsx:80
 msgid "Rok"
 msgstr "Rok"
 
@@ -1845,7 +1867,7 @@ msgstr "Rozkład stacjonarny łańcucha dwóch stanów i jego trwałość."
 #~ msgstr "Rozkład wartości portfela"
 
 #. placeholder {0}: basis.full
-#: src/features/results/Dashboard.tsx:220
+#: src/features/results/Dashboard.tsx:247
 msgid "Rozkład wartości portfela ({0})"
 msgstr "Rozkład wartości portfela ({0})"
 
@@ -1856,7 +1878,7 @@ msgstr "Rozkład wartości portfela ({0})"
 
 #. placeholder {0}: yearsText(month)
 #. placeholder {1}: basis.full
-#: src/features/results/Dashboard.tsx:218
+#: src/features/results/Dashboard.tsx:245
 msgid "Rozkład wartości za {0} ({1})"
 msgstr "Rozkład wartości za {0} ({1})"
 
@@ -1913,7 +1935,7 @@ msgstr "Rynek przełącza się między dwoma stanami: spokojnym i kryzysowym (mo
 msgid "Ryzyko"
 msgstr "Ryzyko"
 
-#: src/features/results/KpiTiles.tsx:68
+#: src/features/results/KpiTiles.tsx:125
 msgid "Ryzyko spadku o ponad 30%"
 msgstr "Ryzyko spadku o ponad 30%"
 
@@ -2015,7 +2037,7 @@ msgstr "Sprzedaż z zyskiem zwiększa zobowiązanie podatkowe płatne w kwietniu
 msgid "Średni zwrot roczny (log)"
 msgstr "Średni zwrot roczny (log)"
 
-#: src/features/results/KpiTiles.tsx:87
+#: src/features/results/KpiTiles.tsx:162
 msgid "Średnia (tryb eksperta)"
 msgstr "Średnia (tryb eksperta)"
 
@@ -2031,11 +2053,11 @@ msgstr "Średnia arytmetyczna wykładnika zwrotu w modelu bez reżimów (liczona
 msgid "Średnia arytmetyczna zwrotu"
 msgstr "Średnia arytmetyczna zwrotu"
 
-#: src/features/results/KpiTiles.tsx:90
+#: src/features/results/KpiTiles.tsx:165
 msgid "Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę."
 msgstr "Średnia jest zawyżana przez rzadkie, skrajnie dobre scenariusze, dlatego jako typowy wynik pokazujemy medianę."
 
-#: src/features/results/KpiTiles.tsx:74
+#: src/features/results/KpiTiles.tsx:149
 msgid "Średnia wartość w najgorszych 5 na 100 przyszłości"
 msgstr "Średnia wartość w najgorszych 5 na 100 przyszłości"
 
@@ -2107,7 +2129,7 @@ msgstr "Suma docelowych wag aktywów płynnych wynosi 0, więc rebalansowanie ni
 msgid "Symulacja"
 msgstr "Symulacja"
 
-#: src/app/Layout.tsx:61
+#: src/app/Layout.tsx:62
 msgid "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 
@@ -2119,7 +2141,7 @@ msgstr "Symulacja idzie miesiąc po miesiącu, nawet do 80 lat. Każda z tysięc
 msgid "Szacuję typowy zwrot portfela…"
 msgstr "Szacuję typowy zwrot portfela…"
 
-#: src/features/results/KpiTiles.tsx:61
+#: src/features/results/KpiTiles.tsx:118
 msgid "Szansa na cel"
 msgstr "Szansa na cel"
 
@@ -2128,7 +2150,7 @@ msgstr "Szansa na cel"
 #~ msgstr "Szansa straty realnej"
 
 #. placeholder {0}: b.tax
-#: src/features/results/KpiTiles.tsx:76
+#: src/features/results/KpiTiles.tsx:151
 msgid "Szansa straty realnej ({0})"
 msgstr "Szansa straty realnej ({0})"
 
@@ -2144,7 +2166,7 @@ msgstr "Szansa upadku do roku {year}: mniej niż 1 na 100"
 msgid "Szansa wejścia w kryzys (na miesiąc)"
 msgstr "Szansa wejścia w kryzys (na miesiąc)"
 
-#: src/features/results/KpiTiles.tsx:81
+#: src/features/results/KpiTiles.tsx:156
 msgid "Szansa wyczerpania portfela"
 msgstr "Szansa wyczerpania portfela"
 
@@ -2156,7 +2178,7 @@ msgstr "Szansa wyjścia z kryzysu (na miesiąc)"
 msgid "Szansa, że środki wyczerpią się, gdy jeszcze żyjesz"
 msgstr "Szansa, że środki wyczerpią się, gdy jeszcze żyjesz"
 
-#: src/features/results/Dashboard.tsx:148
+#: src/features/results/Dashboard.tsx:163
 msgid "Szczegóły techniczne"
 msgstr "Szczegóły techniczne"
 
@@ -2236,7 +2258,7 @@ msgstr "TOS (3-letnie stałe) 4,40% (lista produktów obligacjeskarbowe.pl)."
 msgid "Tożsamość księgowa sprawdzana testem na każdej ścieżce."
 msgstr "Tożsamość księgowa sprawdzana testem na każdej ścieżce."
 
-#: src/features/results/Dashboard.tsx:187
+#: src/features/results/Dashboard.tsx:229
 msgid "Tryb eksperta"
 msgstr "Tryb eksperta"
 
@@ -2273,9 +2295,14 @@ msgstr "Typowe wahania roku: akcje około 15-20%, bitcoin ponad 50%."
 msgid "Typowy wynik"
 msgstr "Typowy wynik"
 
+#. placeholder {0}: b.full
+#: src/features/results/KpiTiles.tsx:90
+msgid "Typowy wynik za {years} ({0})"
+msgstr "Typowy wynik za {years} ({0})"
+
 #: src/features/results/KpiTiles.tsx:50
-msgid "Typowy wynik za {years} ({basis})"
-msgstr "Typowy wynik za {years} ({basis})"
+#~ msgid "Typowy wynik za {years} ({basis})"
+#~ msgstr "Typowy wynik za {years} ({basis})"
 
 #: src/features/methodology/Annex.tsx:139
 #: src/features/methodology/Methodology.tsx:294
@@ -2320,11 +2347,11 @@ msgid "Ustawienia"
 msgstr "Ustawienia"
 
 #: src/features/compare/Compare.tsx:120
-#: src/features/portfolio/AssetTile.tsx:64
+#: src/features/portfolio/AssetTile.tsx:45
 msgid "Usuń"
 msgstr "Usuń"
 
-#: src/features/portfolio/AssetTile.tsx:63
+#: src/features/portfolio/AssetTile.tsx:44
 msgid "Usuń {name}"
 msgstr "Usuń {name}"
 
@@ -2349,7 +2376,7 @@ msgstr "w {k} na 10 przyszłości"
 msgid "w {k} na 10 przyszłości więcej niż"
 msgstr "w {k} na 10 przyszłości więcej niż"
 
-#: src/charts/FanChart.tsx:134
+#: src/charts/FanChart.tsx:153
 msgid "w {k} na 10 przyszłości więcej niż {v}"
 msgstr "w {k} na 10 przyszłości więcej niż {v}"
 
@@ -2359,7 +2386,7 @@ msgstr "w {k} na 100 przyszłości"
 
 #. placeholder {0}: money(s.p10)
 #. placeholder {1}: money(s.p90)
-#: src/features/results/KpiTiles.tsx:56
+#: src/features/results/KpiTiles.tsx:113
 msgid "W 8 na 10 przyszłości między {0} a {1}"
 msgstr "W 8 na 10 przyszłości między {0} a {1}"
 
@@ -2412,7 +2439,7 @@ msgstr "w żadnej przyszłości"
 #~ msgstr "Wachlarz możliwych przyszłości"
 
 #. placeholder {0}: basis.full
-#: src/features/results/Dashboard.tsx:201
+#: src/features/results/Dashboard.tsx:241
 msgid "Wachlarz możliwych przyszłości ({0})"
 msgstr "Wachlarz możliwych przyszłości ({0})"
 
@@ -2421,13 +2448,17 @@ msgstr "Wachlarz możliwych przyszłości ({0})"
 #~ msgstr "Wachlarz możliwych wartości portfela"
 
 #. placeholder {0}: basis.full
-#: src/features/results/Dashboard.tsx:179
+#: src/features/results/Dashboard.tsx:194
 msgid "Wachlarz możliwych wartości portfela ({0})"
 msgstr "Wachlarz możliwych wartości portfela ({0})"
 
 #: src/features/methodology/Methodology.tsx:467
 msgid "Wachlarz pokazuje percentyle 5, 10, 25, 50, 75, 90 i 95 wartości portfela w kolejnych latach, w złotych realnych albo nominalnych. Percentyle liczymy metodą typu 7 <0/>, tą samą co w Excelu i NumPy. Prawdopodobieństwa mają przedziały ufności Wilsona <1/>, a percentyle: przedziały nieparametryczne z rozkładu dwumianowego."
 msgstr "Wachlarz pokazuje percentyle 5, 10, 25, 50, 75, 90 i 95 wartości portfela w kolejnych latach, w złotych realnych albo nominalnych. Percentyle liczymy metodą typu 7 <0/>, tą samą co w Excelu i NumPy. Prawdopodobieństwa mają przedziały ufności Wilsona <1/>, a percentyle: przedziały nieparametryczne z rozkładu dwumianowego."
+
+#: src/features/results/Dashboard.tsx:225
+msgid "Waluta"
+msgstr "Waluta"
 
 #: src/features/methodology/Annex.tsx:121
 #: src/features/methodology/Methodology.tsx:268
@@ -2442,7 +2473,7 @@ msgstr "Wariancja 12-miesięcznej zmiany realnego kursu, z której wyznaczamy zm
 msgid "Wariancja inflacji rok do roku jako suma 12 przyrostów miesięcznych procesu."
 msgstr "Wariancja inflacji rok do roku jako suma 12 przyrostów miesięcznych procesu."
 
-#: src/features/portfolio/AssetTile.tsx:32
+#: src/features/portfolio/AssetTile.tsx:34
 #: src/features/results/RiskCard.tsx:73
 msgid "Wartość"
 msgstr "Wartość"
@@ -2461,11 +2492,11 @@ msgstr "Wartość nie może być większa niż {0}."
 msgid "Wartość nominalna obligacji 100 zł."
 msgstr "Wartość nominalna obligacji 100 zł."
 
-#: src/features/results/Dashboard.tsx:191
+#: src/features/results/Dashboard.tsx:235
 msgid "Wartość po podatku uwzględnia podatek od sprzedaży mieszkania (19% od zysku, o ile sprzedaż nie jest zwolniona po 5 latach od zakupu; bez podanego roku zakupu zwolnienia nie zakładamy)."
 msgstr "Wartość po podatku uwzględnia podatek od sprzedaży mieszkania (19% od zysku, o ile sprzedaż nie jest zwolniona po 5 latach od zakupu; bez podanego roku zakupu zwolnienia nie zakładamy)."
 
-#: src/features/results/KpiTiles.tsx:78
+#: src/features/results/KpiTiles.tsx:153
 msgid "wartość portfela niższa niż dziś po uwzględnieniu inflacji (±{lossPp} pp)"
 msgstr "wartość portfela niższa niż dziś po uwzględnieniu inflacji (±{lossPp} pp)"
 
@@ -2562,7 +2593,7 @@ msgstr "Wpisz cenę 1 BTC w złotych, np. z giełdy. Aplikacja nie pobiera cen s
 msgid "Wpisz dzisiejszą cenę 1 BTC (aplikacja nie pobiera cen sama), a pokażemy możliwe ceny w przyszłości."
 msgstr "Wpisz dzisiejszą cenę 1 BTC (aplikacja nie pobiera cen sama), a pokażemy możliwe ceny w przyszłości."
 
-#: src/features/portfolio/AssetTile.tsx:35
+#: src/features/portfolio/AssetTile.tsx:37
 msgid "Wpisz kwotę."
 msgstr "Wpisz kwotę."
 
@@ -2753,9 +2784,14 @@ msgstr "Zakres w źródłach: {0} – {1}"
 #~ msgid "Zakres wyników"
 #~ msgstr "Zakres wyników"
 
+#. placeholder {0}: b.full
+#: src/features/results/KpiTiles.tsx:100
+msgid "Zakres wyników ({0})"
+msgstr "Zakres wyników ({0})"
+
 #: src/features/results/KpiTiles.tsx:54
-msgid "Zakres wyników ({basis})"
-msgstr "Zakres wyników ({basis})"
+#~ msgid "Zakres wyników ({basis})"
+#~ msgstr "Zakres wyników ({basis})"
 
 #: src/features/settings/DatasetNotice.tsx:32
 msgid "Zaktualizuj parametry"
@@ -2952,7 +2988,7 @@ msgstr "Zwolnienie sprzedaży mieszkania po latach od zakupu"
 msgid "Zwrot czynnika i w miesiącu t: dryf, przesunięcie kryzysowe i szok z mnożnikiem zmienności."
 msgstr "Zwrot czynnika i w miesiącu t: dryf, przesunięcie kryzysowe i szok z mnożnikiem zmienności."
 
-#: src/features/portfolio/AssetTile.tsx:49
+#: src/features/portfolio/AssetTile.tsx:56
 msgid "Zwykłe"
 msgstr "Zwykłe"
 

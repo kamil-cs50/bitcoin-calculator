@@ -20,7 +20,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
+      includeAssets: ['icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'noise.webp'],
       workbox: { globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,json,webmanifest}'] },
       manifest: {
         name: APP_NAME,
@@ -28,8 +28,8 @@ export default defineConfig({
         lang: 'pl',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#f7931a',
+        background_color: '#030409',
+        theme_color: '#2a55ff',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },

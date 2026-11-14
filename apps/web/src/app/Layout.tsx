@@ -18,26 +18,27 @@ export function Layout() {
     { to: '/ustawienia', label: t`Ustawienia` },
   ];
   return (
-    <div className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4">
+    <div className="mx-auto flex min-h-dvh max-w-[1360px] flex-col px-[clamp(18px,3.4vw,48px)]">
+      <div aria-hidden="true" className="ambient" />
       <a
         href="#tresc"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-xl focus:bg-accent focus:px-4 focus:py-3 focus:text-accent-fg"
       >
         <Trans>Przejdź do treści</Trans>
       </a>
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-1 py-3">
-        <NavLink to="/" end className="inline-flex min-h-11 items-center text-lg font-bold">
+      <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4">
+        <NavLink to="/" end className="inline-flex min-h-11 items-center text-sm font-medium tracking-[0.02em] uppercase">
           {APP_NAME}
         </NavLink>
-        <nav aria-label={t`Główna nawigacja`}>
-          <ul className="m-0 flex list-none flex-wrap gap-1 p-0">
+        <nav aria-label={t`Główna nawigacja`} className="glass rounded-full p-1">
+          <ul className="m-0 flex list-none flex-wrap gap-0.5 p-0">
             {items.map((i) => (
               <li key={i.to}>
                 <NavLink
                   to={i.to}
                   className={({ isActive }) =>
-                    `inline-flex min-h-11 items-center rounded-xl px-3 text-base hover:bg-surface-2 ${
-                      isActive ? 'bg-accent-soft font-semibold text-accent-soft-fg' : 'text-fg'
+                    `inline-flex min-h-9 items-center rounded-full px-4 text-sm transition-colors hover:bg-surface-2 ${
+                      isActive ? 'bg-surface-2 font-medium text-fg' : 'text-muted'
                     }`
                   }
                 >
@@ -56,7 +57,7 @@ export function Layout() {
           <Outlet />
         </ErrorBoundary>
       </main>
-      <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-t border-border py-4 text-sm text-muted">
+      <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-border py-6 text-sm text-muted">
         <span>
           <Trans>Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej</Trans>
         </span>

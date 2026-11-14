@@ -15,7 +15,7 @@ import { defaultMaxPaths, runTask } from '../../workers/pool';
 import { currencyWord, useBasis } from './basis';
 import { BtcCard } from './BtcCard';
 import { labelCheckId } from './labels';
-import { KpiTiles } from './KpiTiles';
+import { KpiHero, KpiTiles, computeKpiStats } from './KpiTiles';
 import { ModelCheckPanel } from './ModelCheckPanel';
 import { yearsText } from './periods';
 import { Solvers } from './Solvers';
@@ -91,6 +91,16 @@ export function WarningBanners({ warnings }: { warnings: Warning[] }) {
   );
 }
 
+/** Pozycja paska scenariusza: mała etykieta i wartość. */
+function Meta({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <dt className="font-mono text-xs uppercase tracking-[0.06em] text-muted">{label}</dt>
+      <dd className="m-0 font-medium">{value}</dd>
+    </div>
+  );
+}
+
 function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const { t } = useLingui();
   const assetNames = useAssetNames();
@@ -113,6 +123,11 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const month = result ? (pickedMonth === null ? result.grid[G - 1]! : result.grid[gridIndex(result.grid, pickedMonth)]!) : 0;
   const j = result ? gridIndex(result.grid, month) : 0;
   const histValues = useMemo(() => (result ? winsorize(valuesAt(result, j, { real, afterTax }), 0.99) : null), [result, j, real, afterTax]);
+
+  const stats = useMemo(
+    () => (result ? computeKpiStats(result, scenario, month, real, afterTax) : null),
+    [result, scenario, month, real, afterTax],
+  );
 
   // kontrola modelu po zakończeniu liczenia (osobny, tańszy przebieg samego rynku) w workerze
   const finished = result !== undefined && !state.running;
@@ -165,7 +180,7 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
       </div>
     );
   }
-  if (!result || !fan || !histValues) {
+  if (!result || !fan || !histValues || !stats) {
     const n = new Intl.NumberFormat(numberLocale()).format(maxPaths);
     return (
       <p role="status" className="rounded-card border border-border bg-surface p-6 text-center text-muted">
@@ -177,51 +192,66 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
   const calibrated = checkRows ? checkRows.every((r) => r.ok) : undefined;
   const year = calendarYear(scenario.startYear, scenario.startMonth, month);
   const label = t`Wachlarz możliwych wartości portfela (${basis.full})`;
+  const paths = new Intl.NumberFormat(numberLocale()).format(result.paths);
+
+  // sterowanie wachlarzem w nagłówku jego panelu: pasma realne/nominalne, po podatku i horyzont
+  const fanAside = (
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+      <Toggle label={t`Realnie (w dzisiejszych ${unit})`} checked={real} onCheckedChange={setReal} />
+      <Toggle label={t`Po podatku`} checked={afterTax} onCheckedChange={setAfterTax} />
+      <label className="flex min-h-11 items-center gap-3 text-sm font-medium">
+        <span className="whitespace-nowrap">{t`Rok na wykresie: za ${yearsText(month)} (${year})`}</span>
+        <input
+          type="range"
+          aria-label={t`Rok na wykresie`}
+          aria-valuetext={t`za ${yearsText(month)} (${year})`}
+          min={0}
+          max={G - 1}
+          step={1}
+          value={j}
+          onChange={(e) => setPickedMonth(result.grid[Number(e.target.value)]!)}
+          className="h-11 w-40 accent-accent"
+        />
+      </label>
+    </div>
+  );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 sm:gap-6">
       <Card>
-        <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8">
-          <Toggle label={t`Realnie (w dzisiejszych ${unit})`} checked={real} onCheckedChange={setReal} />
-          <Toggle label={t`Po podatku`} checked={afterTax} onCheckedChange={setAfterTax} />
-          <Toggle label={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
+          <dl className="m-0 flex flex-wrap gap-x-8 gap-y-3">
+            <Meta label={t`Horyzont`} value={yearsText(result.grid[G - 1]!)} />
+            <Meta label={t`Waluta`} value={cur} />
+            <Meta label={t`Próba`} value={t`${paths} przyszłości`} />
+          </dl>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Toggle label={t`Tryb eksperta`} checked={expert} onCheckedChange={setExpert} />
+            <QualityBadge result={result} scenario={scenario} running={state.running} calibrated={calibrated} />
+          </div>
         </div>
         {afterTax && scenario.tax.kind === 'pl' && scenario.positions.some((p) => scenario.assets.find((a) => a.id === p.assetId)?.kind === 'realEstate') && (
-          <p className="m-0 mt-1 text-sm text-muted">
+          <p className="m-0 mt-3 text-sm text-muted">
             {t`Wartość po podatku uwzględnia podatek od sprzedaży mieszkania (19% od zysku, o ile sprzedaż nie jest zwolniona po 5 latach od zakupu; bez podanego roku zakupu zwolnienia nie zakładamy).`}
           </p>
         )}
-        <div className="mt-2">
-          <QualityBadge result={result} scenario={scenario} running={state.running} calibrated={calibrated} />
-        </div>
       </Card>
       <WarningBanners warnings={state.warnings} />
-      <KpiTiles result={result} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
-      <RuinAliveCard result={result} scenario={scenario} dataset={dataset} createWorker={createWorker} />
-      <Card title={t`Wachlarz możliwych przyszłości (${basis.full})`}>
-        <label className="mb-3 flex flex-col gap-1 text-sm font-medium">
-          <span>{t`Rok na wykresie: za ${yearsText(month)} (${year})`}</span>
-          <input
-            type="range"
-            aria-label={t`Rok na wykresie`}
-            aria-valuetext={t`za ${yearsText(month)} (${year})`}
-            min={0}
-            max={G - 1}
-            step={1}
-            value={j}
-            onChange={(e) => setPickedMonth(result.grid[Number(e.target.value)]!)}
-            className="h-11 w-full accent-accent"
-          />
-        </label>
+      <KpiHero stats={stats} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
+      <Card title={t`Wachlarz możliwych przyszłości (${basis.full})`} aside={fanAside}>
         <FanChart fan={fan} month={month} onMonthChange={setPickedMonth} formatValue={money} label={label} />
       </Card>
-      <Card title={t`Rozkład wartości za ${yearsText(month)} (${basis.full})`}>
-        <p className="mb-2 mt-0 text-sm text-muted">{t`Najwyższe 1% przyszłości połączono w ostatnim słupku.`}</p>
-        <Histogram values={histValues} formatValue={money} label={t`Rozkład wartości portfela (${basis.full})`} />
-      </Card>
-      {/* Karta BTC liczy dwa dodatkowe przebiegi w workerach: pokazujemy ją po zakończeniu etapów,
-          żeby nie konkurować z nimi o rdzenie (budżet < 1 s do pierwszego etapu). */}
-      {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} createWorker={createWorker} />}
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[7fr_5fr] lg:items-stretch">
+        <Card title={t`Rozkład wartości za ${yearsText(month)} (${basis.full})`}>
+          <p className="mb-2 mt-0 text-sm text-muted">{t`Najwyższe 1% przyszłości połączono w ostatnim słupku.`}</p>
+          <Histogram values={histValues} formatValue={money} label={t`Rozkład wartości portfela (${basis.full})`} />
+        </Card>
+        {/* Karta BTC liczy dwa dodatkowe przebiegi w workerach: pokazujemy ją po zakończeniu etapów,
+            żeby nie konkurować z nimi o rdzenie (budżet < 1 s do pierwszego etapu). */}
+        {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} createWorker={createWorker} />}
+      </div>
+      <KpiTiles stats={stats} scenario={scenario} month={month} real={real} afterTax={afterTax} expert={expert} />
+      <RuinAliveCard result={result} scenario={scenario} dataset={dataset} createWorker={createWorker} />
       {!state.running && <RiskCard scenario={scenario} createWorker={createWorker} />}
       <Solvers scenario={scenario} createWorker={sim.createWorker} />
       {expert && checkRows && <ModelCheckPanel rows={checkRows} means={check?.means} labelOf={checkLabel} />}

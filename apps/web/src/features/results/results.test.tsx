@@ -16,7 +16,7 @@ import { syncWorker } from '../../workers/syncWorker';
 import * as pool from '../../workers/pool';
 import { BtcCard } from './BtcCard';
 import { Dashboard, WarningBanners } from './Dashboard';
-import { KpiTiles } from './KpiTiles';
+import { KpiHero, KpiTiles, computeKpiStats } from './KpiTiles';
 import { ModelCheckPanel } from './ModelCheckPanel';
 import { QualityBadge } from './QualityBadge';
 import { SIM_SEED, useSimulation } from './useSimulation';
@@ -39,8 +39,13 @@ const money2 = (v: number) => formatMoney(v, 'PLN', { sigDigits: 2 });
 const goalScenario: Scenario = makeScenario({ horizonMonths: 120, goal: { amountReal: 120_000, month: 120 } });
 const result: RunResult = runBatch(goalScenario, { seed: SIM_SEED, paths: 1000 });
 const kpi = (o: { real?: boolean; afterTax?: boolean; expert?: boolean; month?: number } = {}) => (
-  <KpiTiles result={result} scenario={goalScenario} month={o.month ?? 120} real={o.real ?? true} afterTax={o.afterTax ?? true} expert={o.expert ?? false} />
+  <>
+    <KpiHero stats={stats(o)} scenario={goalScenario} month={o.month ?? 120} real={o.real ?? true} afterTax={o.afterTax ?? true} expert={o.expert ?? false} />
+    <KpiTiles stats={stats(o)} scenario={goalScenario} month={o.month ?? 120} real={o.real ?? true} afterTax={o.afterTax ?? true} expert={o.expert ?? false} />
+  </>
 );
+const stats = (o: { real?: boolean; afterTax?: boolean; month?: number } = {}) =>
+  computeKpiStats(result, goalScenario, o.month ?? 120, o.real ?? true, o.afterTax ?? true);
 
 beforeEach(() => {
   localStorage.clear();

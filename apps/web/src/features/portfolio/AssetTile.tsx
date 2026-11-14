@@ -25,19 +25,26 @@ export function AssetTile({ name, position, onValue, onWrapper, onRemove, childr
     <div
       role="group"
       aria-label={name}
-      className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4"
+      className="glass flex flex-col gap-3 rounded-card p-4 sm:p-5"
     >
-      <h3 className="text-base font-semibold">{name}</h3>
-      <MoneyInput
-        label={t`Wartość`}
-        suffix={currencyWord('PLN')}
-        value={draft}
-        error={draft === null ? t`Wpisz kwotę.` : null}
-        onChange={(v) => {
-          setDraft(v);
-          if (v !== null && v >= 0) onValue(v);
-        }}
-      />
+      <h3 className="text-base font-medium tracking-[-0.01em]">{name}</h3>
+      <div className="flex items-end gap-2">
+        <div className="min-w-0 flex-1">
+          <MoneyInput
+            label={t`Wartość`}
+            suffix={currencyWord('PLN')}
+            value={draft}
+            error={draft === null ? t`Wpisz kwotę.` : null}
+            onChange={(v) => {
+              setDraft(v);
+              if (v !== null && v >= 0) onValue(v);
+            }}
+          />
+        </div>
+        <Button variant="danger" onClick={onRemove} aria-label={t`Usuń ${name}`} className="shrink-0">
+          <Trans>Usuń</Trans>
+        </Button>
+      </div>
       <Field label={t`Konto`}>
         {(p) => (
           <select
@@ -60,9 +67,6 @@ export function AssetTile({ name, position, onValue, onWrapper, onRemove, childr
         </p>
       )}
       {children}
-      <Button variant="danger" onClick={onRemove} aria-label={t`Usuń ${name}`}>
-        <Trans>Usuń</Trans>
-      </Button>
     </div>
   );
 }
