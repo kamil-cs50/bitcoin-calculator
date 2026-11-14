@@ -1,17 +1,14 @@
 import { I18nProvider } from '@lingui/react';
-import { Trans } from '@lingui/react/macro';
+import { useState } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 import { i18n } from '../i18n';
-import { APP_NAME } from './appConfig';
+import { routes } from './routes';
 
 export function App() {
+  const [router] = useState(() => createBrowserRouter(routes));
   return (
     <I18nProvider i18n={i18n}>
-      <main className="mx-auto max-w-3xl p-4">
-        <h1 className="text-2xl font-semibold">{APP_NAME}</h1>
-        <p className="mt-2 text-sm text-neutral-600">
-          <Trans>Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej</Trans>
-        </p>
-      </main>
+      <RouterProvider router={router} />
     </I18nProvider>
   );
 }

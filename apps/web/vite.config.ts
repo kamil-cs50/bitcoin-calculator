@@ -4,10 +4,15 @@ import babel from '@rolldown/plugin-babel';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
-import { APP_NAME } from './src/app/appConfig.ts';
+import { APP_NAME } from './src/app/appConfig';
 
 export default defineConfig({
   plugins: [
+    {
+      // Nazwa aplikacji w index.html pochodzi z appConfig (jedno źródło prawdy).
+      name: 'app-name-html',
+      transformIndexHtml: { order: 'pre', handler: (html: string) => html.replaceAll('%APP_NAME%', APP_NAME) },
+    },
     react(),
     babel({ plugins: ['@lingui/babel-plugin-lingui-macro'] }),
     lingui(),

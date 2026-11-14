@@ -1,1 +1,136 @@
 @import "tailwindcss";
+
+/*
+ * Tokeny projektu. Kontrast sprawdzony względem WCAG 2.2 AA (tekst >= 4,5:1,
+ * obramowania pól i fokus >= 3:1). Motyw ciemny: preferencja systemu albo
+ * atrybut data-theme na <html>.
+ */
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f5f5f4;
+  --fg: #1c1917;
+  --muted: #57534e;
+  --border: #d6d3d1;
+  --border-strong: #78716c;
+  --accent: #b45309;
+  --accent-fg: #ffffff;
+  --accent-soft: #fef3c7;
+  --accent-soft-fg: #78350f;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+  --ok: #166534;
+  --ok-soft: #dcfce7;
+  --focus: #1d4ed8;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0a09;
+    --surface: #1c1917;
+    --surface-2: #292524;
+    --fg: #fafaf9;
+    --muted: #a8a29e;
+    --border: #44403c;
+    --border-strong: #a8a29e;
+    --accent: #f59e0b;
+    --accent-fg: #1c1917;
+    --accent-soft: #451a03;
+    --accent-soft-fg: #fde68a;
+    --danger: #f87171;
+    --danger-soft: #450a0a;
+    --ok: #4ade80;
+    --ok-soft: #052e16;
+    --focus: #93c5fd;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0c0a09;
+  --surface: #1c1917;
+  --surface-2: #292524;
+  --fg: #fafaf9;
+  --muted: #a8a29e;
+  --border: #44403c;
+  --border-strong: #a8a29e;
+  --accent: #f59e0b;
+  --accent-fg: #1c1917;
+  --accent-soft: #451a03;
+  --accent-soft-fg: #fde68a;
+  --danger: #f87171;
+  --danger-soft: #450a0a;
+  --ok: #4ade80;
+  --ok-soft: #052e16;
+  --focus: #93c5fd;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-fg: var(--accent-soft-fg);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius-card: 1rem;
+  --min-target: 2.75rem; /* 44 px: minimalny cel dotykowy */
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Cyfry tabelaryczne: kwoty i procenty ustawiają się w kolumnach. */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Widoczny fokus dla każdego elementu interaktywnego. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Animacje wejścia arkusza i podpowiedzi; wyłączane przy prefers-reduced-motion. */
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.anim-sheet { animation: sheet-in 200ms ease-out; }
+.anim-fade { animation: fade-in 150ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -7,6 +7,82 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pl\n"
 
-#: src/app/App.tsx:12
+#: src/app/Layout.tsx:26
+msgid "Główna nawigacja"
+msgstr "Główna nawigacja"
+
+#: src/app/pages.tsx:44
+msgid "Nie ma takiej strony"
+msgstr "Nie ma takiej strony"
+
+#: src/app/Layout.tsx:9
+#: src/app/pages.tsx:31
+msgid "Plan"
+msgstr "Plan"
+
+#: src/app/Layout.tsx:8
+#: src/app/pages.tsx:28
+msgid "Portfel"
+msgstr "Portfel"
+
+#: src/app/Layout.tsx:20
+msgid "Przejdź do treści"
+msgstr "Przejdź do treści"
+
+#: src/app/pages.tsx:21
+msgid "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
+msgstr "Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości."
+
+#: src/app/Layout.tsx:49
 msgid "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
+
+#: src/app/Layout.tsx:12
+#: src/app/pages.tsx:40
+msgid "Ustawienia"
+msgstr "Ustawienia"
+
+#: src/lib/format.ts:72
+msgid "w {k} na 10 przyszłości"
+msgstr "w {k} na 10 przyszłości"
+
+#: src/lib/format.ts:69
+msgid "w {k} na 100 przyszłości"
+msgstr "w {k} na 100 przyszłości"
+
+#: src/lib/format.ts:64
+msgid "w każdej przyszłości"
+msgstr "w każdej przyszłości"
+
+#: src/lib/format.ts:65
+msgid "w mniej niż 1 na 100 przyszłości"
+msgstr "w mniej niż 1 na 100 przyszłości"
+
+#: src/lib/format.ts:66
+msgid "w ponad 99 na 100 przyszłości"
+msgstr "w ponad 99 na 100 przyszłości"
+
+#: src/lib/format.ts:63
+msgid "w żadnej przyszłości"
+msgstr "w żadnej przyszłości"
+
+#: src/app/pages.tsx:46
+msgid "Wybierz coś z menu na górze."
+msgstr "Wybierz coś z menu na górze."
+
+#: src/app/Layout.tsx:10
+#: src/app/pages.tsx:34
+msgid "Wynik"
+msgstr "Wynik"
+
+#: src/app/Layout.tsx:11
+msgid "Założenia"
+msgstr "Założenia"
+
+#: src/app/pages.tsx:37
+msgid "Założenia i źródła"
+msgstr "Założenia i źródła"
+
+#: src/components/ui/Sheet.tsx:28
+msgid "Zamknij"
+msgstr "Zamknij"

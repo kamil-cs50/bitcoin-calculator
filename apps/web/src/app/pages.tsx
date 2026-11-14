@@ -1,0 +1,50 @@
+import { Trans } from '@lingui/react/macro';
+import type { ReactNode } from 'react';
+import { Card } from '../components/ui/Card';
+import { APP_NAME } from './appConfig';
+
+function Page({ title, children }: { title: ReactNode; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <h1 className="text-2xl font-semibold">{title}</h1>
+      {children}
+    </div>
+  );
+}
+
+// Szkielety stron; treść dochodzi w kolejnych zadaniach (30+).
+export function HomePage() {
+  return (
+    <Page title={APP_NAME}>
+      <Card>
+        <p>
+          <Trans>Sprawdź, jak mogą potoczyć się losy Twojego portfela w 10 000 możliwych przyszłości.</Trans>
+        </p>
+      </Card>
+    </Page>
+  );
+}
+export function PortfolioPage() {
+  return <Page title={<Trans>Portfel</Trans>}>{null}</Page>;
+}
+export function PlanPage() {
+  return <Page title={<Trans>Plan</Trans>}>{null}</Page>;
+}
+export function ResultPage() {
+  return <Page title={<Trans>Wynik</Trans>}>{null}</Page>;
+}
+export function AssumptionsPage() {
+  return <Page title={<Trans>Założenia i źródła</Trans>}>{null}</Page>;
+}
+export function SettingsPage() {
+  return <Page title={<Trans>Ustawienia</Trans>}>{null}</Page>;
+}
+export function NotFoundPage() {
+  return (
+    <Page title={<Trans>Nie ma takiej strony</Trans>}>
+      <p>
+        <Trans>Wybierz coś z menu na górze.</Trans>
+      </p>
+    </Page>
+  );
+}
