@@ -254,7 +254,7 @@ msgstr "Docelowy zwrot roczny (po latach)"
 msgid "Dodaj do portfela"
 msgstr "Dodaj do portfela"
 
-#: src/features/results/Dashboard.tsx:173
+#: src/features/results/Dashboard.tsx:175
 msgid "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 msgstr "Dodaj do portfela przynajmniej jedną pozycję, a pokażemy, jak mogą potoczyć się jego losy."
 
@@ -321,7 +321,7 @@ msgstr "Gdzie trzymasz bitcoina?"
 msgid "Giełda lub własny portfel"
 msgstr "Giełda lub własny portfel"
 
-#: src/app/Layout.tsx:28
+#: src/app/Layout.tsx:29
 msgid "Główna nawigacja"
 msgstr "Główna nawigacja"
 
@@ -598,6 +598,10 @@ msgstr "Nie ma takiej strony"
 msgid "Nie możemy policzyć tego scenariusza"
 msgstr "Nie możemy policzyć tego scenariusza"
 
+#: src/features/settings/StorageNotice.tsx:46
+msgid "Nie możemy zapisać planu na tym urządzeniu (np. tryb prywatny). Aplikacja działa dalej, ale po zamknięciu karty plan zniknie. Pobierz kopię w Ustawieniach."
+msgstr "Nie możemy zapisać planu na tym urządzeniu (np. tryb prywatny). Aplikacja działa dalej, ale po zamknięciu karty plan zniknie. Pobierz kopię w Ustawieniach."
+
 #: src/features/plan/WithdrawalForm.tsx:187
 msgid "Nie udało się oszacować zwrotu portfela."
 msgstr "Nie udało się oszacować zwrotu portfela."
@@ -617,6 +621,10 @@ msgstr "Nie udało się wczytać pliku: nie można go odczytać. Twój plan zost
 #: src/features/settings/Settings.tsx:74
 msgid "Nie udało się wczytać pliku: to nie jest poprawny plan z tej aplikacji. Twój plan zostaje bez zmian."
 msgstr "Nie udało się wczytać pliku: to nie jest poprawny plan z tej aplikacji. Twój plan zostaje bez zmian."
+
+#: src/features/settings/StorageNotice.tsx:24
+msgid "Nie udało się wczytać zapisanego planu"
+msgstr "Nie udało się wczytać zapisanego planu"
 
 #: src/features/assumptions/useParamRows.ts:104
 msgid "Niepewność inflacji długookresowej (SE)"
@@ -726,7 +734,7 @@ msgstr "Pesymistyczny"
 msgid "pieniądze kończą się przed wybranym rokiem"
 msgstr "pieniądze kończą się przed wybranym rokiem"
 
-#: src/app/Layout.tsx:11
+#: src/app/Layout.tsx:12
 #: src/app/pages.tsx:42
 #: src/features/onboarding/Onboarding.tsx:91
 msgid "Plan"
@@ -760,6 +768,10 @@ msgstr "Pobierz cenę"
 #: src/features/settings/Settings.tsx:106
 msgid "Pobierz kopię (JSON)"
 msgstr "Pobierz kopię (JSON)"
+
+#: src/features/settings/StorageNotice.tsx:34
+msgid "Pobierz kopię danych"
+msgstr "Pobierz kopię danych"
 
 #: src/features/onboarding/Onboarding.tsx:98
 msgid "Podaj pełną liczbę lat od 1 do 60."
@@ -802,7 +814,7 @@ msgstr "Półokres powrotu kursu {0} do średniej (lata)"
 msgid "Ponad inflację, np. gdy zarobki rosną szybciej niż ceny."
 msgstr "Ponad inflację, np. gdy zarobki rosną szybciej niż ceny."
 
-#: src/app/Layout.tsx:10
+#: src/app/Layout.tsx:11
 #: src/app/pages.tsx:36
 msgid "Portfel"
 msgstr "Portfel"
@@ -838,7 +850,7 @@ msgstr "Przedział"
 msgid "Przedział od 10. do 90. percentyla"
 msgstr "Przedział od 10. do 90. percentyla"
 
-#: src/app/Layout.tsx:22
+#: src/app/Layout.tsx:23
 msgid "Przejdź do treści"
 msgstr "Przejdź do treści"
 
@@ -978,7 +990,7 @@ msgstr "Sufit (zł miesięcznie, opcjonalnie)"
 msgid "Symulacja"
 msgstr "Symulacja"
 
-#: src/app/Layout.tsx:52
+#: src/app/Layout.tsx:54
 msgid "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 msgstr "Symulacja edukacyjna, nie stanowi rekomendacji inwestycyjnej"
 
@@ -1066,7 +1078,7 @@ msgstr "Ustalany w styczniu od wartości portfela, wypłacany w 12 ratach."
 msgid "Ustaw cel w planie, a policzymy, ile trzeba miesięcznie wpłacać."
 msgstr "Ustaw cel w planie, a policzymy, ile trzeba miesięcznie wpłacać."
 
-#: src/app/Layout.tsx:14
+#: src/app/Layout.tsx:15
 #: src/app/pages.tsx:55
 msgid "Ustawienia"
 msgstr "Ustawienia"
@@ -1246,7 +1258,7 @@ msgstr "Wybierz coś z menu na górze."
 msgid "Wygląd"
 msgstr "Wygląd"
 
-#: src/app/Layout.tsx:12
+#: src/app/Layout.tsx:13
 #: src/app/pages.tsx:47
 msgid "Wynik"
 msgstr "Wynik"
@@ -1288,6 +1300,10 @@ msgstr "za {0} ({year})"
 msgid "Za ile lat zaczynasz wypłaty. Puste albo 0 oznacza: od razu."
 msgstr "Za ile lat zaczynasz wypłaty. Puste albo 0 oznacza: od razu."
 
+#: src/features/settings/StorageNotice.tsx:37
+msgid "Zacznij od nowa"
+msgstr "Zacznij od nowa"
+
 #. placeholder {0}: (est * 100).toLocaleString('pl-PL', { maximumFractionDigits: 1 })
 #: src/features/plan/WithdrawalForm.tsx:189
 msgid "Zakładany typowy zwrot realny portfela: {0}% rocznie (mediana z symulacji, po kosztach)."
@@ -1303,7 +1319,7 @@ msgstr "Zakres w źródłach: {0} – {1}"
 msgid "Zakres wyników"
 msgstr "Zakres wyników"
 
-#: src/app/Layout.tsx:13
+#: src/app/Layout.tsx:14
 msgid "Założenia"
 msgstr "Założenia"
 
@@ -1318,6 +1334,10 @@ msgstr "założenie"
 #: src/components/ui/Sheet.tsx:28
 msgid "Zamknij"
 msgstr "Zamknij"
+
+#: src/features/settings/StorageNotice.tsx:27
+msgid "Zapis na tym urządzeniu jest uszkodzony lub pochodzi z nieznanej wersji. Możesz pobrać jego kopię albo zacząć od nowa; dopóki nie wybierzesz, nic go nie nadpisze."
+msgstr "Zapis na tym urządzeniu jest uszkodzony lub pochodzi z nieznanej wersji. Możesz pobrać jego kopię albo zacząć od nowa; dopóki nie wybierzesz, nic go nie nadpisze."
 
 #: src/features/settings/Settings.tsx:167
 msgid "Zbiór danych {CURRENT_DATASET_VERSION}. Aplikacja działa offline; nowa wersja pojawia się po Twojej zgodzie."

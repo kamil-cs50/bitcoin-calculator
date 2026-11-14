@@ -54,7 +54,7 @@ describe('nazwa aplikacji', () => {
     expect(html).toContain('%APP_NAME%');
   });
   it('e2e bierze nazwę z appConfig', () => {
-    const e2e = readFileSync(resolve(process.cwd(), 'e2e/offline.spec.ts'), 'utf8');
+    const e2e = readFileSync(resolve(process.cwd(), 'e2e/flow.spec.ts'), 'utf8');
     expect(e2e).not.toContain(`'${APP_NAME}'`);
     expect(e2e).toContain('APP_NAME');
   });

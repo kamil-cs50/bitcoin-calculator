@@ -1,5 +1,6 @@
 import { Trans, useLingui } from '@lingui/react/macro';
 import { NavLink, Outlet, useLocation } from 'react-router';
+import { StorageNotice } from '../features/settings/StorageNotice';
 import { UpdateBanner } from '../features/settings/UpdateBanner';
 import { APP_NAME } from './appConfig';
 
@@ -44,6 +45,7 @@ export function Layout() {
           </ul>
         </nav>
       </header>
+      <StorageNotice />
       {pathname !== '/ustawienia' && <UpdateBanner />}
       <main id="tresc" tabIndex={-1} className="flex-1 pb-8 pt-2 outline-none">
         <Outlet />

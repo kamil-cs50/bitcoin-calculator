@@ -156,7 +156,9 @@ function Body({ scenario, sim }: { scenario: Scenario; sim: SimOptions }) {
         <p className="mb-2 mt-0 text-sm text-muted">{t`Najwyższe 1% przyszłości połączono w ostatnim słupku.`}</p>
         <Histogram values={histValues} formatValue={money} label={t`Rozkład wartości portfela`} />
       </Card>
-      <BtcCard scenario={scenario} dataset={dataset} month={month} />
+      {/* Karta BTC liczy dwa dodatkowe przebiegi na głównym wątku: pokazujemy ją po zakończeniu etapów,
+          żeby nie opóźniać pierwszego wyniku (budżet < 1 s do pierwszego etapu). */}
+      {!state.running && <BtcCard scenario={scenario} dataset={dataset} month={month} />}
       <Solvers scenario={scenario} createWorker={sim.createWorker} />
       {expert && checkRows && <ModelCheckPanel rows={checkRows} labelOf={names} />}
     </div>
