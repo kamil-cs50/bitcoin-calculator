@@ -17,6 +17,7 @@ separator `;` lub `,`, nagłówek opcjonalny).
 | `calibrate-assets.ts --input id=plik.csv ...` | poziomy indeksów (pliki użytkownika) | `σ`, średni log-zwrot, autokorelacja, korelacje (ściąganie Ledoita–Wolfa) |
 | `calibrate-regimes.ts --input plik.csv` | miesięczne poziomy indeksu | `p01`, `p10`, `κ₁`, `Δ`, `ν`, logLik (EM z filtrem Hamiltona, t-Studenta) |
 | `convert-gus-life-table.ts --input tablica_a.xlsx [--output plik.json] [--accessed YYYY-MM-DD]` | XLSX „Tablica A” GUS (pobrany ręcznie) | `datasets/2026.11/lifeTables.json`: `q_x` 0–100 (M, K ogółem) + opublikowane `e_0`, `e_60`, `e_65`; **zapisuje** plik zbioru (`--output -` na stdout) |
+| `backtest-shiller.ts --input ie_data-Data.csv [--write-md docs/BACKTEST.md]` | arkusz „Data” Shillera jako CSV (plik lokalny, nie w repozytorium) | rozkłady 10- i 20-letnich realnych CAGR: model vs okna historyczne, kryterium T9; opis w `docs/BACKTEST.md` |
 
 Skrypty importują `calibrateInflation` i `fxPhi` z `@sim/engine` (devDependency; `@sim/engine` nie zależy od
 `@sim/data`, brak cyklu) oraz zbiór danych przez `@sim/data/node`.

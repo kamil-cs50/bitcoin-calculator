@@ -17,3 +17,5 @@ export { effectiveVol, fxPhi } from './models/fx';
 export { calibrateInflation } from './models/inflation';
 export { meanExpHalfVar, buildScaleTable } from './math/scaleTable';
 export type { SolverOptions, SolverResult } from './solvers/bisect';
+export { stationaryBootstrap, resample, resampleRows } from './models/bootstrap';
+export type { BootstrapDraw } from './models/bootstrap';

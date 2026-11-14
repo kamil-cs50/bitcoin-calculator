@@ -16,7 +16,8 @@
     "calibrate:inflation": "tsx scripts/calibrate-inflation.ts",
     "calibrate:fx": "tsx scripts/calibrate-fx.ts",
     "calibrate:assets": "tsx scripts/calibrate-assets.ts",
-    "calibrate:regimes": "tsx scripts/calibrate-regimes.ts"
+    "calibrate:regimes": "tsx scripts/calibrate-regimes.ts",
+    "backtest:shiller": "tsx scripts/backtest-shiller.ts"
   },
   "dependencies": {
     "zod": "^4.6.7"
